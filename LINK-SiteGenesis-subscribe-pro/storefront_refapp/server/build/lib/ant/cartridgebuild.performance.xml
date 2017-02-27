@@ -1,0 +1,216 @@
+<?xml version="1.0"?>
+<project name="cartridgebuild.performance">
+
+    <property file="${dw.instancePropertyFile}" />
+
+    <path id="xlt.classpath">
+        <fileset dir="${dw.build.source}/tool_xlt/lib">
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
+
+    <target name="performance.test.compile">
+        <echo message="Building benchmark test cartridge ${cartridge.name}" />
+        <property name="testlib" value="${dw.build.source}/${cartridge.name}/build/testlib" />
+        <property name="testresults" value="${dw.build.source}/${cartridge.name}/build/testresults" />
+
+        <delete dir="${testlib}" failonerror="false" />
+        <mkdir dir="${testlib}" />
+        <delete dir="${testresults}"  failonerror="false" />
+        <mkdir dir="${testresults}" />
+        
+        <!-- clear results -->
+        <delete includeemptydirs="true">
+            <fileset dir="${dw.build.source}/${cartridge.name}/results">
+                <include name="*-benchmark*/**"/>
+            </fileset>
+        </delete>
+
+        <javac srcdir="${dw.build.source}/${cartridge.name}/javasource"
+               destdir="${testlib}"
+               source="1.5"
+               classpathref="xlt.classpath"
+               includeantruntime="false"
+               fork="true"
+               executable="${dw.javac.command}"
+               debug="true" />
+    </target>
+
+    <target name="performance.test.run">
+		<antcall target="cartridgebuild.performance.performance.test.compile" 
+		          inheritrefs="true" />
+        <echo message="Starting performance test for cartridge ${cartridge.name}" />
+
+        <path id="test.classpath">
+            <pathelement path="${testlib}" />
+            <path refid="xlt.classpath" />
+        </path>
+
+        <echo message="Testing against ${install.ws.host}:${install.ws.port.http}" />
+        <junit fork="yes"
+               dir="${cartridge.base}"
+               haltonfailure="false"
+               showoutput="yes"
+               printsummary="on"
+               jvm="${dw.java.command}">
+            <sysproperty key="IS_HOME" value="${dw.instance}" />
+            <env key="IS_HOME" value="${dw.instance}" />
+            <!-- 
+                Set a property to pass and overwrite the already set property. This allows a dynamic configuration 
+                of the host for testing.
+            -->
+            <sysproperty key="com.xceptance.xlt.project.host.http"
+                         value="${install.ws.host}" />
+            <sysproperty key="com.xceptance.xlt.project.host.https"
+                         value="${install.ws.host}" />
+            <sysproperty key="com.xceptance.xlt.result-dir"
+                         value="${cartridge.base}/results/${benchmark.product.fullversion}-benchmark/agent" />
+            <classpath refid="test.classpath" />
+            <jvmarg value="-Xmx512m" />
+            <jvmarg value="-Djava.endorsed.dirs=" />
+            <formatter usefile="yes" type="xml" />
+            <batchtest fork="yes" todir="${cartridge.testresults}">
+                <fileset dir="${cartridge.source.test}">
+                    <include name="**/T*.java" />
+                </fileset>
+            </batchtest>
+        </junit>
+        
+        <!-- compress current results -->
+        <zip destfile="${cartridge.base}/results/${benchmark.product.fullversion}-benchmark.zip"
+             basedir="${cartridge.base}/results/" includes="${benchmark.product.fullversion}-benchmark/**" />
+
+        <!-- update symbolic link to current results -->
+        <symlink link="${cartridge.base}/results/latestresults" 
+                 resource="${cartridge.base}/results/${benchmark.product.fullversion}-benchmark"
+                 overwrite="true" />
+
+        <!-- upload current results to versions -->
+        <ant antfile="${dw.antlib}/dwbuild.external.storage.xml"
+             target="s3.upload.single.file"
+             inheritrefs="true">
+            <property name="s3.upload.source.file" value="${cartridge.base}/results/${benchmark.product.fullversion}-benchmark.zip" />
+            <property name="s3.bucket" value="${dw.s3.benchmark.results}/${install.product.version}" />
+        </ant>
+
+        <!-- rename and upload current results to releases -->
+        <copy file="${cartridge.base}/results/${benchmark.product.fullversion}-benchmark.zip" 
+              tofile="${cartridge.base}/results/${install.product.version}-benchmark.zip"
+              overwrite="true"/>
+
+        <ant antfile="${dw.antlib}/dwbuild.external.storage.xml"
+             target="s3.upload.single.file"
+             inheritrefs="true">
+            <property name="s3.upload.source.file" value="${cartridge.base}/results/${install.product.version}-benchmark.zip" />
+            <property name="s3.bucket" value="${dw.s3.benchmark.results}/releases" />
+        </ant>
+    </target>
+
+    <target name="performance.test.report">
+
+        <echo message="Starting performance report for cartridge ${cartridge.name}" />
+
+        <!-- synch reports with s3 released versions reports -->
+        <ant antfile="${dw.antlib}/dwbuild.external.storage.xml"
+             target="s3.download.files"
+             inheritrefs="true">
+            <property name="s3.target.path" location="${cartridge.base}/reports" />
+            <property name="s3.source.path" value="releases" />
+            <property name="s3.bucket" value="${dw.s3.benchmark.reports}" />
+        </ant>
+
+        <!-- synch reports with s3 current versions reports -->
+        <ant antfile="${dw.antlib}/dwbuild.external.storage.xml"
+             target="s3.download.files"
+             inheritrefs="true">
+            <property name="s3.target.path" location="${cartridge.base}/reports" />
+            <property name="s3.source.path" value="${install.product.version}" />
+            <property name="s3.bucket" value="${dw.s3.benchmark.reports}" />
+        </ant>
+
+        <!-- extract archives -->
+        <unzip dest="${cartridge.base}/reports" overwrite="true">
+            <fileset dir="${cartridge.base}/reports">
+                <include name="**/*.zip"/>
+            </fileset>
+        </unzip>
+
+        <!-- configure XLT classpath -->
+        <path id="xlt.classpath">
+            <fileset dir="${dw.build.source}/tool_xlt/lib">
+                <include name="**/*.jar" />
+                <exclude name="**/junit*.jar" />
+            </fileset>
+        </path>
+
+        <!-- clear the current version report and former performance trend report -->
+        <delete dir="${cartridge.base}/reports/${benchmark.product.fullversion}-benchmark" />
+        <delete dir="${cartridge.base}/reports/trendreport" />
+
+        <!-- create a file to reflect XLT-required results lookup -->
+        <touch file="${cartridge.base}/results/${benchmark.product.fullversion}-benchmark/.xlt"/>
+
+        <!-- create performance report -->
+        <java classname="com.xceptance.xlt.report.ReportGeneratorMain"
+               fork="yes" classpathref="xlt.classpath" >
+            <arg value="-o${cartridge.base}/reports/${benchmark.product.fullversion}-benchmark"/>
+            <arg value="${cartridge.base}/results/${benchmark.product.fullversion}-benchmark"/>
+        </java>
+
+        <!-- compress current report -->
+        <zip destfile="${cartridge.base}/reports/${benchmark.product.fullversion}-benchmark.zip"
+             basedir="${cartridge.base}/reports/" includes="${benchmark.product.fullversion}-benchmark/**" />
+
+        <!-- update symbolic link to current report -->
+        <symlink link="${cartridge.base}/reports/latestreport" 
+                 resource="${cartridge.base}/reports/${benchmark.product.fullversion}-benchmark"
+                 overwrite="true" />
+
+        <!-- upload current report to versions -->
+        <ant antfile="${dw.antlib}/dwbuild.external.storage.xml"
+             target="s3.upload.single.file"
+             inheritrefs="true">
+            <property name="s3.upload.source.file" value="${cartridge.base}/reports/${benchmark.product.fullversion}-benchmark.zip" />
+            <property name="s3.bucket" value="${dw.s3.benchmark.reports}/${install.product.version}" />
+        </ant>
+
+        <!-- rename and upload current report to releases -->
+        <copy file="${cartridge.base}/reports/${benchmark.product.fullversion}-benchmark.zip" 
+              tofile="${cartridge.base}/reports/${install.product.version}-benchmark.zip"
+              overwrite="true"/>
+
+        <ant antfile="${dw.antlib}/dwbuild.external.storage.xml"
+             target="s3.upload.single.file"
+             inheritrefs="true">
+            <property name="s3.upload.source.file" value="${cartridge.base}/reports/${install.product.version}-benchmark.zip" />
+            <property name="s3.bucket" value="${dw.s3.benchmark.reports}/releases" />
+        </ant>
+
+        <!-- filter versions to match all version less than and equal to current version -->
+        <dirset id="filtered.performance.reports" dir="${cartridge.base}/reports/" includes="*-benchmark">
+            <scriptselector language="javascript">
+                self.setSelected(filename.match(/(^\d+?\.\d+?\.\d+?\.\d+?).*/)[1] &lt;= project.getProperty('install.product.version'));
+            </scriptselector>
+        </dirset>
+        <pathconvert dirsep="/" pathsep=" " property="performance.reports" refid="filtered.performance.reports" />
+
+        <!-- create new performance trend report -->
+        <java classname="com.xceptance.xlt.report.trendreport.TrendReportGeneratorMain"
+               fork="yes" classpathref="xlt.classpath" >
+            <arg value="-o${cartridge.base}/reports/trendreport"/>
+            <arg line="${performance.reports}"/>
+        </java>
+
+        <!-- cleanup report directories - keep zip files of current version only -->
+        <delete includeemptydirs="true">
+            <fileset dir="${cartridge.base}/reports">
+                <include name="*-benchmark/**"/>
+                <include name="*-benchmark.zip"/>
+                <exclude name="${benchmark.product.fullversion}-benchmark/**"/>
+                <exclude name="${install.product.version}*-benchmark.zip"/>
+            </fileset>
+        </delete>
+
+    </target>
+
+</project>

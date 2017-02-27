@@ -1,0 +1,29 @@
+<ivy-module version="2.0">
+	<info organisation="com.demandware" module="storefront_refapp" revision="1.0" />
+	
+	<configurations>
+		<conf name="default" />
+		<conf name="provided" description="provided by the env." /> 
+		<conf name="compile" extends="default,provided" /> 
+		<conf name="runtime" description="needed to build and run appserver" /> 
+		<conf name="test" description="needed during tests only, not deployed" /> 
+		<conf name="source" description="java source jars" /> 
+	</configurations>
+	
+	<publications>
+		<artifact name="storefront_refapp" />
+	</publications>
+
+    <dependencies xmlns:e="urn:ant.apache.org:ivy-extras">
+        <dependency org="dw.deployment" name="${jdk.artifactId}" rev="${dw.dependencies.jdk}" transitive="false" conf="compile->*" >
+            <artifact name="${jdk.artifactId}" type="tar.gz" e:classifier="bin" />
+        </dependency>
+    </dependencies>
+<!--	
+	<dependencies xmlns:e="urn:ant.apache.org:ivy-extras">
+		<dependency org="dw.ecom" name="sitegen" rev="14.2.0.12" changing="false" transitive="false" conf="compile->default">
+	     		<artifact name="sitegen" e:classifier="bin" type="source" conf="compile" ext="zip" />
+	   	</dependency>
+	</dependencies>
+-->
+</ivy-module>

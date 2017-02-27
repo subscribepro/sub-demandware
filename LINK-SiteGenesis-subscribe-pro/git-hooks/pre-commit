@@ -1,0 +1,3 @@
+ #!/usr/bin/env bash
+
+npm run lint --loglevel=silent && npm run test:unit --loglevel=silent -- --reporter=dot

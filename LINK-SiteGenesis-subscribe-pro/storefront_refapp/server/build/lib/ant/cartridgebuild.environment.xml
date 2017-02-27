@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<project name="cartridgebuild.environment">
+
+    <!-- set the cartridge version number if it has not been set in the cartridge label file -->
+    <property name="cartridge.build.version" value="${dwbuild.fullversion}" />
+
+    <!--
+        Create properties for convenient locations.
+        At this point, we already have
+        cartridge.base and cartridge.name   -->
+
+    <property name="cartridge.staticfiles" location="${cartridge.base}/staticfiles" />
+    <property name="cartridge.cartridge" location="${cartridge.base}/staticfiles/cartridge" />
+    <property name="cartridge.templates" location="${cartridge.cartridge}/templates" />
+    <!-- TODO: change to src eventually -->
+    <property name="cartridge.source" location="${cartridge.base}/javasource" />
+    <!-- TODO: better be temporary, java tests should be in src/test/java -->
+    <property name="cartridge.source.test" location="${cartridge.base}/javasource_test" />
+
+    <property name="cartridge.build" location="${cartridge.base}/build" />
+    <property name="cartridge.classes" location="${cartridge.build}/classes" />
+    <property name="cartridge.test-classes" location="${cartridge.build}/test-classes" />
+    <property name="cartridge.static" location="${cartridge.build}/static" />
+    <property name="cartridge.generated" location="${cartridge.build}/generated" />
+    <property name="cartridge.resources" location="${cartridge.classes}/resources/${cartridge.name}" />
+
+    <property name="cartridge.testresults" location="${cartridge.build}/testresults" />
+    <property name="cartridge.testreport" location="${cartridge.build}/testreport" />
+    <property name="cartridge.codemetrics.results" location="${cartridge.build}/codemetrics" />
+
+    <!-- build artifacts (jar and zip files) go here -->
+    <property name="cartridge.dist" location="${cartridge.base}/dist" />
+    <property name="cartridge.dist.predeploy" location="${cartridge.dist}/appserverinstance" />
+    <property name="cartridge.predeploy.instance.system" location="${cartridge.dist.predeploy}/system" />
+    <property name="cartridge.predeploy.instance.sharedata" location="${cartridge.dist.predeploy}/sharedata" />
+    <property name="cartridge.predeploy.instance.realmdata" location="${cartridge.dist.predeploy}/realmdata" />
+    <property name="cartridge.predeploy.catalina.home" location="${cartridge.predeploy.instance.system}/engine/tomcat" />
+    
+    <property name="cartridge.jar.name" value="${cartridge.name}.jar" />
+    <property name="cartridge.jar" location="${cartridge.dist}/${cartridge.name}.jar" />
+
+    <available property="cartridge.has.ivy.config"
+               file="${cartridge.base}/ivy-${cartridge.name}.xml"
+               type="file" />
+
+    <available property="cartridge.has.javasource"
+               file="${cartridge.source}"
+               type="dir" />
+
+    <available property="cartridge.has.javasource.test"
+               file="${cartridge.source.test}"
+               type="dir" />
+               
+    <available property="cartridge.has.templates" file="${cartridge.templates}" type="dir" />
+    <available property="cartridge.has.pipelines" file="${cartridge.cartridge}/pipelines" type="dir" />
+    <available property="cartridge.has.impex" file="${cartridge.cartridge}/impex" type="dir" />
+    <available property="cartridge.has.scripts" file="${cartridge.cartridge}/scripts" type="dir" />
+    <available property="cartridge.has.appserverinstance.system" file="${cartridge.base}/appserverinstance/system" type="dir" />
+    <available property="cartridge.has.appserverinstance.sharedata" file="${cartridge.base}/appserverinstance/sharedata" type="dir" />
+    <available property="cartridge.has.appserverinstance.realmdata" file="${cartridge.base}/appserverinstance/realmdata" type="dir" />
+
+    <condition property="cartridge.deploy">
+        <or>
+            <contains string="${cartridges.startup}" substring="${cartridge.name}" />
+            <contains string="${cartridges.dbinit}" substring="${cartridge.name}" />
+            <contains string="${dw.build.test.projects}" substring="${cartridge.name}" />
+            <equals arg1="storefront_refapp" arg2="${cartridge.name}" />
+        </or>
+    </condition>
+
+    <condition property="cartridge.precompile.jsp.dir" value="localdata/webapps/custom" else="system/work">
+        <contains string="${cartridge.name}" substring="app_storefront" />
+    </condition>
+
+    <condition property="cartridge.jsp.dir"
+               value="${dw.instance.localdata}/webapps/custom/isml2jsp/cartridges/${cartridge.name}"
+               else="${dw.instance.system}/webapps/ROOT/isml2jsp/cartridges/${cartridge.name}">
+        <contains string="${cartridge.name}" substring="app_storefront" />
+    </condition>
+
+    <condition property="cartridge.jspclass.uriroot"
+               value="${dw.instance.localdata}/webapps/custom"
+               else="${dw.instance.system}/webapps/ROOT">
+        <contains string="${cartridge.name}" substring="app_storefront" />
+    </condition>
+
+    <condition property="cartridge.jspclass.dir"
+               value="${dw.instance.localdata}/appserver/work"
+               else="${dw.instance.system}/work">
+        <contains string="${cartridge.name}" substring="app_storefront" />
+    </condition>
+
+    <condition property="cartridge.has.cartridgefiles">
+        <or>
+            <available file="${cartridge.cartridge}" type="dir" />
+            <isset property="cartridge.has.templates" />
+            <isset property="cartridge.has.pipelines" />
+            <isset property="cartridge.has.impex" />
+            <isset property="cartridge.has.scripts" />
+        </or>
+    </condition>
+
+    <fileset id="cartridge.js.css.files" dir="${cartridge.cartridge}/static">
+        <include name="**/*.js" />
+        <include name="**/*.css" />
+    </fileset>
+
+    <fileset id="cartridge.dwux.files" dir="${cartridge.cartridge}/static">
+        <include name="**/dw*.js" />
+        <include name="**/dwux*.css" />
+    </fileset>
+
+    <fileset id="cartridge.bm.js.css.files" dir="${cartridge.cartridge}/static">
+        <include name="**/*.js" />
+        <include name="**/*.css" />
+        <exclude name="**/default/jscript/gwt/**/*.*" />
+    </fileset>
+
+    <fileset id="cartridge.main.classes" dir="${cartridge.classes}" erroronmissingdir="false">
+    </fileset>
+
+    <fileset id="cartridge.test.classes" dir="${cartridge.build}/test-classes" erroronmissingdir="false" />
+
+    <fileset dir="${cartridge.source}" id="cartridge.main.resources">
+        <include name="**/*.ddl" />
+        <include name="**/*.js" />
+        <include name="**/*.properties" />
+        <include name="**/*.resource" />
+        <include name="**/*.sql" />
+        <include name="**/*.txt" />
+        <include name="**/*.xml" />
+        <include name="**/*.conf" />
+        <include name="**/*.json" />        
+        <exclude name="test/**/*" />
+    </fileset>
+
+    <fileset dir="${cartridge.source.test}" id="cartridge.test.resources">
+        <exclude name="**/*.java" />
+    </fileset>
+
+</project>

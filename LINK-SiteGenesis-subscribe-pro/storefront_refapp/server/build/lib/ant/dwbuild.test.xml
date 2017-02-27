@@ -1,0 +1,208 @@
+<?xml version="1.0"?>
+<project name="dwbuild.test">
+
+    <property name="dw.antlib" location="${ant.file}/.." />
+    <include file="${dw.antlib}/dwbuild.lib.xml" />
+
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+             classpath="${dw.build.libs.build}/ant-contrib-1.0b3.jar" />
+
+    <property name="ivy.default.ivy.user.dir" value="${dw.build.ivy.home}"/>
+
+    <taskdef resource="org/apache/ivy/ant/antlib.xml"
+             uri="antlib:org.apache.ivy.ant"
+             classpath="${dw.build.libs.build}/ivy-${build.ivy.release}.jar" />
+             
+    <property file="${dw.instancePropertyFile}" />
+    <property name="web.hostname" value="${install.ws.host}" />
+    <property name="testurl"
+              value="http://${web.hostname}/on/demandware.static/Sites-Site/-/default/css/login.css" />
+
+    <condition property="isWindows">
+        <os family="windows" />
+    </condition>
+    
+    <condition property="appserver.binary"
+               value="${dw.instance.system}/bin/tomcat.bat"
+               else="${dw.instance.system}/bin/tomcat.sh">
+        <isset property="isWindows" />
+    </condition>
+
+    <condition property="appserver.coverage.datafile"
+               value="${dw.global.jacoco.exec.build}"
+               else="">
+      <available file="${dw.global.jacoco.exec.build}"/>
+    </condition>
+
+    <target name="check.test.env">
+        <condition property="no.hostname">
+            <not>
+                <isset property="install.ws.host" />
+            </not>
+        </condition>
+        <fail if="no.hostname"
+              message="Need to set install.ws.host in ${dw.instancePropertyFile} to run server based tests" />
+    </target>
+    
+    <property environment="env" />
+    
+    <condition property="dw.temp.dir" value="${env.TEMP}" else="/tmp">
+        <os family="windows" />
+    </condition>
+    
+    <!-- Execution target to run server dependent regression tests.-->
+    <target name="test.server.regression.run">
+        <echo message="Starting regression tests on test_app_storefront_refapp and test_app_storefront_electronics" />
+        <ant dir="${dw.build.source}/test_app_storefront_refapp"
+             antfile="build.xml"
+             target="regressiontest" />
+        <ant dir="${dw.build.source}/test_app_storefront_electronics"
+             antfile="build.xml"
+             target="regressiontest" />
+    </target>
+
+    <!-- run server independent unit tests -->
+    <target name="test.unit.run"
+            description="Run server independent unit tests that are defined in the cartridges">
+        <echo message="List of test cartridges: ${dw.test.projects}" />
+        <foreach list="${dw.test.projects}"
+                 target="run.cartridge.tests"
+                 param="cartridge"
+                 inheritall="true"
+                 inheritrefs="true"
+                 trim="true">
+            <param name="test.target" value="unittest" />
+        </foreach>
+    </target>
+
+    <!-- Execution target to run server dependent functional/unit tests -->
+    <target name="test.server.functional.run">
+        <echo message="List of test cartridges: ${dw.test.projects}" />
+        <foreach list="${dw.test.projects}"
+                 target="run.cartridge.tests"
+                 param="cartridge"
+                 inheritall="true"
+                 inheritrefs="true">
+            <param name="test.target" value="functionaltest" />
+        </foreach>
+    </target>
+
+    <!-- Execution target to run cartridge tests (unit or functionnal tests) -->
+    <target name="run.cartridge.tests">
+        <echo message="Running tests (${test.target}) for ${cartridge}" />
+        <ant dir="${dw.build.source}/${cartridge}"
+             antfile="build.xml"
+             target="${test.target}"
+             inheritrefs="true" />
+    </target>
+
+    <!-- Target to trigger server dependent regression or functional/unit tests -->
+    <target name="trigger.server.dependent.tests"
+            description="trigger server dependent regression or functional/unit tests">
+        <parallel>
+            <antcall target="start.testenvironment" inheritrefs="true">
+                <param name="appserver.coverage.datafile" value="${appserver.coverage.datafile}" />
+            </antcall>
+            <sequential>
+                <waitfor maxwait="60" maxwaitunit="second" checkevery="100">
+                    <http url="${testurl}" />
+                </waitfor>
+                <antcall target="test.server.${test.type}.run" />
+                <antcall target="stop.testenvironment" />
+            </sequential>
+        </parallel>
+    </target>
+
+    <!-- Target to start the test environment -->
+    <target name="start.testenvironment">
+        <antcall target="start.webserver" />
+        <ant antfile="${dw.antlib}/dwbuild.datagrid.xml" target="moce.start" />
+        <antcall target="start.appserver" />
+    </target>
+
+    <target name="start.appserver">
+        <antcall target="start.appserver.windows" />
+        <antcall target="start.appserver.linux" />
+    </target>
+
+    <target name="start.appserver.linux" if="os.family.unix">        
+        <echo message="Starting app server in ${dw.instance}" />
+        <exec executable="${appserver.binary}"
+              dir="${dw.instance}"
+              failonerror="true">
+            <env key="DW_HOME" value="${dw.home}" />
+            <arg value="test" />
+            <arg value="${appserver.coverage.datafile}" />
+        </exec>   
+    </target>
+
+    <target name="start.appserver.windows" if="os.family.windows">
+        <echo message="Starting app server in ${dw.instance}" />
+        <exec executable="${appserver.binary}"
+              dir="${dw.instance}" >
+            <env key="DW_HOME" value="${dw.home}" />
+            <arg line="test ${appserver.coverage.datafile}" />
+        </exec>
+    </target>
+
+    <!-- Target to stop the test environment -->
+    <target name="stop.testenvironment">
+        <antcall target="stop.webserver" />
+        <ant antfile="${dw.antlib}/dwbuild.datagrid.xml" target="moce.stop" />
+        <antcall target="stop.appserver" />
+    </target>
+
+    <target name="stop.appserver">
+        <antcall target="stop.appserver.windows" />
+        <antcall target="stop.appserver.linux" />
+    </target>
+
+    <target name="stop.appserver.linux" if="os.family.unix">        
+        <echo message="Stopping APPSERVER in ${dw.instance}" />
+        <exec executable="${appserver.binary}"
+              dir="${dw.instance}"
+              failonerror="true">
+            <env key="DW_HOME" value="${dw.home}" />
+            <arg value="stop" />
+        </exec>   
+    </target> 
+
+    <target name="stop.appserver.windows" if="os.family.windows">
+        <echo message="Stopping APPSERVER in ${dw.instance}" />
+        <exec executable="${appserver.binary}"
+              dir="${dw.instance}" >
+            <env key="DW_HOME" value="${dw.home}" />
+            <arg line="stop" />
+        </exec>
+    </target>
+
+    <!-- the webserver start/stop targets require, that the build user has sudo permissions with 
+         the NOPASSWD option enabled -->
+    <!-- Target to start the webserver -->
+    <target name="start.webserver" unless="${os.family.windows}">
+        <echo message="Starting the web server" />
+        <exec executable="sudo">
+            <arg line="${dw.home}/webserverinstance/httpd/bin/apache_start" />
+        </exec>
+    </target>
+
+    <!-- Target to stop the webserver -->
+    <target name="stop.webserver" unless="${os.family.windows}">
+        <echo message="Stopping the web server" />
+        <exec executable="sudo">
+            <arg line="${dw.home}/webserverinstance/httpd/bin/apache_stop" />
+        </exec>
+    </target>
+
+    <target name="test.list" description="Creates for each cartridge a list of functional and unit tests that are included in the test suite">
+        <ant antfile="${dw.antlib}/dwbuild.lib.xml" target="all.projects.exec">
+            <property name="all.build.target" value="test.list" />
+        </ant>
+    </target>
+
+    <target name="test.list.excludes" description="Creates for each cartridge a list of classes located in javasource_test which are not part of the test suite">
+        <ant antfile="${dw.antlib}/dwbuild.lib.xml" target="all.projects.exec">
+            <property name="all.build.target" value="test.list.excludes" />
+        </ant>
+    </target>
+</project>

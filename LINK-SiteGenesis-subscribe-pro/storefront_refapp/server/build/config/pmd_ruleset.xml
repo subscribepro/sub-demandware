@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<ruleset name="Custom ruleset"
+    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd"
+    xsi:noNamespaceSchemaLocation="http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+  <description>This ruleset contains base line for PMD.</description>
+
+  <!-- enabled rules from java basic rule set -->
+  <rule ref="rulesets/java/basic.xml/OverrideBothEqualsAndHashcode"/>
+  <rule ref="rulesets/java/basic.xml/DoubleCheckedLocking"/>
+  <rule ref="rulesets/java/basic.xml/AvoidDecimalLiteralsInBigDecimalConstructor"/>
+  <rule ref="rulesets/java/basic.xml/MisplacedNullCheck"/>
+  <rule ref="rulesets/java/basic.xml/AvoidThreadGroup"/>
+  <rule ref="rulesets/java/basic.xml/BrokenNullCheck"/>
+  <rule ref="rulesets/java/basic.xml/CheckResultSet"/>
+  <rule ref="rulesets/java/basic.xml/CheckSkipResult"/>
+  <rule ref="rulesets/java/basic.xml/DontCallThreadRun"/>
+  
+  <!-- enabled rules from java controversial rule set -->
+  <rule ref="rulesets/java/controversial.xml/DoNotCallGarbageCollectionExplicitly"/>
+
+  <!-- enabled rules from java design rule set -->
+  <rule ref="rulesets/java/design.xml/CloseResource"/>
+  <rule ref="rulesets/java/design.xml/AvoidSynchronizedAtMethodLevel"/>
+  <rule ref="rulesets/java/design.xml/UseNotifyAllInsteadOfNotify"/>
+  <rule ref="rulesets/java/design.xml/CompareObjectsWithEquals"/>
+  <rule ref="rulesets/java/design.xml/NonThreadSafeSingleton"/>
+  <rule ref="rulesets/java/design.xml/UnsynchronizedStaticDateFormatter"/>
+  
+  <!-- enabled rules from java finalizers rule set -->
+  <rule ref="rulesets/java/finalizers.xml"/>
+
+</ruleset>

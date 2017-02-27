@@ -1,0 +1,257 @@
+<?xml version="1.0"?>
+<project name="cartridgebuild" default="main">
+
+    <!-- Read the optional cartridge specific build properties. -->
+    <property file="${cartridge.base}/build.properties" />
+    <property name="cname" value="custombuild.${cartridge.name}" />
+
+    <!-- everything that is in the cartridge context and is not a target 
+         - classpath definitions
+         - switches
+         - fileset definitions -->
+    <include file="${dw.antlib}/cartridgebuild.environment.xml" />
+    <!-- import all custom targets for this cartridge
+         the file must exist and must implement all generic custom targets -->
+    <import file="${cartridge.base}/custombuild.xml" />
+    <include file="${dw.antlib}/cartridgebuild.lib.xml" />
+    <include file="${dw.antlib}/cartridgebuild.studio.xml" />
+    <include file="${dw.antlib}/cartridgebuild.codemetrics.xml" />
+
+
+    <!-- clean build and target directory. 
+         has to be called explicitly, never gets called as a depndency -->
+    <target name="clean"
+            description="Delete build and dist content of this cartridge">
+        <echo message="Cleaning ${cartridge.name}/build and ${cartridge.name}/dist" />
+        <delete failonerror="false" includeemptydirs="true" verbose="false">
+            <fileset dir="${cartridge.build}" includes="**/*" />
+            <fileset dir="${cartridge.dist}" includes="**/*" />
+            <!-- only the xlt test cartridges have this -->
+            <fileset dir="${cartridge.base}/results" includes="**/*" />
+        </delete>
+    </target>
+
+    <target name="copy">
+        <antcall target="${cname}.precopy" inheritrefs="true" />
+        <!-- resolve and deploy ivy dependencies -->
+        <ant antfile="${dw.antlib}/cartridgebuild.lib.xml" 
+             target="resolve.ivy.dependencies"/>
+
+        <!-- copy resources that go into the main jar -->
+        <copy todir="${cartridge.classes}" verbose="false" failonerror="false">
+            <fileset refid="cartridge.main.resources" />
+        </copy>
+
+        <!-- copy resources that go into the test jar -->
+        <copy todir="${cartridge.build}/test-classes"
+              verbose="false"
+              failonerror="false">
+            <fileset refid="cartridge.test.resources" />
+        </copy>
+
+        <antcall target="${cname}.postcopy" inheritrefs="true" />
+    </target>
+
+    <!-- Task to compile all java classes. -->
+    <target name="compile"
+            description="compile sources"
+            if="cartridge.has.javasource">
+        <antcall target="${cname}.precompile" inheritrefs="true" />
+        <mkdir dir="${cartridge.classes}" />
+
+        <!-- Need to extend the path here because some tests depend on test classes 
+             in other cartridges -->
+        <path id="compile.classpath">
+            <path refid="dw.build.classpath" />
+            <path refid="dw.test.classpath" />
+            <path location="${cartridge.classes}" />
+        </path>
+
+        <echo message="Starting compile of main classes for ${cartridge.name}"/>
+        <javac srcdir="${cartridge.source}"
+               destdir="${cartridge.classes}"
+               classpathref="compile.classpath"
+               failonerror="true"
+               debug="true"
+               encoding="UTF-8"
+               includeantruntime="false"
+               fork="true"
+               executable="${dw.javac.command}"
+               memoryMaximumSize="768m">
+        </javac>
+
+        <antcall target="compile.test" inheritrefs="true" />
+        
+        <ant antfile="${dw.antlib}/cartridgebuild.generate.xml"
+             target="pipeletlist"
+             inheritRefs="true" />
+
+        <antcall target="${cname}.postcompile" inheritrefs="true" />
+    </target>
+    
+    <target name="compile.test"
+            description="compile test classes"
+            if="cartridge.has.javasource.test">
+
+        <echo message="Starting compile of test classes for ${cartridge.name} located in javasource_test"/>
+
+        <mkdir dir="${cartridge.build}/test-classes" />
+
+        <javac srcdir="${cartridge.source.test}"
+               destdir="${cartridge.build}/test-classes"
+               classpathref="compile.classpath"
+               failonerror="true"
+               debug="true"
+               encoding="UTF-8"
+               includeantruntime="false"
+               fork="true"
+               executable="${dw.javac.command}"
+               memoryMaximumSize="768m">
+        </javac>
+    </target>
+
+    <target name="jar"
+            description="Build the cartridge jars (includes unit tests), put them into the dist folder of the cartridge">
+        <antcall target="${cname}.prejar" inheritrefs="true" />
+
+        <mkdir dir="${cartridge.dist}" />
+
+        <antcall target="cartridgebuild.lib.jar.generic">
+            <param name="jar.file" value="${cartridge.jar}" />
+            <reference refid="cartridge.main.classes" torefid="jar.content.files" />
+            <param name="jar.title" value="${cartridge.name} main classes" />
+        </antcall>
+
+        <antcall target="cartridgebuild.lib.jar.generic">
+            <param name="jar.file"
+                   value="${cartridge.dist}/${cartridge.name}_tests.jar" />
+            <reference refid="cartridge.test.classes" torefid="jar.content.files" />
+            <param name="jar.title" value="${cartridge.name}_tests" />
+        </antcall>
+
+        <antcall target="${cname}.postjar" inheritrefs="true" />
+    </target>
+
+    <!-- the switch is set in cartridgebuild.environment, if the cartridge is
+         in cartridgelist.properties -->
+
+    <target name="deploy" if="cartridge.deploy"
+        description="Prepare, then copy jars to the tomcat lib folder, cartridge properties and resources to cartridge folder in appserverinstance">
+        <antcall target="${cname}.predeploy" inheritrefs="true" />
+
+        <mkdir dir="${dw.instance.system}/resources/cartridges/${cartridge.name}/release/lib" />
+
+        <!-- Copy cartridge jars to CATALINA_HOME/lib that are meant to be part of the release 
+             for devbuilds, also test jars are deployed -->
+        <copy todir="${cartridge.predeploy.catalina.home}/lib"
+              flatten="true"
+              verbose="true"
+              failonerror="false">
+            <fileset dir="${cartridge.dist}">
+                <include name="${cartridge.jar.name}" />
+                <include name="${cartridge.name}_tests.jar"/>
+                <include name="dw*.jar" />
+            </fileset>
+        </copy>
+
+        <copy todir="${cartridge.predeploy.instance.system}/resources/cartridges/${cartridge.name}/release"
+              overwrite="true"
+              failonerror="false">
+            <fileset dir="${cartridge.build}">
+                <include name="*.properties" />
+                <exclude name="${cartridge.name}.build.properties" />
+            </fileset>
+        </copy>
+
+        <copy todir="${cartridge.predeploy.instance.system}/resources/cartridges/${cartridge.name}/release/lib"
+              overwrite="true"
+              failonerror="false">
+            <fileset dir="${cartridge.classes}/resources" />
+        </copy>
+
+        <!-- resources (test and prod) that are in the cartridge release directory -->
+        <copy todir="${cartridge.predeploy.instance.system}/resources/cartridges/${cartridge.name}/release"
+              verbose="false"
+              overwrite="true"
+              failonerror="false">
+            <fileset dir="${cartridge.cartridge}" includes="**/*" />
+        </copy>
+
+        <!-- copy compresses static content to cartridge release directory -->
+        <copy todir="${cartridge.predeploy.instance.system}/resources/cartridges/${cartridge.name}/release/static"
+              verbose="false"
+              overwrite="true"
+              failonerror="false">
+            <fileset dir="${cartridge.static}" includes="**/*" />
+        </copy>        
+
+        <!-- make sure all files are copied over as part of the build -->
+        <antcall target="copy.appserverinstance.system" />
+        <antcall target="copy.appserverinstance.sharedata" />
+        <antcall target="copy.appserverinstance.realmdata" />
+
+        <!-- everything should be in target/appserverinstance -
+             now provision it -->
+        <echo message="Copying cartridge ${cartridge.dist.predeploy} to appserverinstance" />
+        <copy todir="${dw.instance}"
+              verbose="false"
+              overwrite="true"
+              failonerror="false">
+            <fileset dir="${cartridge.dist.predeploy}" includes="**/*" />
+        </copy>        
+
+        <antcall target="${cname}.postdeploy" inheritrefs="true" />
+    </target>
+
+    <target name="copy.appserverinstance.system"
+            if="cartridge.has.appserverinstance.system">
+        <echo message="Copying cartridge system data into ${cartridge.predeploy.instance.system}" />
+        <copy todir="${cartridge.predeploy.instance.system}" verbose="false" overwrite="false">
+            <fileset dir="${cartridge.base}/appserverinstance/system" />
+        </copy>
+    </target>
+
+    <target name="copy.appserverinstance.sharedata"
+            if="cartridge.has.appserverinstance.sharedata"
+            unless="cartridge.build.skip.appserverinstance.sharedata">
+        <echo message="Copying cartridge sharedata to ${cartridge.predeploy.instance.sharedata}" />
+        <copy todir="${cartridge.predeploy.instance.sharedata}"
+              verbose="false"
+              overwrite="false">
+            <fileset dir="${cartridge.base}/appserverinstance/sharedata" />
+        </copy>
+    </target>
+
+    <target name="copy.appserverinstance.realmdata"
+            if="cartridge.has.appserverinstance.realmdata"
+            unless="cartridge.build.skip.appserverinstance.realmdata">
+        <echo message="Copying cartridge realmdata to ${cartridge.predeploy.instance.realmdata}" />
+        <copy todir="${cartridge.predeploy.instance.realmdata}"
+              verbose="false"
+              overwrite="false">
+            <fileset dir="${cartridge.base}/appserverinstance/realmdata" />
+        </copy>
+    </target>
+
+    <import file="${dw.antlib}/cartridgebuild.test.xml" />
+    <import file="${dw.antlib}/cartridgebuild.performance.xml" />
+
+    <target name="main" unless="build.skip.${cartridge.name}">
+        <echo message="Building the ${cartridge.name} cartridge" />
+        <antcall target="copy" inheritrefs="true" />
+        <antcall target="compile" inheritrefs="true" />
+        <antcall target="jar" inheritrefs="true" />
+        <antcall target="deploy" inheritrefs="true" />
+        <antcall target="${cname}.finally" inheritrefs="true" />
+    </target>
+
+    <target name="ping"
+            description="Print the classpath, write visible properties into property file in build/">
+        <ant target="cartridgebuild.lib.print.classpath" inheritrefs="true" />
+        <echo message="This is the ${cartridge.name} cartridge in ${cartridge.base}" />
+        <mkdir dir="${cartridge.build}" />
+        <echoproperties destfile="${cartridge.build}/${cartridge.name}.build.properties" />
+        <echo message="Find all properties available to this cartridge build in build/${cartridge.name}.build.properties"/>
+    </target>
+
+</project>

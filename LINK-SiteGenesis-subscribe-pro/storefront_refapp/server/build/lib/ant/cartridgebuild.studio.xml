@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<project name="cartridgebuild.studio"
+         xmlns:rsel="antlib:org.apache.tools.ant.types.resources.selectors">
+
+    <!-- This is semi-purposeful test code, eventually to be used for
+         studio integration, Right now, the automatic call of the
+         DeployClassFile Builder should be disabled -->
+
+    <target name="deploy" if="studio.build.files">
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+                 classpath="${dw.build.libs.build}/ant-contrib-1.0b3.jar" />
+
+        <!-- remove double quotes from the lis string -->
+        <propertyregex property="file.list"
+                  input="${studio.build.files}"
+                  regexp="&quot;"
+                  replace="" />
+        <propertyregex property="file.list"
+                  input="${studio.build.files}"
+                  regexp=" "
+                  replace="," />
+
+        <!-- build an ant path resource from the now space separated list -->
+        <pathconvert property="classes">
+            <restrict>
+                <filelist dir="${$cartridge.classes}"
+                          files="${file.list}" />
+                <rsel:type type="file" />
+                <rsel:name name="*.class" />
+            </restrict>
+        </pathconvert>
+
+        <!-- count the number of (class) files in the resource -->
+        <resourcecount property="class.count">
+            <path path="${classes}" />
+        </resourcecount>
+
+        <condition property="do.deploy.classes">
+            <resourcecount when="greater" count="0">
+                <path path="${classes}" />
+            </resourcecount>
+        </condition>
+        <antcall target="cartridgebuild.studio.deploy.classes"/>
+    </target>
+
+    <target name="deploy.classes" if="do.deploy.classes">
+        <filelist id="class.buildfiles"
+                  dir="${cartridge.base}/build/classes"
+                  files="${studio.build.files}" />
+
+        <copy todir="${dw.catalina.home}/lib" verbose="true">
+            <restrict>
+                <filelist dir="${$cartridge.classes}"
+                          files="${file.list}" />
+                <rsel:type type="file" />
+                <rsel:name name="*.class" />
+            </restrict>
+        </copy>
+    </target>
+
+</project>

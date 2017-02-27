@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<project name="dwbuild.performance" default="performance">
+
+    <property name="dw.antlib" location="${ant.file}/.." />
+    <import file="${dw.antlib}/dwbuild.test.xml" />
+
+    <!-- Execution target to run performance tests -->
+    <target name="performance">
+        <!-- verfify test environment -->
+        <antcall target="check.test.env" />
+        
+        <!--read version properties -->
+        <property file="${dw.instance.system}/resources/cartridges/version.properties" />
+        <property name="install.product.fullversion" value="${install.product.version}.${install.product.build}" />
+        <echo>Running benchmark on ${install.product.fullversion}</echo>
+
+        <script language="javascript">
+            var buildNo = project.getProperty('install.product.build');
+            var padChar = "0";
+            var size = 4;
+            var re = new RegExp(".{" + size + "}$");
+            var padded = "";            
+            do
+            {
+                padded += padChar;
+            }
+            while(padded.length &lt; size);
+            project.setNewProperty('benchmark.product.fullversion', project.getProperty('install.product.version') + '.' + re.exec(padded + buildNo)[0]);
+        </script>
+
+        <!-- prepare performance test infrastructure -->
+        <antcall target="infrastructure.performance" />
+             
+        <!-- prepare performance test data -->
+        <antcall target="dbinit.performance" />
+
+        <!-- run performance tests -->
+        <antcall target="trigger.server.performance.tests"
+                 inheritrefs="true" />
+        <antcall target="trigger.server.performance.tests.noserver"
+                 inheritrefs="true" />
+
+        <!-- create performance test reports -->
+        <ant dir="${dw.build.source}/test_performance"
+             antfile="build.xml"
+             target="performance.test.report" />
+    </target>
+    
+    <!-- Build and deploy infrastructure for performance testing -->
+    <target name="infrastructure.performance" unless="noserver">
+
+        <!-- build and deploy bc_performance cartridge -->
+        <ant antfile="${dw.build.source}/bc_performance/build.xml"
+             target="main" 
+             inheritrefs="true" />
+
+        <!-- add bc_performance and data_performance to cartridgelist.properties -->
+        <propertyfile file="${dw.instance.system}/resources/cartridges/cartridgelist.properties">
+            <entry key="cartridges" operation="+" value=" bc_performance"/>
+            <entry key="cartridges.dbinit" operation="+" value=" data_performance"/>
+        </propertyfile>
+
+    </target>
+
+    <!-- Execution target to run database initialization for performance testing -->
+    <target name="dbinit.performance" unless="nodbinit">
+
+        <!-- build and deploy performance test data -->
+        <ant antfile="${dw.build.source}/data_performance/build.xml"
+             target="main" 
+             inheritrefs="true" />
+
+        <!-- run dbinit on test_data -->
+        <ant antfile="${dw.instance.system}/tools/deployment/dbinit.xml"
+             target="dbinit.parametrized"
+             inheritrefs="true">
+            <property name="dbinit.target.name" value="data_performance" />
+        </ant>
+
+    </target>
+
+    <!-- Target to trigger server performance tests -->
+    <target name="trigger.server.performance.tests"
+            description="trigger server performance tests" 
+            unless="noserver">
+        <parallel>
+            <antcall target="start.testenvironment" inheritrefs="true">
+                <param name="appserver.coverage.datafile" value="" />
+            </antcall>
+            <sequential>
+                <waitfor maxwait="60" maxwaitunit="second" checkevery="100">
+                    <http url="${testurl}" />
+                </waitfor>
+                <antcall target="test.server.performance.run" />
+                <antcall target="stop.testenvironment" />
+            </sequential>
+        </parallel>
+    </target>
+    
+    <!-- Target to trigger server performance tests without starting server -->
+    <target name="trigger.server.performance.tests.noserver"
+            description="trigger server performance tests without starting server" 
+            if="noserver">
+        <antcall target="test.server.performance.run" />          
+    </target>
+
+    <!-- Execution target to run server performance tests.-->
+    <target name="test.server.performance.run">
+        <echo message="Starting performance tests" />
+        <ant dir="${dw.build.source}/test_performance"
+             antfile="build.xml"
+             target="performance.test.run" />
+    </target>
+
+</project>

@@ -1,0 +1,26 @@
+<ivysettings>
+    <include url="ivysettings-local-resolvers.xml" />
+    <include url="ivysettings-dw-resolvers.xml" />
+    
+    <resolvers>
+        <!-- ivy chain resolver -->
+        <chain name="dw-chain-resolver" changingPattern=".*SNAPSHOT" checkmodified="true">
+            <!--  local resolvers -->
+            <resolver ref="dw-local-maventools" />
+            <resolver ref="dw-local-core" />
+            <resolver ref="dw-local-search" />
+            <resolver ref="dw-local-beehive" />
+            <resolver ref="dw-local-oms" />
+            <resolver ref="dw-local-wapi" />
+            <resolver ref="dw-local-moce" />
+            <resolver ref="dw-local-all-others" />
+           
+            <!--  dw ibiblio resolvers -->
+            <resolver ref="dw-public-proxy" />
+            <resolver ref="dw-releases" />
+            <resolver ref="dw-snapshots" />
+            <resolver ref="dw-thirdparty" />
+        </chain>
+    </resolvers>
+</ivysettings>
+

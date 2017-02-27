@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<project name="dwbuild.publish" xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:e="http://ant.apache.org/ivy/extra">
+    <target name="publish" if="build.do.ci.build">
+        <ant antfile="${dw.antlib}/dwbuild.package.xml"
+             target="determine.artifact.name" inheritrefs="true" />
+
+        <property file="${dw.build.build}/temp/dw.artifact.prefix.properties" />
+        <antcall target="do.publish" inheritrefs="true" />
+    </target>
+
+    <target name="do.publish">
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+                 classpath="${dw.build.libs.build}/ant-contrib-1.0b3.jar" />
+        <property name="ivy.default.ivy.user.dir" value="${dw.build.ivy.home}"/>
+        <property name="dw.module" value="ecom.${dw.current.branch}" />
+
+        <condition property="dw.resolver" value="nexus-ecom-releases" else="nexus-ecom-snapshots">
+            <contains substring="release" string="${dw.current.branch}" casesensitive="true" />
+        </condition>
+
+        <taskdef resource="org/apache/ivy/ant/antlib.xml"
+                 uri="antlib:org.apache.ivy.ant"
+                 classpath="${dw.build.libs.build}/ivy-${build.ivy.release}.jar" />
+
+        <ivy:configure file="${dw.build.build}/config/ivysettings-publish.xml" />
+        <if>
+            <equals arg1="${do.build.tests}" arg2="true" />
+                <then>
+                    <ivy:resolve file="${dw.build.build}/config/ivy-publish-testrelease.xml" />
+                </then>
+            <else>
+                <ivy:resolve file="${dw.build.build}/config/ivy-publish-release.xml" />
+            </else>
+        </if>
+
+        <echo message="Publishing ${dw.current.branch} to ${dw.resolver}" />
+
+        <ivy:publish resolver="${dw.resolver}"
+                     pubbranch="${dw.current.branch}"
+                     pubrevision="${dwbuild.fullversion}"
+                     module="${dw.module}"
+                     overwrite="true"
+                     publishivy="false" >
+            <artifacts pattern="${dw.build.release}/${setup.product.id}-[revision]-[branch]-[artifact].[ext]"/>
+        </ivy:publish>
+    </target>
+    
+    <!-- this is only here for testing and it needs to be activated by setting -Dfake.files=x on the command line -->
+    <target name="fake.release.files" if="fake.files">
+        <ant antfile="${dw.antlib}/dwbuild.package.xml"
+             target="determine.artifact.name" inheritrefs="true" />
+
+        <property file="${dw.build.build}/temp/dw.artifact.prefix.properties" />
+
+        <propertyfile comment="# 123" file="${dw.artifact.prefix}-API-doc.tar.gz" />
+        <propertyfile comment="# 123" file="${dw.artifact.prefix}-localdata.tar.gz" />
+        <propertyfile comment="# 123" file="${dw.artifact.prefix}-sharedata-sites.tar.gz" />
+        <propertyfile comment="# 123" file="${dw.artifact.prefix}-sharedata.tar.gz" />
+        <propertyfile comment="# 123" file="${dw.artifact.prefix}-system-cartridges.tar.gz" />
+        <propertyfile comment="# 123" file="${dw.artifact.prefix}-system-demo.tar.gz" />
+        <propertyfile comment="# 123" file="${dw.artifact.prefix}-system-mock.tar.gz" />
+        <propertyfile comment="# 123" file="${dw.artifact.prefix}-system-quota-manager.tar.gz" />
+        <propertyfile comment="# 123" file="${dw.artifact.prefix}-system-tomcat.libs.tar.gz" />
+        <propertyfile comment="# 123" file="${dw.artifact.prefix}-system-webapps.tar.gz" />
+        <propertyfile comment="# 123" file="${dw.artifact.prefix}-system.tar.gz" />
+        <propertyfile comment="# 123" file="${dw.artifact.prefix}-systemsettings.tar.gz" />
+        <propertyfile comment="# 123" file="${dw.artifact.prefix}-webadapter.tar.gz" />
+        <propertyfile comment="# 123" file="${dw.artifact.prefix}-webserver.tar.gz" />
+        <propertyfile comment="# 12345" file="${dw.artifact.prefix}-sharedata-test.tar.gz" />
+        <propertyfile comment="# 12345" file="${dw.artifact.prefix}-system-test.tar.gz" />
+    </target>
+
+</project>
+

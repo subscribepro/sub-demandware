@@ -1,0 +1,365 @@
+<?xml version="1.0"?>
+<project name="cartridgebuild.test"
+         xmlns:ivy="antlib:org.apache.ivy.ant"
+         xmlns:junit4="antlib:com.carrotsearch.junit4">
+
+    <patternset id="functional.testsuite">
+        <include name="test/server/**/*${pattern}*.class" if="pattern"/>
+        <include name="test/server/**/*Test.class" unless="pattern"/>
+        <include name="test/server/**/*TestSuite.class" unless="pattern"/>
+        <exclude name="**/*TestCase.class" />
+    </patternset>
+    
+    <patternset id="unit.testsuite">
+        <include name="test/unit/**/*${pattern}*.class" if="pattern" />
+        <include name="com/**/*${pattern}*.class" if="pattern" />
+        <include name="dw/**/*${pattern}*.class" if="pattern" />
+        <include name="test/unit/**/*Test.class" unless="pattern" />
+        <include name="test/unit/**/*TestSuite.class" unless="pattern" />
+        <include name="test/unit/**/_*.class" unless="pattern" />
+        <include name="com/**/*Test.class" unless="pattern" />
+        <include name="com/**/*TestSuite.class" unless="pattern" />
+        <include name="com/**/_*.class" unless="pattern" />
+        <include name="dw/**/*Test.class" unless="pattern" />
+        <include name="dw/**/*TestSuite.class" unless="pattern" />
+        <include name="dw/**/_*.class" unless="pattern" />
+        <exclude name="**/*TestCase.class" />
+        <exclude name="**/*$*.class" />
+        <!-- exclude unit tests for GWT based Business Mgr UI since they require JUnit 3  to run -->
+        <exclude name="test/unit/**/gwt/**" />
+        <!-- exclude Junit test framework, unfortunately it is located in the same folder like the test classes -->
+        <exclude name="com/demandware/etest/**/*.class" />
+    </patternset>
+
+    <patternset id="excludes.testsuite">
+        <invert>
+            <patternset refid="functional.testsuite"/>
+        </invert>
+        <invert>
+            <patternset refid="unit.testsuite"/>
+        </invert>
+        <exclude name="**/*$*.class" />
+        <exclude name="com/demandware/etest/**/*.class" />
+    </patternset>
+
+    <property file="${dw.instancePropertyFile}" />
+    
+    <condition property="parallel.jvm.functionaltest" value="1" else="${parallelism.functionaltest}">
+        <not>
+            <isset property="parallelism.functionaltest" />
+        </not>
+    </condition>
+
+    <condition property="parallel.jvm.unittest" value="1" else="${parallelism.unittest}" >
+        <or>
+            <not>
+                <isset property="parallelism.unittest" />
+            </not>
+            <equals arg1="${cartridge.name}" arg2="orm" casesensitive="false" trim="true" />
+        </or>
+    </condition>
+
+    <condition property="coverage.jacoco.agent.jvmargs"
+               value="-javaagent:${dw.global.jacoco.agent}=destfile=${dw.global.jacoco.exec.build},includes=com.demandware*:dw*:TopLevel*"
+               else="">
+      <available file="${dw.global.jacoco.exec.build}"/>
+    </condition>
+
+    <target name="singletest"
+            description="Execute a single test or group of tests by passing a fileset pattern like -Dpattern=LogTest"
+            if="pattern">
+        <antcall target="unittest" inheritrefs="true" />
+        <antcall target="functionaltest" inheritRefs="true" />
+    </target>
+
+    <target name="create.target.folders">
+        <mkdir dir="${cartridge.testresults}" />
+        <mkdir dir="${cartridge.testreport}" />
+    </target>
+
+    <target name="init.test.env" depends="create.target.folders">
+
+        <taskdef resource="org/apache/ivy/ant/antlib.xml"
+                 uri="antlib:org.apache.ivy.ant"
+                 classpath="${dw.build.libs.build}/ivy-${build.ivy.release}.jar" />
+
+        <ivy:configure file="${dw.build.build}/config/ivysettings.xml" />
+        <ivy:resolve file="${dw.build.build}/config/testautomation.ivy.xml" />
+        <ivy:cachepath pathid="testautomation.path"
+                       file="${dw.build.build}/config/testautomation.ivy.xml" />
+
+        <path id="testautomation.classpath">
+            <path refid="testautomation.path" />
+            <fileset dir="${dw.catalina.home}/lib">
+                <include name="*.jar" />
+            </fileset>
+        </path>
+
+        <!-- http://labs.carrotsearch.com/download/randomizedtesting/2.0.0/docs/junit4-ant/Tasks/junit4.html -->
+        <taskdef uri="antlib:com.carrotsearch.junit4">
+            <classpath refid="testautomation.classpath" />
+        </taskdef>
+
+    </target>
+
+    <!-- clean up any temp files that may be the result of an aborted test -->
+    <target name="cleanup.temp.files">
+        <delete quiet="true" failonerror="false">
+            <fileset dir="${cartridge.base}" includes="junit4-*"/>
+        </delete>
+    </target>
+
+    <target name="functionaltest"
+            description="Execute all server-dependent unit tests for this cartridge"
+            if="cartridge.has.javasource.test"
+            depends="init.test.env">
+
+        <echo message="functional testing ${cartridge.name} with ${parallel.jvm.functionaltest} JVM(s)" />
+
+        <path id="functionaltest.classpath">
+            <path refid="dw.main.classpath" />
+            <fileset dir="${dw.catalina.home}/lib">
+                <include name="*.jar" />
+            </fileset>
+        </path>
+
+        <junit4:junit4 printsummary="on"
+                haltonfailure="false"
+                jvm="${dw.java.command}"
+                parallelism="${parallel.jvm.functionaltest}"
+                shuffleOnSlave="false"
+                dynamicAssignmentRatio="0.0">
+            <env key="IS_HOME" value="${dw.instance}" />
+            <env key="LANG" value="en_US.UTF-8" />
+            <sysproperty key="IS_HOME" value="${dw.instance}" />
+            <classpath refid="functionaltest.classpath" />
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1g" />
+            <jvmarg value="-XX:MaxPermSize=256m" />
+            <jvmarg value="-Dtestinstance.host=${install.ws.host}" />
+            <jvmarg value="-XX:-UseSplitVerifier" />
+            <jvmarg value="-Duser.timezone=GMT" />
+            <jvmarg line="${coverage.jacoco.agent.jvmargs}" />
+            <zipfileset src="${cartridge.dist}/${cartridge.name}_tests.jar">
+                <patternset refid="functional.testsuite"/>
+            </zipfileset>
+            <listeners>
+                <junit4:report-text showThrowable="false"
+                                    showStackTraces="false"
+                                    showOutput="never"
+                                    showStatusOk="false"
+                                    showStatusError="false"
+                                    showStatusFailure="false"
+                                    showStatusIgnored="false"
+                                    showSuiteSummary="true" />
+                <junit4:report-ant-xml dir="${cartridge.testresults}"
+                                       mavenExtensions="false"
+                                       outputStreams="yes" />
+                <junit4:report-json file="${cartridge.testreport}/functional_test_results.html"
+                                    projectName="${cartridge.name} - Functional Test Results"
+                                    outputStreams="yes" />
+            </listeners>
+        </junit4:junit4>
+
+        <antcall target="cleanup.temp.files" inheritrefs="true" />
+
+    </target>
+
+    <target name="unittest"
+            description="Execute all server-independent unit tests for this cartridge"
+            if="cartridge.has.javasource.test"
+            depends="init.test.env">
+
+        <echo message="unit testing ${cartridge.name} with ${parallel.jvm.unittest} JVM(s)" />
+
+        <path id="unittest.classpath">
+            <path refid="dw.main.classpath" />
+            <fileset dir="${dw.build.source}">
+                <include name="*/dist/*.jar" />
+                <exclude name="*/dist/*_tests.jar" />
+            </fileset>
+            <fileset dir="${dw.build.source}">
+                <include name="core_kernel/dist/core_kernel_tests.jar" />
+                <include name="core_script/dist/core_script_tests.jar" />
+                <include name="core/dist/core_tests.jar" />
+                <include name="${cartridge.name}/dist/${cartridge.name}_tests.jar" />
+            </fileset>
+            <!-- jacoco should only be there after it has been explicitly prepared -->
+            <fileset dir="${dw.global.jacoco.dist}" includes="jacoco_agent.jar" erroronmissingdir="false" />
+        </path>
+
+        <junit4:junit4 printsummary="on"
+                haltonfailure="false"
+                jvm="${dw.java.command}"
+                parallelism="${parallel.jvm.unittest}"
+                shuffleOnSlave="false"
+                dynamicAssignmentRatio="0.0">
+            <env key="IS_HOME" value="${dw.instance}" />
+            <env key="LANG" value="en_US.UTF-8" />
+            <sysproperty key="IS_HOME" value="${dw.instance}" />
+            <sysproperty key="cartridge.base"
+                         value="${cartridge.base}" />
+            <jvmarg value="-Xms768m" />
+            <jvmarg value="-Xmx1536m" />
+            <jvmarg value="-XX:MaxPermSize=256m" />
+            <jvmarg value="-XX:-UseSplitVerifier" />
+            <jvmarg value="-Djava.security.egd=file:/dev/../dev/urandom" />
+            <jvmarg value="-Duser.timezone=GMT" />
+            <jvmarg line="${coverage.jacoco.agent.jvmargs}" />
+            <classpath refid="unittest.classpath" />
+            <zipfileset src="${cartridge.dist}/${cartridge.name}_tests.jar">
+                <patternset refid="unit.testsuite"/>
+            </zipfileset>
+            <listeners>
+                <junit4:report-text showThrowable="false"
+                                    showStackTraces="false"
+                                    showOutput="never"
+                                    showStatusOk="false"
+                                    showStatusError="false"
+                                    showStatusFailure="false"
+                                    showStatusIgnored="false"
+                                    showSuiteSummary="true" />
+                <junit4:report-ant-xml dir="${cartridge.testresults}"
+                                       mavenExtensions="false"
+                                       outputStreams="yes" />
+                <junit4:report-json file="${cartridge.testreport}/unit_test_results.html"
+                                    projectName="${cartridge.name} - Unit Test Results"
+                                    outputStreams="yes" />
+            </listeners>
+        </junit4:junit4>
+
+        <antcall target="cleanup.temp.files" inheritrefs="true" />
+
+    </target>
+
+    <target name="regressiontest" depends="init.test.env">
+
+        <echo message="Starting regression test for cartridge ${cartridge.name}" />
+        <property name="testlib" value="${cartridge.base}/build/testlib" />
+        <delete dir="${testlib}" />
+        <mkdir dir="${testlib}" />
+
+        <path id="xlt.classpath">
+            <fileset dir="${dw.build.source}/tool_xlt/lib">
+                <include name="**/*.jar" />
+            </fileset>
+        </path>
+
+        <javac srcdir="${cartridge.source}"
+               destdir="${testlib}"
+               source="1.7"
+               classpathref="xlt.classpath"
+               includeantruntime="false"
+               fork="true"
+               executable="${dw.javac.command}"
+               debug="true" />
+
+        <path id="test.classpath">
+            <pathelement path="${testlib}" />
+            <path refid="xlt.classpath" />
+        </path>
+
+        <echo message="Testing against ${install.ws.host}:${install.ws.port.http}" />
+        <junit fork="yes"
+               dir="${cartridge.base}"
+               haltonfailure="false"
+               showoutput="yes"
+               printsummary="on"
+               jvm="${dw.java.command}">
+            <sysproperty key="IS_HOME" value="${dw.instance}" />
+            <env key="IS_HOME" value="${dw.instance}" />
+            <!-- 
+                Set a property to pass and overwrite the already set property. This allows a dynamic configuration
+                of the host for testing.
+            -->
+            <sysproperty key="com.xceptance.xlt.project.host.http"
+                         value="${install.ws.host}" />
+            <sysproperty key="com.xceptance.xlt.project.host.https"
+                         value="${install.ws.host}" />
+            <classpath refid="test.classpath" />
+            <jvmarg value="-Xmx1g" />
+            <jvmarg value="-Djava.endorsed.dirs=" />
+            <formatter usefile="yes" type="xml" />
+            <batchtest fork="yes" todir="${cartridge.testresults}">
+                <fileset dir="${cartridge.source}">
+                    <include name="**/tests/**/T*.java" />
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="test.list" depends="create.target.folders">
+        <fileset id="functional.testsuite.fileset" dir="${cartridge.build}/test-classes" erroronmissingdir="false">
+            <patternset refid="functional.testsuite"/>
+        </fileset>
+
+        <fileset id="unit.testsuite.fileset" dir="${cartridge.build}/test-classes" erroronmissingdir="false">
+            <patternset refid="unit.testsuite"/>
+        </fileset>
+
+        <echo message="Delete old list of tests" />
+        <delete failonerror="false">
+            <fileset dir="${cartridge.testreport}" includes="**/*test_list*.txt"/>
+        </delete>
+        
+        <echo message="Generating list of functional tests to ${cartridge.name}/build/testreport/functional_test_list.txt" />
+        <antcall target="generate.test.list" inheritRefs="true">
+            <reference refid="functional.testsuite.fileset" torefid="test.list.fileset"/>
+            <param name="test.list.report" value="functional_test_list.txt"/>
+        </antcall>
+
+        <echo message="Generating list of unit tests to ${cartridge.name}/build/testreport/unit_test_list.txt" />
+        <antcall target="generate.test.list" inheritRefs="true">
+            <reference refid="unit.testsuite.fileset" torefid="test.list.fileset"/>
+            <param name="test.list.report" value="unit_test_list.txt"/>
+        </antcall>
+    </target>
+
+    <target name="test.list.excludes" depends="create.target.folders">
+        <fileset id="excludes.testsuite.fileset" dir="${cartridge.build}/test-classes" erroronmissingdir="false">
+            <patternset refid="excludes.testsuite"/>
+        </fileset>
+
+        <fileset id="misplaced.tests.fileset" dir="${cartridge.build}/classes" erroronmissingdir="false">
+            <include name="/test/**/*.class" />
+        </fileset>
+
+        <echo message="Generating list of classes not included in test suite to ${cartridge.name}/build/testreport/excluded_from_test_list.txt" />
+        <antcall target="generate.test.list" inheritRefs="true">
+            <reference refid="excludes.testsuite.fileset" torefid="test.list.fileset"/>
+            <param name="test.source.dir" value="${cartridge.build}${file.separator}test-classes"/>
+            <param name="test.list.report" value="excluded_from_test_suite.txt"/>
+        </antcall>
+        <antcall target="generate.test.list" inheritRefs="true">
+            <reference refid="misplaced.tests.fileset" torefid="test.list.fileset"/>
+            <param name="test.source.dir" value="${cartridge.build}${file.separator}classes"/>
+            <param name="test.list.report" value="excluded_from_test_suite.txt"/>
+            <param name="test.list.report.append" value="true"/>
+        </antcall>
+    </target>
+    
+    <target name="generate.test.list">
+        <path id="test.list.path">
+           <fileset refid="test.list.fileset" />
+        </path>
+        <pathconvert refid="test.list.path" property="test.list" pathsep="${line.separator}">
+            <mapper>
+                <chainedmapper>
+                    <globmapper from="${test.source.dir}${file.separator}*.class" to="*" />
+                    <packagemapper from="*" to="*" />
+                </chainedmapper>
+            </mapper>
+        </pathconvert>
+        
+        <condition property="test.list.empty">
+            <length string="${test.list}" when="eq" length="0" />
+        </condition>
+
+        <antcall target="write.test.list" inheritRefs="true"/>
+    </target>
+
+    <target name="write.test.list" unless="test.list.empty">
+        <echo message="${test.list}" file="${cartridge.testreport}/${test.list.report}" append="${test.list.report.append}"/>
+    </target>
+    
+</project>

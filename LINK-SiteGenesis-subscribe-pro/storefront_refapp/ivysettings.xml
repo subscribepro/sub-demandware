@@ -1,0 +1,5 @@
+<ivysettings>
+   <include file="${dw.build.build}/config/ivysettings.xml"/>
+</ivysettings>
+
+

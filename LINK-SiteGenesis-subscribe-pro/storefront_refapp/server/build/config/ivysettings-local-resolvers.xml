@@ -1,0 +1,57 @@
+<ivysettings>
+    <!-- "dw/core" and "dw/maventools" instead of [organization] to only pick up dw projects -->
+    <property name="local-maven2-repo" value="${user.home}/.m2/repository" override="false" /> 
+    <property name="local-dw-core-ivy-pattern" value="file:${local-maven2-repo}/dw/core/[module]/[revision]/[module]-[revision].pom" override="false" /> 
+    <property name="local-dw-core-artifact-pattern" value="file:${local-maven2-repo}/dw/core/[module]/[revision]/[module]-[revision](-[classifier]).[ext]" override="false" /> 
+    <property name="local-dw-maventools-ivy-pattern" value="file:${local-maven2-repo}/dw/maventools/[module]/[revision]/[module]-[revision].pom" override="false" /> 
+    <property name="local-dw-maventools-artifact-pattern" value="file:${local-maven2-repo}/dw/maventools/[module]/[revision]/[module]-[revision](-[classifier]).[ext]" override="false" />
+    <property name="local-dw-search-ivy-pattern" value="file:${local-maven2-repo}/dw/search/[module]/[revision]/[module]-[revision].pom" override="false" /> 
+    <property name="local-dw-search-artifact-pattern" value="file:${local-maven2-repo}/dw/search/[module]/[revision]/[module]-[revision](-[classifier]).[ext]" override="false" /> 
+    <property name="local-dw-beehive-ivy-pattern" value="file:${local-maven2-repo}/dw/beehive/[module]/[revision]/[module]-[revision].pom" override="false" />
+    <property name="local-dw-beehive-artifact-pattern" value="file:${local-maven2-repo}/dw/beehive/[module]/[revision]/[module]-[revision](-[classifier]).[ext]" override="false" />
+    <property name="local-dw-oms-ivy-pattern" value="file:${local-maven2-repo}/dw/oms/[module]/[revision]/[module]-[revision].pom" override="false" />
+    <property name="local-dw-oms-artifact-pattern" value="file:${local-maven2-repo}/dw/oms/[module]/[revision]/[module]-[revision](-[classifier]).[ext]" override="false" />
+    <property name="local-dw-wapi-ivy-pattern" value="file:${local-maven2-repo}/dw/webapi/[module]/[revision]/[module]-[revision].pom" override="false" />
+    <property name="local-dw-wapi-artifact-pattern" value="file:${local-maven2-repo}/dw/webapi/[module]/[revision]/[module]-[revision](-[classifier]).[ext]" override="false" />
+    <property name="local-dw-moce-ivy-pattern"      value="file:${local-maven2-repo}/dw/moce/[module]/[revision]/[module]-[revision].pom" override="false" />
+    <property name="local-dw-moce-artifact-pattern" value="file:${local-maven2-repo}/dw/moce/[module]/[revision]/[module]-[revision](-[classifier]).[ext]" override="false" />
+    <property name="local-dw-all-others-ivy-pattern"      value="file:${local-maven2-repo}/[organisation]/[module]/[revision]/[module]-[revision].pom" override="false" />
+    <property name="local-dw-all-others-artifact-pattern" value="file:${local-maven2-repo}/[organisation]/[module]/[revision]/[module]-[revision](-[classifier]).[ext]" override="false" />
+     
+    <resolvers>
+        <!-- local maven repo resolvers -->
+        <url name="dw-local-maventools" changingPattern=".*SNAPSHOT" checkmodified="true" m2compatible="true">
+              <ivy pattern="${local-dw-maventools-ivy-pattern}" />
+              <artifact pattern="${local-dw-maventools-artifact-pattern}" />
+        </url>
+        <url name="dw-local-core" changingPattern=".*SNAPSHOT" checkmodified="true" m2compatible="true">
+            <ivy pattern="${local-dw-core-ivy-pattern}" />
+            <artifact pattern="${local-dw-core-artifact-pattern}" />
+        </url>
+        <url name="dw-local-search" changingPattern=".*SNAPSHOT" checkmodified="true" m2compatible="true">
+            <ivy pattern="${local-dw-search-ivy-pattern}" />
+            <artifact pattern="${local-dw-search-artifact-pattern}" />
+        </url>
+        <url name="dw-local-beehive" changingPattern=".*SNAPSHOT" checkmodified="true" m2compatible="true">
+            <ivy pattern="${local-dw-beehive-ivy-pattern}" />
+            <artifact pattern="${local-dw-beehive-artifact-pattern}" />
+        </url>
+        <url name="dw-local-oms" changingPattern=".*SNAPSHOT" checkmodified="true" m2compatible="true">
+            <ivy pattern="${local-dw-oms-ivy-pattern}" />
+            <artifact pattern="${local-dw-oms-artifact-pattern}" />
+        </url>
+        <url name="dw-local-wapi" changingPattern=".*SNAPSHOT" checkmodified="true" m2compatible="true">
+            <ivy pattern="${local-dw-wapi-ivy-pattern}" />
+            <artifact pattern="${local-dw-wapi-artifact-pattern}" />
+        </url>
+        <url name="dw-local-moce" changingPattern=".*SNAPSHOT" checkmodified="true" m2compatible="true">
+            <ivy pattern="${local-dw-moce-ivy-pattern}" />
+            <artifact pattern="${local-dw-moce-artifact-pattern}" />
+        </url>
+        <url name="dw-local-all-others" changingPattern=".*SNAPSHOT" checkmodified="true" m2compatible="true">
+            <ivy pattern="${local-dw-all-others-ivy-pattern}" />
+            <artifact pattern="${local-dw-all-others-artifact-pattern}" />
+        </url>
+        
+    </resolvers>
+</ivysettings>

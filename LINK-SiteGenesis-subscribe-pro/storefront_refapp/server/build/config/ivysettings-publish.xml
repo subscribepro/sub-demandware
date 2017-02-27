@@ -1,0 +1,16 @@
+<ivysettings>
+    <properties file="../temp/dw.artifact.prefix.properties" />
+    <credentials host="m2.svc1.demandware.net"
+                 realm="Sonatype Nexus Repository Manager" 
+                 username="deployment"
+                 passwd="52c76da7c56b606849df5a038d1bb561"/>
+    <resolvers>
+        <ibiblio name="nexus-ecom-releases-secure" root="https://m2.svc1.demandware.net/content/repositories/ecom-releases/" m2compatible="true"/>
+        <ibiblio name="nexus-ecom-releases" root="http://m2.svc1.demandware.net/content/repositories/ecom-releases/" m2compatible="true"/>
+        <ibiblio name="nexus-ecom-snapshots-secure" root="https://m2.svc1.demandware.net/content/repositories/ecom-snapshots/" m2compatible="true"/>
+        <ibiblio name="nexus-ecom-snapshots" root="http://m2.svc1.demandware.net/content/repositories/ecom-snapshots/" m2compatible="true"/>
+    </resolvers>
+
+    <settings defaultResolver="nexus-ecom-snapshots" />
+</ivysettings>
+

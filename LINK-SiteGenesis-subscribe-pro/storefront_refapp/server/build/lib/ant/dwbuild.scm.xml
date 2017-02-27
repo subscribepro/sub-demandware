@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<project name="dwbuild.scm">
+
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+             classpath="${dw.build.libs.build}/ant-contrib-1.0b3.jar" />
+
+    <property file="${dw.build.config}/build.properties" />
+    <property name="dw.scm.url"
+              value="${dw.scm.servername}/${dw.scm.projectname}" />
+
+    <target name="branch.to.artifactname">
+        <property name="dw.artifact.prefix" 
+                  value="${dw.build.release}/${setup.product.id}-${dwbuild.fullversion}-${dw.build.branchname}" />
+        <basename property="dw.artifact.name" file="${dw.artifact.prefix}" />
+
+        <delete file="${dw.build.build}/temp/dw.artifact.prefix.properties"
+                failonerror="false" />
+
+        <propertyfile file="${dw.build.build}/temp/dw.artifact.prefix.properties">
+            <entry key="dw.current.branch"
+                   value="${dw.build.branchname}" />
+            <entry key="dw.artifact.name"
+                   value="${dw.artifact.name}" />
+            <entry key="dw.artifact.prefix"
+                   value="${dw.artifact.prefix}" />
+        </propertyfile>
+    </target>
+
+    <target name="git.add.tag">
+        <!-- Commit to git here -->
+
+        <!-- We should probably move away from storing the build number in the code and move it to a tag in git instead -->
+        <exec executable="git" failifexecutionfails="true" errorproperty="">
+            <arg value="tag"/>
+            <arg value="-a"/>
+            <arg value="${tag.id}"/>
+            <arg value="-m"/>
+            <arg value="${tag.message}"/>
+        </exec>
+
+        <exec executable="git" failifexecutionfails="true" errorproperty="">
+            <arg value="push"/>
+            <arg value="origin"/>
+            <arg value="${tag.id}"/>
+        </exec>
+    </target>
+
+    <target name="tag.build">
+        <fail unless="env.JOB_URL"
+              message="jenkins job url (JOB_URL) is missing" />
+
+        <property name="jenkins.build.info.xml"
+                  location="${dw.build.temp}/build.properties.xml" />
+        <delete file="${jenkins.build.info.xml}" failonerror="false" />
+
+        <get src="${env.JOB_URL}/api/xml"
+             dest="${jenkins.build.info.xml}"
+             verbose="true"
+             usetimestamp="true"
+             ignoreerrors="true" />
+
+        <xmlproperty file="${jenkins.build.info.xml}"
+                     keeproot="false"
+                     prefix="dw.build.info" />
+
+        <echo message="# Tag build, commit to git" />
+
+        <antcall target="git.add.tag">
+            <param name="tag.id" value="${dw.build.info.name}-${dw.build.branchname}-${dwbuild.fullversion}" />
+            <param name="tag.message" value="BUILD: Tagging CI build '${dw.build.info.name}' of branch '$dw.build.branchname' with version '${dwbuild.fullversion}'" />
+        </antcall>        
+    </target>
+
+</project>

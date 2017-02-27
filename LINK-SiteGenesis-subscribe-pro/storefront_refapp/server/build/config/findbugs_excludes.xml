@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<FindBugsFilter>
+  <!-- exclude confidence level 2 (normal confidence) and 3 (low confidence) -->
+  <Or>
+	<Confidence value="3"/>
+	<Confidence value="2"/>
+  </Or>
+  <!-- exclude ranks 15 to 20 (bugs to concern) -->
+  <Or>
+	<Rank value="15"/>
+    <Rank value="16"/>
+    <Rank value="17"/>
+    <Rank value="18"/>
+    <Rank value="19"/>
+	<Rank value="20"/>
+  </Or>
+  <!-- exclude org.mozilla package and sub packages as well as test package and sub packages -->
+  <Package name="~org\.mozilla.*" />
+  <Package name="~test.*" />
+  <!-- exclude code 'CN,Nm' of category 'BAD_PRACTICE' -->
+  <And>
+    <Bug category="BAD_PRACTICE"/>
+    <Bug code="CN,Nm"/>
+  </And>
+  <!-- exclude pattern 'VA_FORMAT_STRING_USES_NEWLINE' of code 'Fs' of category 'BAD_PRACTICE' -->
+  <And>
+    <Bug category="BAD_PRACTICE"/>
+	<Bug code="Fs"/>
+	<Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"></Bug>
+  </And>
+  <!-- exclude code 'USELESS_STRING' of category 'CORRECTNESS' -->
+  <And>
+    <Bug category="CORRECTNESS"/>
+    <Bug code="USELESS_STRING"/>
+  </And>  
+  <!-- exclude category 'EXPERIMENTAL' -->
+  <Bug category="EXPERIMENTAL"/>
+  <!-- exclude code 'MS' of category 'MALICIOUS_CODE' -->
+  <And>
+    <Bug category="MALICIOUS_CODE"/>
+    <Bug code="MS"/>
+  </And>
+  <!-- exclude code 'ST' of category 'STYLE' -->
+  <And>
+    <Bug category="STYLE"/>
+    <Bug code="ST"/>
+  </And>
+</FindBugsFilter>

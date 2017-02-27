@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<project name="dwbuild.resources">
+
+    <condition property="ext" value="tar.gz" else="zip" >
+        <os family="unix"/>
+    </condition>
+    
+    <property name="jdk.archive.name" value="jdk-${dw.deploy.jdk.version}-${os.family.id}.${ext}" />
+    <property name="jdk64.archive.name" value="jdk64-${dw.deploy.jdk.version}-${os.family.id}.${ext}" />
+    <property name="jdk.archive.url" value="${dw.repository.url}/${jdk.archive.name}" />
+    <property name="jdk64.archive.url" value="${dw.repository.url}/${jdk64.archive.name}" />
+    <property name="jdk.archive.path" value="${dw.resources}/jdk/${jdk.archive.name}" />
+    <property name="jdk64.archive.path" value="${dw.resources}/jdk/${jdk64.archive.name}" />
+
+    <available property="skip.download.jdk" file="${jdk.archive.path}"/>
+    <condition property="skip.download.jdk64">
+        <or>
+            <available file="${jdk64.archive.path}"/>
+            <not><isset property="os.family.linux"/></not>
+        </or>
+    </condition>
+
+    <target name="deploy.jdk">
+        <echo message="Deploying JDK ${dw.deploy.jdk.version} for ${os.family.id}"/>
+        <!-- step 1: see if the archive for the current version are available
+                     download if necessary -->
+        <antcall target="check.resources.jdk"/>
+        <!-- step 2: unpack the archive(s) -->
+        <antcall target="unpack.jdk.${os.family.id}"/>
+    </target>
+
+    <target name="check.resources.jdk">
+        <antcall target="fetch.jdk"/>
+        <antcall target="fetch.jdk64"/>
+    </target>
+
+    <!-- Parameters:
+         url:    a canonical url to a(n s3) resource
+         target: the absolute path in the local file system -->
+    <target name="fetch.resource">
+        <dirname property="targetpath" file="${target}"/>
+        <mkdir dir="${targetpath}"/> 
+        <get src="${url}"
+             dest="${target}"
+             verbose="false"
+             usetimestamp="true"
+             ignoreerrors="true" />
+    </target>
+        
+    <target name="fetch.jdk" unless="skip.download.jdk">
+        <antcall target="fetch.resource">
+            <param name="url" value="${jdk.archive.url}"/>
+            <param name="target" value="${jdk.archive.path}"/>
+        </antcall>
+    </target>
+        
+    <target name="fetch.jdk64" unless="skip.download.jdk64">
+        <antcall target="fetch.resource">
+            <param name="url" value="${jdk64.archive.url}"/>
+            <param name="target" value="${jdk64.archive.path}"/>
+        </antcall>
+    </target>
+
+    <target name="unpack.jdk.linux">
+        <exec executable="tar" failonerror="true">
+            <arg line="xzf ${jdk.archive.path}"/> 
+            <arg line="-C ${dw.instance.system}/engine" />
+        </exec>
+        <exec executable="tar" failonerror="true">
+            <arg line="xzf ${jdk64.archive.path}"/> 
+            <arg line="-C ${dw.instance.system}/engine" />
+        </exec>
+    </target>
+
+    <target name="unpack.jdk.windows">
+        <unzip src="${jdk.archive.path}"
+               dest="${dw.instance.system}/engine"
+               overwrite="true"/>
+    </target>
+
+    <target name="unpack.jdk.mac">
+        <exec executable="tar" failonerror="true">
+            <arg line="xzf ${jdk.archive.path}"/> 
+            <arg line="-C ${dw.instance.system}/engine" />
+        </exec>
+    </target>
+
+</project>

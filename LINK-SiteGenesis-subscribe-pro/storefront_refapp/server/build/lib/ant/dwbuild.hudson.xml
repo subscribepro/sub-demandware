@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<project name="dwbuild.hudson">
+
+    <!-- This project contains all the jobs to run on the buildserver nodes exclusively -->
+
+    <property name="dw.build.testresources"
+              location="${env.HUDSON_HOME}/resources" />
+
+    <property name="dw.instancePropertyTemplate"
+              location="${dw.build.testresources}/install.devbuild.properties.${env.EXECUTOR_NUMBER}" />
+              
+    <property name="dw.localBuildSettingsPropertyTemplate"
+              location="${dw.build.testresources}/settings.devbuild.properties" />
+    
+    <property name="dw.datagridConfigurationTemplate"
+              location="${dw.build.testresources}/datagrid.properties.${env.EXECUTOR_NUMBER}" />
+    
+    <target name="get.instance.configuration.file" if="env.EXECUTOR_NUMBER">
+        <delete file="${dw.instancePropertyFile}" failonerror="false" />
+        <delete file="${dw.localBuildSettingsPropertyFile}" failonerror="false" />
+
+        <echo message="Using ${dw.instancePropertyTemplate} for build ${env.JOB_NAME}-${env.BUILD_NUMBER}" />
+        <copy file="${dw.instancePropertyTemplate}"
+              tofile="${dw.instancePropertyFile}"
+              failonerror="true"
+              overwrite="true"
+              verbose="true" />
+
+        <copy file="${dw.localBuildSettingsPropertyTemplate}"
+              tofile="${dw.localBuildSettingsPropertyFile}"
+              failonerror="false"
+              overwrite="true"
+              verbose="false" />
+    </target>
+
+</project>
