@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+<project name="cartridgebuild.lib"          
+         xmlns:ivy="antlib:org.apache.ivy.ant">
+
+    <!-- targets that require a cartridge context 
+         properties like cartridge.base and cartridge.name can be used -->
+
+    <target name="resolve.ivy.dependencies" 
+            description="Resolve and retrieve dependencies for the current cartridge"
+            if="cartridge.has.ivy.config">
+
+        <property name="ivy.dupe.cache" location="${dw.catalina.home}/ivy" />
+        <taskdef resource="org/apache/ivy/ant/antlib.xml"
+                 uri="antlib:org.apache.ivy.ant"
+                 classpath="${dw.build.libs.build}/ivy-${build.ivy.release}.jar" />
+
+        <!-- see if we can resolve everything before we delete -->
+        <ivy:configure file="${dw.build.build}/config/ivysettings.xml" />
+        <ivy:resolve file="${cartridge.base}/ivy-${cartridge.name}.xml"  />
+        <mkdir dir="${ivy.dupe.cache}"/>
+        <!-- so this is a set of all file that were in the last resolve -->
+        <fileset dir="${ivy.dupe.cache}" id="cleanup.set" includes="*jar" />
+        <!-- also clean duplicates out of the cartridge environment (APP-21853) -->
+        <fileset dir="${cartridge.build}/jars" id="build.cleanup.set" />
+
+        <!-- convert this into a list and map from temp to main location -->
+        <pathconvert pathsep="," property="cleanup.list" refid="cleanup.set">
+          <map from="${ivy.dupe.cache}" to="${dw.catalina.home}/lib" />
+        </pathconvert>
+        <!-- now we can apply the fileset from the temp ivy folder to the lib folder, deleting
+             all files that came in on the last retrieve -->
+        <delete verbose="true" failonerror="false">
+          <filelist files="${cleanup.list}" />
+        </delete>
+        <!-- now cleanup the temp places to prepare for the new retrieve -->
+        <delete verbose="true" failonerror="false">
+          <fileset refid="cleanup.set" />
+          <fileset refid="build.cleanup.set" />
+        </delete>
+        <!-- finally retrieve the new set ov ivy resources -->
+        <ivy:retrieve pattern="${ivy.dupe.cache}/[artifact]-[revision].[ext]" type="jar" sync="false" />
+        <ivy:retrieve pattern="${ivy.dupe.cache}/[artifact]-[revision].[ext]" type="bundle" sync="false" />
+        <ivy:retrieve pattern="${cartridge.build}/jars/main/[artifact]-[revision].[ext]" type="jar" sync="false" conf="runtime" />
+        <ivy:retrieve pattern="${cartridge.build}/tgz/[artifact]-[revision].[ext]" type="tar.gz" sync="true" conf="runtime" />
+        <ivy:retrieve pattern="${cartridge.build}/zip/[artifact]-[revision].[ext]" type="zip" sync="false" conf="runtime" />
+        <ivy:retrieve pattern="${cartridge.build}/jars/main/[artifact]-[revision].[ext]" type="bundle" sync="false" />
+        <ivy:retrieve pattern="${cartridge.build}/jars/test/[artifact]-[revision].[ext]" type="jar" sync="false" conf="test" />
+        <ivy:retrieve pattern="${cartridge.build}/jars/src/[artifact]-[revision]-[type].[ext]" conf="source" />                 
+        <ivy:retrieve pattern="${cartridge.build}/jars/main/[artifact]-[classifier].[ext]" type="dll" sync="false" conf="runtime" />
+        <ivy:retrieve pattern="${cartridge.build}/jars/main/[artifact]-[classifier].[ext]" type="so" sync="false" conf="runtime" />
+        <ivy:retrieve pattern="${cartridge.build}/jars/main/[artifact]-[classifier].[ext]" type="jnilib" sync="false" conf="runtime" />
+        <ivy:retrieve pattern="${cartridge.build}/jars/main/[artifact]-[classifier].[ext]" type="dylib" sync="false" conf="runtime" />
+        <!-- after this, all just retrieved resources are in lib _and_ in the ivy directory -->
+        <copy todir="${dw.catalina.home}/lib">
+            <fileset dir="${ivy.dupe.cache}">
+                <include name="*jar" />
+            </fileset>
+        </copy>
+        <ivy:report todir="${cartridge.base}/ivy-report"/>
+    </target>
+
+    <!-- creates a cartridge-specific pom file if the cartridge has an ivy configuration -->
+
+    <target name="make.cartridge.pomfile" 
+            description="Create a pomfile for the cartridge"
+            if="cartridge.has.ivy.config">
+
+        <taskdef resource="org/apache/ivy/ant/antlib.xml"
+                 uri="antlib:org.apache.ivy.ant"
+                 classpath="${dw.build.libs.build}/ivy-${build.ivy.release}.jar" />
+
+        <ivy:makepom ivyfile="${cartridge.base}/ivy-${cartridge.name}.xml"
+                     pomfile="${cartridge.base}/${cartridge.name}.pom"
+                     conf="default,runtime,test,source">
+           <mapping conf="default" scope="compile"/>
+           <mapping conf="runtime" scope="compile"/>
+           <mapping conf="test" scope="test"/>
+           <mapping conf="source" scope="source"/>
+        </ivy:makepom>
+    </target>
+
+    <target name="jar.generic">
+        <echo message="Creating ${jar.file} file ..." />
+        <jar destfile="${jar.file}" whenmanifestonly="skip">
+            <fileset refid="jar.content.files" />
+            <manifest>
+                <attribute name="Implementation-Vendor" value="Salesforce Commerce Cloud" />
+                <attribute name="Implementation-Title" value="${jar.title}" />
+                <attribute name="Implementation-Version"
+                           value="${cartridge.build.version}" />
+            </manifest>
+        </jar>
+    </target>
+
+    <!-- The parameter to this target is a fileset id compress.fileset 
+         there are two pre-defined filesets in cartridgebuild.environment
+         cartridge.js.css.files and cartridge.dwux.files
+    -->
+    <target name="compress_js_css">
+        <taskdef name="yuicompress"
+                 classname="com.yahoo.platform.yui.compressor.YUICompressTask"
+                 classpath="${dw.build.libs.build}/yuicompressor-2.3.5.jar:${dw.build.libs.build}/YUIAnt.jar" />
+
+        <mkdir dir="${cartridge.static}" />
+        <yuicompress linebreak="300"
+                     warn="false"
+                     munge="yes"
+                     charset="UTF-8"
+                     preserveallsemicolons="true"
+                     outputfolder="${cartridge.static}">
+            <fileset refid="${compress.fileset}" />
+        </yuicompress>
+    </target>
+
+    <target name="print.classpath">
+        <pathconvert pathsep="${line.separator}|   |-- "
+                     property="echo.path"
+                     refid="dw.build.classpath">
+        </pathconvert>
+        <echo message="|-- dw.build.classpath" />
+        <echo message="|   |" />
+        <echo message="|   |-- ${echo.path}" />
+    </target>
+
+    <target name="copy.ddlfiles">
+        <mkdir dir="${dw.instance.system}/resources/cartridges/${cartridge.name}/release/lib" />
+        <copy todir="${dw.instance.system}/resources/cartridges/${cartridge.name}/release/lib"
+              preservelastmodified="true">
+            <fileset dir="${cartridge.source}">
+                <include name="**/*.ddl" />
+                <include name="**/*.sql" />
+            </fileset>
+        </copy>
+    </target>
+
+</project>

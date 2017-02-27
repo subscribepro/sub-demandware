@@ -1,0 +1,233 @@
+<?xml version="1.0"?>
+<project name="dwbuild.environment">
+
+    <xmlproperty file="${dw.home}/server/build/config/dw.build.locations.xml"
+                 semanticAttributes="true" />
+    <property name="is.home" value="${dw.is.home}" />
+    <xmlproperty file="${dw.build.config}/dw.instance.locations.xml"
+                 semanticAttributes="true" />
+
+    <!-- all the property file names are set in dw.build.locations -->
+    <property file="${dw.cartridgelistFile}" />
+    <property file="${dw.localBuildSettingsPropertyFile}" />
+    <property file="${dw.build.dependencyPropertyFile}" />
+
+    <property file="${dw.globalBuildSettingsPropertyFile}" />
+    <property file="${dw.buildVersionPropertyFile}" />
+
+    <property environment="env" />
+    <!-- BUILD_NUMBER is normally set in the Hudson env, 
+         we use the build id in the property files only as fallback -->
+    <property name="env.BUILD_NUMBER" value="${smoke.build.id}" />
+    <property name="dwbuild.number" value="${env.BUILD_NUMBER}" />
+    <property name="dwbuild.fullversion"
+              value="${smoke.version.id}.${dwbuild.number}" />
+
+    <condition property="dw.build.branchname" value="${env.GIT_BRANCH}">
+        <isset property="env.GIT_BRANCH" />
+    </condition>
+    <condition property="dw.build.branchname" value="${bamboo.repository.git.branch}">
+        <isset property="bamboo.repository.git.branch" />
+    </condition>
+    <property name="dw.build.branchname"
+              value="unknown-branch" />
+
+    <!-- the location the build server puts all artifacts into for promotion -->
+    <property name="dw.artifact.staging.area"
+              value="${env.BUILD_ARTIFACT_STAGING_AREA}" />
+
+    <!-- the code coverage data and report -->
+    <property name="dw.global.jacoco.dist"
+              location="${dw.build.build}/temp/jacoco/dist" />
+    <property name="dw.global.jacoco.report"
+              location="${dw.build.build}/temp/jacoco/report" />
+    <property name="dw.global.jacoco.agent"
+              location="${dw.global.jacoco.dist}/jacoco_agent.jar" />
+    <property name="dw.global.jacoco.exec.build"
+              location="${java.io.tmpdir}/${env.JOB_NAME}-jacoco-${dwbuild.fullversion}.exec" />
+    <property name="dw.global.jacoco.exec"
+              location="${dw.global.jacoco.report}/jacoco-${dwbuild.fullversion}.exec" />
+
+    <condition property="dw.server.Xms" value="768" >
+        <not>
+            <isset property="dw.server.Xms" />
+        </not>
+    </condition>
+    
+    <condition property="dw.server.Xmx" value="1536" >
+        <not>
+            <isset property="dw.server.Xmx" />
+        </not>
+    </condition>
+    
+    <condition property="dw.server.MaxPermSize" value="256" >
+        <not>
+              <isset property="dw.server.MaxPermSize" />
+        </not>
+    </condition>
+
+    <condition property="has.artifact.staging.area">
+        <available file="${dw.artifact.staging.area}" type="dir" />
+    </condition>
+
+    <tstamp>
+        <format property="current.year" pattern="yyyy" />
+    </tstamp>
+
+    <!-- the generic part of the build classpath -->
+    <path id="dw.jdk.classpath">
+        <fileset dir="${dw.instance.java.home}">
+            <include name="jre/lib/*.jar" />
+            <include name="jre/lib/endorsed/*.jar" />
+            <include name="jre/lib/ext/*.jar" />
+            <include name="lib/*.jar" />
+        </fileset>
+    </path>
+
+    <path id="dw.core.classpath">
+        <fileset dir="${dw.build.libs.build}">
+            <include name="main/*.jar" />
+            <include name="test/*.jar" />
+        </fileset>
+    </path>
+
+    <path id="dw.main.classpath">
+        <path refid="dw.core.classpath" />
+		<path refid="dw.tomcat.classpath" />
+        <fileset dir="${dw.build.build}/resources">
+            <include name="apache-ant*/lib/ant.jar" />
+        </fileset>
+    </path>
+
+    <!-- the build classpath -->
+    <path id="dw.build.classpath">
+        <path refid="dw.main.classpath" />
+        <dirset dir="${dw.build.source}">
+            <include name="*/build/classes" />
+            <include name="*/build/test-classes" />
+        </dirset>
+    </path>
+
+	<path id="dw.tomcat.classpath">
+        <fileset dir="${dw.instance.tomcat.home}">
+            <include name="ivy/*.jar" />
+            <include name="lib/*.jar" />
+        </fileset>
+    </path>
+
+    <path id="dw.isml.classpath">
+        <path refid="dw.core.classpath" />
+        <path refid="dw.tomcat.classpath" />
+    </path>
+
+    <path id="dw.test.classpath">
+        <fileset dir="${dw.build.source}">
+            <include name="*/dist/*tests.jar" />
+        </fileset>
+    </path>
+
+    <patternset id="dw.cartridge.sources">
+        <include name="com/demandware/**/*.java" />
+        <include name="dw/**/*.java" />
+        <include name="TopLevel/**/*.java" />
+    </patternset>
+
+    <condition property="os.family" value="windows">
+        <os family="windows" />
+    </condition>
+    <condition property="os.family" value="unix">
+        <not>
+            <os family="windows" />
+        </not>
+    </condition>
+
+    <condition property="os.family.id" value="windows">
+        <os family="windows" />
+    </condition>
+    <condition property="os.family.id" value="linux">
+        <and>
+            <os family="unix" />
+            <not>
+                <os family="mac" />
+            </not>
+        </and>
+    </condition>
+    <condition property="os.family.id" value="mac">
+        <os family="mac" />
+    </condition>
+
+    <!-- these are os switches for targets  -->
+    <!-- need to use boolean values for the flags once ant 1.8 has been established 
+          value="true" else="false"
+    -->
+    <condition property="os.family.windows">
+        <equals arg1="${os.family.id}" arg2="windows" />
+    </condition>
+    <condition property="os.family.linux">
+        <equals arg1="${os.family.id}" arg2="linux" />
+    </condition>
+    <condition property="os.family.mac">
+        <equals arg1="${os.family.id}" arg2="mac" />
+    </condition>
+    <condition property="os.family.unix">
+        <equals arg1="${os.family}" arg2="unix" />
+    </condition>
+
+    <condition property="dw.platform.unknown">
+        <or>
+            <not>
+                <isset property="os.family" />
+            </not>
+            <and>
+                <not>
+                    <isset property="os.family.windows" />
+                </not>
+                <not>
+                    <isset property="os.family.linux" />
+                </not>
+                <not>
+                    <isset property="os.family.mac" />
+                </not>
+                <not>
+                    <isset property="os.family.unix" />
+                </not>
+            </and>
+        </or>
+    </condition>
+
+    <fail message="Cannot safely determine the platform"
+          if="dw.platform.unknown" />
+
+    <!-- save some time for internal builds, don't package anything -->
+
+    <condition property="build.skip.packaging">
+        <isset property="build.do.devbld" />
+    </condition>
+
+    <!-- enables
+         - version number increment + commit
+         - commit to git/ upload to s3 of pipelet and script api logs -->
+
+    <condition property="build.do.ci.build">
+        <and>
+            <not>
+                <isset property="build.do.devbld" />
+            </not>
+            <isset property="os.family.linux" />
+            <isset property="env.JOB_URL" />
+            <isset property="env.JOB_NAME" />
+            <isset property="env.BUILD_URL" />
+            <isset property="env.BUILD_NUMBER" />
+        </and>
+    </condition>
+
+    <!-- define some tasks to run only on the build server -->
+
+    <condition property="build.skip.documentation.commit">
+        <not>
+            <isset property="build.do.ci.build" />
+        </not>
+    </condition>
+
+</project>
+

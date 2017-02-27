@@ -1,0 +1,37 @@
+<!-- is.home needs to be set before invoking this -->
+
+<dw>
+    <instance location="${is.home}">
+        <system location="${dw.instance}/system" />
+        <libs location="${dw.instance.system}/engine/tomcat/lib"/>
+        <systemsettings location="${dw.instance}/systemsettings">
+            <isbuildPropertyFile location="${dw.instance.systemsettings}/config/isbuild.properties"/>
+        </systemsettings>
+        <sharedata location="${dw.instance}/sharedata" />
+        <localdata location="${dw.instance}/localdata" />
+        <realmdata location="${dw.instance}/realmdata" />
+        <dependencies location="${dw.instance}/dependencies" />
+        <!-- a shortcut to sharedata/config/cluster -->
+        <config location="${dw.instance.sharedata}/config/cluster">
+            <demandwarePropertyFile location="${dw.instance.config}/demandware.properties"/>
+            <appserverPropertyFile location="${dw.instance.config}/appserver.properties"/>
+            <ormPropertyFile location="${dw.instance.config}/orm.properties"/>
+            <stagingPropertyFile location="${dw.instance.config}/staging.properties"/>
+        </config>
+        <installPropertyFile location="${dw.instance}/install.properties"/>
+        <dependencyPropertyFile location="${dw.instance.systemsettings}/config/dw.dependencies.properties"/>
+        <ant.home location="${dw.instance.system}/engine/ant" />
+        <!-- <java.home location="${dw.instance.dependencies}/jdk" />
+        <java64.home location="${dw.instance.dependencies}/jdk64" /> -->
+        <java.home location="${dw.instance.system}/engine/jdk" />
+        <java64.home location="${dw.instance.system}/engine/jdk64" />
+    </instance>
+
+    <java.command location="${dw.instance.java.home}/bin/java" />
+    <javac.command location="${dw.instance.java.home}/bin/javac" />
+    <javadoc.command location="${dw.instance.java.home}/bin/javadoc" />
+
+    <catalina.home location="${dw.instance.system}/engine/tomcat" />
+    <catalina.base location="${dw.instance.localdata}/appserver" />
+ 
+</dw>

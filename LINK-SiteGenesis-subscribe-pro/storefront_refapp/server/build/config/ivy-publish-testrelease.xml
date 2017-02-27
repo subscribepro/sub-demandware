@@ -1,0 +1,25 @@
+<ivy-module version="2.0" xmlns:e="http://ant.apache.org/ivy/extra">
+
+    <info organisation="com.demandware" module="${dw.module}" />
+
+    <publications>
+        <artifact type="gz" ext="tar.gz" name="API-doc" e:classifier="${dw.current.branch}" />
+        <artifact type="gz" ext="tar.gz" name="localdata" e:classifier="${dw.current.branch}" />
+        <artifact type="gz" ext="tar.gz" name="sharedata-sites" e:classifier="${dw.current.branch}" />
+        <artifact type="gz" ext="tar.gz" name="sharedata" e:classifier="${dw.current.branch}" />
+        <artifact type="gz" ext="tar.gz" name="system-cartridges" e:classifier="${dw.current.branch}" />
+        <artifact type="gz" ext="tar.gz" name="system-demo" e:classifier="${dw.current.branch}" />
+        <artifact type="gz" ext="tar.gz" name="system-mock" e:classifier="${dw.current.branch}" />
+        <artifact type="gz" ext="tar.gz" name="system-quota-manager" e:classifier="${dw.current.branch}" />
+        <artifact type="gz" ext="tar.gz" name="system-tomcat.libs" e:classifier="${dw.current.branch}" />
+        <artifact type="gz" ext="tar.gz" name="system-webapps" e:classifier="${dw.current.branch}" />
+        <artifact type="gz" ext="tar.gz" name="system" e:classifier="${dw.current.branch}" />
+        <artifact type="gz" ext="tar.gz" name="system-test" e:classifier="${dw.current.branch}" />
+        <artifact type="gz" ext="tar.gz" name="sharedata-test" e:classifier="${dw.current.branch}" />
+        <artifact type="gz" ext="tar.gz" name="systemsettings" e:classifier="${dw.current.branch}" />
+        <artifact type="gz" ext="tar.gz" name="webadapter" e:classifier="${dw.current.branch}" />
+        <artifact type="gz" ext="tar.gz" name="webserver" e:classifier="${dw.current.branch}" />
+    </publications>
+
+</ivy-module>
+

@@ -1,0 +1,6 @@
+<ivysettings>
+    <properties file="${build.ivy.proj_dir}/ivy-versions.properties" />
+    <!-- property name="maki.core.ver" value="1.0-SNAPSHOT"/-->
+    <include url="ivysettings-${build.ivy.resolver}-chain.xml"/>
+    <settings defaultResolver="dw-chain-resolver" />
+</ivysettings>

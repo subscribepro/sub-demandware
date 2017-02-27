@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+    "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
+    "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
+
+<!-- Checkstyle configuration -->
+
+<module name="Checker">
+    <module name="TreeWalker">
+        <!-- Checks for imports -->
+        <!--
+            <module name="AvoidStarImport"/>
+            <module name="RedundantImport"/>
+            <module name="UnusedImports"/>
+        -->
+
+        <!-- Checks for blocks. -->
+        <!--
+            <module name="AvoidNestedBlocks"/>
+            <module name="EmptyBlock"/>
+            <module name="NeedBraces"/>
+        -->
+
+        <!-- Checks for common coding problems -->
+        <module name="DoubleCheckedLocking"/>
+        <!-- 
+            <module name="EmptyStatement"/> 
+        -->
+        <module name="EqualsHashCode"/>
+        <!--
+            <module name="IllegalInstantiation"/>
+            <module name="InnerAssignment"/>
+            <module name="MagicNumber"/>
+            <module name="MissingSwitchDefault"/>
+            <module name="ModifiedControlVariable"/>
+            <module name="RedundantThrows"/>
+            <module name="SimplifyBooleanExpression"/>
+            <module name="SimplifyBooleanReturn"/>
+            <module name="StringLiteralEquality"/>
+            <module name="IllegalCatch"/>
+            <module name="IllegalThrows"/>
+            <module name="ExplicitInitialization"/>
+            <module name="DefaultComesLast"/>
+        -->
+        <module name="FallThrough"/>
+        <!--
+            <module name="MultipleStringLiterals"/>
+        -->
+
+        <!-- Checks for class design  -->
+        <!--
+            <module name="HideUtilityClassConstructor"/>
+            <module name="InterfaceIsType"/>
+            <module name="VisibilityModifier"/>      
+        -->
+    </module>
+</module>

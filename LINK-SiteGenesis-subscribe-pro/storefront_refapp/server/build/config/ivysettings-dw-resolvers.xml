@@ -1,0 +1,28 @@
+<ivysettings>
+    <resolvers>
+        <ibiblio name="dw-public-proxy"
+                 m2compatible="true"
+                 usepoms="true"
+                 pattern="[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]"
+                 root="http://nexus.svc1.demandware.net/content/groups/public"/>
+        <ibiblio name="dw-releases"
+                 m2compatible="true"
+                 usepoms="true"
+                 pattern="[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]"
+                 root="http://nexus.svc1.demandware.net/content/repositories/releases"/>
+                 
+        <ibiblio name="dw-snapshots"
+                 m2compatible="true"
+                 usepoms="true"
+                 pattern="[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]"
+                 root="http://nexus.svc1.demandware.net/content/repositories/snapshots"/>
+                 
+        <ibiblio name="dw-thirdparty"
+                 m2compatible="true"
+                 usepoms="true"
+                 pattern="[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]"
+                 root="http://nexus.svc1.demandware.net/content/repositories/thirdparty"/>
+        <ibiblio name="maven" m2compatible="true" usepoms="false"/>
+    </resolvers>
+</ivysettings>
+

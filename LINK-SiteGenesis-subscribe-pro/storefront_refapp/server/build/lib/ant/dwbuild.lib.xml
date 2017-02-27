@@ -1,0 +1,282 @@
+<?xml version="1.0"?>
+<project name="dwbuild.lib"
+         xmlns:rsel="antlib:org.apache.tools.ant.types.resources.selectors">
+         
+    <echo message="is.home is ${is.home}" />
+    <echo message="deployment directory is ${is.home}/system/tools/deployment" />
+
+    <!-- a parametrized executor target, executes
+         ${all.build.target} (defaults to main) for
+         all projects in ${dw.build.projects} (defined in build.properties)
+         in the correct order -->
+
+    <target name="all.projects.exec">
+        <pathconvert property="mapped">
+            <restrict id="buildfiles">
+                <filelist dir="${dw.build.source}"
+                          files="${dw.build.projects}" />
+                <rsel:type type="dir" />
+            </restrict>
+        </pathconvert>
+        <property name="all.build.target" value="main" />
+        <echo message="Will execute target ${all.build.target} for all cartridges" />
+        <subant target="${all.build.target}"
+                buildpath="${mapped}"
+                inheritrefs="true" />
+    </target>
+    
+    <target name="all.test.projects.exec">
+        <pathconvert property="mapped">
+            <restrict id="buildfiles">
+                <filelist dir="${dw.build.source}"
+                          files="${dw.build.test.projects}" />
+                <rsel:type type="dir" />
+            </restrict>
+        </pathconvert>
+        <property name="test.build.target" value="main" />
+        <echo message="Will execute target ${test.build.target} for all cartridges" />
+        <subant target="${test.build.target}"
+                buildpath="${mapped}"
+                inheritrefs="true" />
+    </target>
+    
+    <target name="dbinit.init.sequence"
+            description="Add all cartridges to dbinit sequence that are defined in build/config/cartridgelist.properties">
+        <propertyfile file="${dw.instance.system}/resources/cartridges/cartridgelist.properties">
+            <entry key="cartridges.dbinit" value="${cartridges.dbinit}"/>
+        </propertyfile>
+    </target>
+    
+    <target name="dbinit.init.test.sequence"
+            depends="dbinit.init.sequence"
+            description="Add test cartridges to dbinit sequence that are defined in build/config/cartridgelist.properties">
+        <propertyfile file="${dw.instance.system}/resources/cartridges/cartridgelist.properties">
+            <entry key="cartridges.dbinit" operation="+" value=" ${dw.dbinit.test.projects}"/>
+        </propertyfile>
+    </target>
+    
+    <target name="dbinit.core"
+            depends="dbinit.init.sequence"
+            description="Initialize the database schema and rebuild and enable the foreign key constraints in the database.">
+        <echo message="Executing dbinit - prepare database without Site Genesis" />
+        <ant antfile="${dw.antlib}/dwbuild.datagrid.xml" target="moce.start" />
+        <ant antfile="${dw.instance.system}/tools/deployment/dbinit.xml"
+             target="dbinit.kernel" />
+    </target>
+    
+    <target name="dbinit.refapp"
+            depends="dbinit.init.sequence"
+            description="Initialize the database schema, prepares SiteGenesis and rebuild and enable the foreign key constraints in the database.">
+        <echo message="Executing dbinit - prepare database with Site Genesis" />     
+        <ant antfile="${dw.antlib}/dwbuild.datagrid.xml" target="moce.start" />
+        <ant antfile="${dw.instance.system}/tools/deployment/dbinit.xml"
+             target="dbinit.all" />
+    </target>
+    
+    <target name="dbinit.test"
+            depends="dbinit.init.test.sequence">
+        <ant antfile="${dw.antlib}/dwbuild.datagrid.xml" target="moce.start" />
+        <ant antfile="${dw.instance.system}/tools/deployment/dbinit.xml"
+             target="dbinit.parametrized"
+             inheritrefs="true">
+            <property name="dbinit.target.name" value="data_test" />
+        </ant>
+    </target>
+
+    <target name="dbinit.wapi"
+            depends="dbinit.init.test.sequence">
+        <ant antfile="${dw.antlib}/dwbuild.datagrid.xml" target="moce.start" />
+        <ant antfile="${dw.instance.system}/tools/deployment/dbinit.xml"
+             target="dbinit.parametrized"
+             inheritrefs="true">
+            <property name="dbinit.target.name" value="data_wapi" />
+        </ant>
+    </target>
+
+    <target name="dbinit.all"
+            depends="dbinit.init.test.sequence"
+            description="Initialize the database schema, prepares SiteGenesis, prepares test data of data_test and data_wapi and rebuild and enable the foreign key constraints in the database." >
+        <echo message="Executing dbinit - prepare database with Site Genesis" />     
+        <ant antfile="${dw.antlib}/dwbuild.datagrid.xml" target="moce.start" />
+        <ant antfile="${dw.instance.system}/tools/deployment/dbinit.xml"
+             target="dbinit.all" />
+    </target>
+
+    <!-- delete all build artifacts, compiled, copied and generated files -->
+    <target name="distclean">
+        <delete dir="${dw.instance}" />
+        <delete dir="${dw.build.webserverinstance}" />
+        <delete dir="${dw.build.release}" />
+        <delete dir="${dw.build.soa}" />
+
+        <!-- clean build artifacts in cartridge folders -->
+        <echo message="Clean cartridge artifacts in ${dw.build.source}" />
+        <delete includeemptydirs="true" failonerror="false" verbose="false">
+            <fileset dir="${dw.build.source}">
+                <include name="*/build/**/*" />
+                <include name="*/dist/**/*" />
+                <include name="*/results/**/*" />
+                <exclude name="**/.gitkeep" />
+            </fileset>
+            <fileset dir="${dw.build.build}/temp" includes="*">
+                <exclude name="**/.gitkeep" />
+            </fileset>
+        </delete>
+
+        <mkdir dir="${dw.instance}" />
+        <mkdir dir="${dw.build.webserverinstance}" />
+        <mkdir dir="${dw.build.release}" />
+        <mkdir dir="${dw.build.soa}" />
+    </target>
+
+    <!-- unixcopy target:
+         1. copy everything, including symbolic links and permissions
+         2. strip unneeded files and folders -->
+
+    <target name="unix.copy">
+        <exec executable="cp">
+            <arg value="-a" />
+            <arg value="${source.dir}" />
+            <arg value="${target.dir}" />
+        </exec>
+        <delete includeemptydirs="true" verbose="false" failonerror="false">
+            <fileset dir="${target.dir}" defaultexcludes="no">
+                <include name="**/.gitignore" />
+                <include name="**/.gitkeep" />
+            </fileset>
+        </delete>
+    </target>
+
+    <target name="unix.make.executable">
+        <exec executable="chmod">
+            <arg value="-R" />
+            <arg value="755" />
+            <arg value="${target.dir}" />
+        </exec>
+    </target>
+
+    <target name="add.server.cert.to.jdks">
+        <echo message="Adding ${cert.alias} certificate to jdk keystore" />
+        <exec executable="${dw.instance.java.home}/bin/keytool">
+            <arg value="-importcert" />
+            <arg value="-alias" />
+            <arg value="${cert.alias}" />
+            <arg value="-file" />
+            <arg value="${cert.folder}/${cert.filename}" />
+            <arg line="-storetype jks -storepass changeit -noprompt -keystore" />
+            <arg value="${dw.instance.java.home}/jre/lib/security/cacerts" />
+        </exec>
+
+        <available property="jdk64.is.present" file="${dw.instance.java64.home}/bin/keytool" /> 
+        <antcall target="dwbuild.lib.add.server.cert.to.jdk64">
+            <param name="cert.alias" value="${cert.alias}" />
+            <param name="cert.filename" value="${cert.filename}" />
+        </antcall>
+    </target>
+
+    <!-- only do the 64bit part if it is available -->
+    <target name="add.server.cert.to.jdk64" if="jdk64.is.present">
+        <echo message="Adding ${cert.alias} certificate to jdk64 keystore" />
+        <exec executable="${dw.instance.java64.home}/bin/keytool">
+            <arg value="-import" />
+            <arg value="-alias" />
+            <arg value="${cert.alias}" />
+            <arg value="-file" />
+            <arg value="${cert.folder}/${cert.filename}" />
+            <arg line="-storetype jks -storepass changeit -noprompt -keystore" />
+            <arg value="${dw.instance.java64.home}/jre/lib/security/cacerts" />
+        </exec>
+    </target>
+
+    <!-- this is for easier debugging, the resulting file can be viewed in the hudson workspace view -->
+    <target name="diag">
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+                 classpath="${dw.build.libs.build}/ant-contrib-1.0b3.jar" />
+
+        <property name="dw.build.property.logfile"
+                  location="${dw.build.temp}/all.build.properties" />
+        <propertyregex property="dw.antversion"
+                       input="${ant.version}"
+                       select="\2"
+                       regexp="^(Apache .* )([0-9]+\.[0-9]+\.[0-9]+)( .*)" />
+
+        <delete file="${dw.build.property.logfile}" failonerror="false" />
+        <condition property="banner.line.devbuild"
+                   value="Will build an internal Development System"
+                   else="Will build a production system">
+            <isset property="build.do.devbld" />
+        </condition>
+
+        <property name="banner.line"
+                  value="###############################################################################################" />
+        <echo message="${banner.line}" />
+        <echo message="# Building ${setup.product.id}-${dwbuild.fullversion} on ${os.family.id}" />
+        <echo message="# Ant Version is ${dw.antversion}, ant home is ${ant.home}" />
+        <echo message="# Java Version is ${java.version} (${java.vm.name}, ${java.vm.vendor})" />
+        <echo message="# DW_HOME is ${dw.home}" />
+        <echo message="# Instance home will be ${dw.instance}" />
+        <echo message="# ${banner.line.devbuild}" />
+        <echo message="${banner.line}" />
+        <condition property="has.no.build.config">
+            <not>
+                <available file="${dw.instancePropertyFile}" />
+            </not>
+        </condition>
+
+        <condition property="ant.is.ok">
+            <antversion atleast="${dw.build.min.ant.version}"/>
+        </condition>
+        <fail unless="ant.is.ok" message="Your ant version needs to be at least ${dw.build.min.ant.version}" />
+
+        <condition property="not.ready.for.build">
+            <and>
+                <isset property="has.no.build.config" />
+                <not>
+                    <isset property="build.do.ci.build" />
+                </not>
+            </and>
+        </condition>
+
+        <echoproperties destfile="${dw.build.property.logfile}" />
+
+        <fail if="not.ready.for.build"
+              message="Need an instance setup file: ${dw.instancePropertyFile} was not found" />
+    </target>
+    
+    <target name="set.bm.passwords.for.devbuild" if="build.do.devbld">
+        <path id="oracle.driver.classpath">
+            <fileset dir="${dw.catalina.home}/lib">
+                <include name="ojdbc6-*.jar" />
+                <include name="orai18n-*.jar" />
+            </fileset>
+        </path>
+        <property file="${dw.instance.sharedata}/config/cluster/orm.properties" />
+        <echo message="Setting Business Manager Passwords" />
+        <sql driver="oracle.jdbc.OracleDriver"
+             classpathref="oracle.driver.classpath"
+             rdbms="oracle"
+             url="${demandware.jdbc.url}"
+             userid="${demandware.jdbc.user}"
+             password="${demandware.jdbc.password}"
+             onerror="abort"
+             delimiter=";"><![CDATA[
+update basiccredentials set password='004f2d49755e6a4d5e764973a500bc90',
+                            passwordchangerequiredflag = 0,
+                            failedlogincount = null,
+                            accountlockeduntil=null 
+                        where login = 'admin' 
+                        AND domainid IN 
+                          (select domainid from domaininformation where domainname = 'Sites');
+update basiccredentials set password = '0f15f577b9fe4f3a90a02e6c70a83e5d',
+                            passwordchangerequiredflag = 0,
+                            failedlogincount = null,
+                            accountlockeduntil=null 
+                        where login = 'support' 
+                        AND domainid IN 
+                          (select domainid from domaininformation where domainname = 'Sites');
+commit;
+]]></sql>
+        <echo message="&gt;&gt;&gt; Password for users 'admin' and 'support' is now 'demandware1'" />
+    </target>
+
+</project>

@@ -1,0 +1,15 @@
+<ivysettings>
+    <include url="ivysettings-dw-resolvers.xml" />
+    
+    <resolvers>
+        <!-- ivy chain resolver -->
+        <chain name="dw-chain-resolver" changingPattern=".*SNAPSHOT" checkmodified="true">
+            <!--  dw ibiblio resolvers -->
+            <resolver ref="dw-public-proxy" />
+            <resolver ref="dw-releases" />
+            <resolver ref="dw-snapshots" />
+            <resolver ref="dw-thirdparty" />
+        </chain>
+    </resolvers>
+</ivysettings>
+

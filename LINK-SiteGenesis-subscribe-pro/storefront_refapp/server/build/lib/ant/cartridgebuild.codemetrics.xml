@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<project name="cartridgebuild.codemetrics">
+    <fileset id="codemetrics.source.path" dir="${cartridge.source}">
+        <include name="com/demandware/**/*.java" />
+        <include name="dw/**/*.java" />
+        <include name="TopLevel/**/*.java" />
+    </fileset>
+
+    <target name="checkprecondition">
+        <property name="ivy.default.ivy.user.dir" value="${dw.build.ivy.home}"/>
+
+        <taskdef resource="org/apache/ivy/ant/antlib.xml"
+                 uri="antlib:org.apache.ivy.ant"
+                 classpath="${dw.build.libs.build}/ivy-${build.ivy.release}.jar" />
+
+        <condition property="cartridge.has.java.source.files">
+            <resourcecount when="greater" count="0">
+                <fileset dir="${cartridge.base}" includes="**/*">
+                    <filename name="javasource/**/*.java" />
+                </fileset>
+            </resourcecount>
+        </condition>
+    </target>
+
+    <!-- TODO classes to analyze need to be more specific -->
+    <target name="findbugs"
+            if="cartridge.has.java.source.files"
+            depends="checkprecondition"
+            description="Run Findbugs on cartridge sources">
+
+        <echo message="Executing findbugs for cartridge ${cartridge.name}" />
+        <mkdir dir="${cartridge.codemetrics.results}" />
+        <property name="findbugs.ivy.dep.file"
+                  value="${dw.build.build}/config/findbugs.ivy.xml" />
+        <findbugs classpathref="check.path"
+                  pluginList=""
+                  output="xml:withMessages"
+                  projectName="${cartridge.name}"
+                  outputfile="${cartridge.codemetrics.results}/findbugs.xml"
+                  excludefilter="${dw.build.build}/config/findbugs_excludes.xml"
+                  jvmargs="-Xmx512M">
+            <sourcepath path="${cartridge.source}" />
+            <class location="${cartridge.classes}" />
+            <auxclasspath>
+                <path refid="dw.build.classpath" />
+            </auxclasspath>
+        </findbugs>
+    </target>
+
+    <target name="pmd"
+            if="cartridge.has.java.source.files"
+            depends="checkprecondition"
+            description="Run PMD on cartridge sources">
+        <echo message="Executing PMD for cartridge ${cartridge.name}" />
+        <mkdir dir="${cartridge.codemetrics.results}" />
+        <pmd shortFilenames="true" encoding="utf-8">
+            <ruleset>${dw.build.build}/config/pmd_ruleset.xml</ruleset>
+            <formatter type="xml"
+                       toFile="${cartridge.codemetrics.results}/pmd.xml" />
+            <fileset refid="codemetrics.source.path" />
+            <version>java 1.7</version>
+        </pmd>
+    </target>
+
+    <condition property="executed.inside.cartridge.base">
+        <equals arg1="${cartridge.base}" arg2="${user.dir}"/>
+    </condition>
+
+    <target name="checkstyle"
+            if="cartridge.has.java.source.files"
+            depends="checkprecondition"
+            description="Run checkstyle on cartridge sources">
+        <echo message="Executing checkstyle for cartridge ${cartridge.name}" />
+        <mkdir dir="${cartridge.codemetrics.results}" />
+
+        <checkstyle config="${dw.build.build}/config/checkstyle.checks.xml"
+                    failOnViolation="false">
+            <classpath refid="check.path" />
+            <fileset refid="codemetrics.source.path" />
+            <formatter type="xml"
+                       toFile="${cartridge.codemetrics.results}/checkstyle.xml" />
+        </checkstyle>
+    </target>
+
+</project>

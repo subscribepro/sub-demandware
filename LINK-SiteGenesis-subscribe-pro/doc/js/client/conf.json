@@ -1,0 +1,20 @@
+{
+	"source": {
+		"exclude": [
+			"node_modules",
+			"doc",
+			"src",
+			"storefront_refapp",
+			"test",
+			"app_storefront_controllers",
+			"app_storefront_core/cartridge/scripts",
+			"version.js"
+		]
+	},
+	"templates": {
+		"default": {
+			"layoutFile": "layout.tmpl"
+		}
+	},
+	"plugins": ["plugins/markdown"]
+}
