@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
+    <type-extension type-id="Product">
+	<custom-attribute-definitions>
+	    <attribute-definition attribute-id="subproSubscriptionEnabled">
+		<display-name xml:lang="x-default">Subscription Enabled</display-name>
+		<type>boolean</type>
+		<localizable-flag>false</localizable-flag>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+	    </attribute-definition>
+	</custom-attribute-definitions>
+	<group-definitions>
+	    <attribute-group group-id="subscribe-pro">
+		<display-name xml:lang="x-default">Subscribe Pro</display-name>
+		<attribute attribute-id="subproSubscriptionEnabled"/>
+	    </attribute-group>
+	</group-definitions>
+    </type-extension>
+
+    <type-extension type-id="ProductLineItem">
+	<custom-attribute-definitions>
+	    <attribute-definition attribute-id="subproSubscriptionOptionMode">
+		<display-name xml:lang="x-default">Subscription Option Mode</display-name>
+		<type>string</type>
+		<localizable-flag>false</localizable-flag>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+	    </attribute-definition>
+	    <attribute-definition attribute-id="subproSubscriptionSelectedOptionMode">
+		<display-name xml:lang="x-default">Subscription Selected Option Mode</display-name>
+		<description xml:lang="x-default">Subscription mode which was chosen on this ProductLineItem</description>
+		<type>string</type>
+		<localizable-flag>false</localizable-flag>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+	    </attribute-definition>
+	    <attribute-definition attribute-id="subproSubscriptionInterval">
+		<display-name xml:lang="x-default">Subscription Refill Interval</display-name>
+		<type>string</type>
+		<localizable-flag>false</localizable-flag>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+	    </attribute-definition>
+	    <attribute-definition attribute-id="subproSubscriptionAvailableIntervals">
+		<display-name xml:lang="x-default">Subscription Available Intervals</display-name>
+		<description xml:lang="x-default">String with names of available intervals, separated by comma</description>
+		<type>string</type>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+	    </attribute-definition>
+	    <attribute-definition attribute-id="subproSubscriptionDiscount">
+		<display-name xml:lang="x-default">Subscription Discount</display-name>
+		<description xml:lang="x-default">Subscription discount offered on this product, as either a percentage or a fixed price, depending on the value of the subproSubscriptionIsDiscountPercentage property</description>
+		<type>double</type>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+	    </attribute-definition>
+	    <attribute-definition attribute-id="subproSubscriptionIsDiscountPercentage">
+		<display-name xml:lang="x-default">Subscription Is Discount Percentage</display-name>
+		<description xml:lang="x-default">Is the discount on the product specified as a percentage or as a fixed price amount</description>
+		<type>boolean</type>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+	    </attribute-definition>
+	    <attribute-definition attribute-id="subproSubscriptionCreated">
+		<display-name xml:lang="x-default">Subscription Created at Subscribe?</display-name>
+		<type>boolean</type>
+		<localizable-flag>false</localizable-flag>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+	    </attribute-definition>
+	    <attribute-definition attribute-id="subproSubscriptionDateCreated">
+		<display-name xml:lang="x-default">Subscription Date Created</display-name>
+		<type>datetime</type>
+		<localizable-flag>false</localizable-flag>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+	    </attribute-definition>
+	    <attribute-definition attribute-id="subproSubscriptionID">
+		<display-name xml:lang="x-default">Subscription ID</display-name>
+		<type>string</type>
+		<localizable-flag>false</localizable-flag>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+	    </attribute-definition>
+	</custom-attribute-definitions>
+	<group-definitions>
+	    <attribute-group group-id="subscribe-pro">
+		<display-name xml:lang="x-default">Subscribe Pro</display-name>
+		<attribute attribute-id="subproSubscriptionOptionMode"/>
+		<attribute attribute-id="subproSubscriptionSelectedOptionMode"/>
+		<attribute attribute-id="subproSubscriptionInterval"/>
+		<attribute attribute-id="subproSubscriptionAvailableIntervals"/>
+		<attribute attribute-id="subproSubscriptionDiscount"/>
+		<attribute attribute-id="subproSubscriptionIsDiscountPercentage"/>
+		<attribute attribute-id="subproSubscriptionCreated"/>
+		<attribute attribute-id="subproSubscriptionDateCreated"/>
+		<attribute attribute-id="subproSubscriptionID"/>
+	    </attribute-group>
+	</group-definitions>
+    </type-extension>
+
+    <type-extension type-id="CustomerPaymentInstrument">
+	<custom-attribute-definitions>
+	    <attribute-definition attribute-id="subproPaymentProfileID">
+		<display-name xml:lang="x-default">Subscribe Pro Payment Profile ID</display-name>
+		<description xml:lang="x-default">This attribute will contain the payment profile id that is returned from Subscription Pro upon creating payment profile record in the Subscribe Pro system</description>
+		<type>string</type>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+		<min-length>0</min-length>
+	    </attribute-definition>
+	    <attribute-definition attribute-id="subproCCPrefix">
+		<display-name xml:lang="x-default">Subscribe Pro Credit Card Prefix</display-name>
+		<description xml:lang="x-default">This attribute will contain the first six characters of the users credit card number. This will be used when creating the payment profile at Subscribe Pro.</description>
+		<type>string</type>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+		<min-length>0</min-length>
+	    </attribute-definition>
+	</custom-attribute-definitions>
+	<group-definitions>
+	    <attribute-group group-id="subscribe-pro">
+		<display-name xml:lang="x-default">Subscribe Pro</display-name>
+		<attribute attribute-id="subproPaymentProfileID"/>
+	    </attribute-group>
+	</group-definitions>
+    </type-extension>
+
+    <type-extension type-id="Order">
+	<custom-attribute-definitions>
+	    <attribute-definition attribute-id="subproContainsSubscriptions">
+		<display-name xml:lang="x-default">Contains Subscriptions</display-name>
+		<type>boolean</type>
+		<localizable-flag>false</localizable-flag>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+	    </attribute-definition>
+	    <attribute-definition attribute-id="subproSubscriptionsToBeProcessed">
+		<display-name xml:lang="x-default">Subscriptions to be processed</display-name>
+		<type>boolean</type>
+		<localizable-flag>false</localizable-flag>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+	    </attribute-definition>
+	</custom-attribute-definitions>
+	<group-definitions>
+	    <attribute-group group-id="subscribe-pro">
+		<display-name xml:lang="x-default">Subscribe Pro</display-name>
+		<attribute attribute-id="subproContainsSubscriptions"/>
+		<attribute attribute-id="subproSubscriptionsToBeProcessed"/>
+	    </attribute-group>
+	</group-definitions>
+    </type-extension>
+
+    <type-extension type-id="Basket">
+	<custom-attribute-definitions>
+	    <attribute-definition attribute-id="subproContainsSubscriptions">
+		<display-name xml:lang="x-default">Contains Subscriptions</display-name>
+		<type>boolean</type>
+		<localizable-flag>false</localizable-flag>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+	    </attribute-definition>
+	    <attribute-definition attribute-id="subproSubscriptionsToBeProcessed">
+		<display-name xml:lang="x-default">Subscriptions to be processed</display-name>
+		<type>boolean</type>
+		<localizable-flag>false</localizable-flag>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+	    </attribute-definition>
+	</custom-attribute-definitions>
+	<group-definitions>
+	    <attribute-group group-id="subscribe-pro">
+		<display-name xml:lang="x-default">Subscribe Pro</display-name>
+		<attribute attribute-id="subproContainsSubscriptions"/>
+		<attribute attribute-id="subproSubscriptionsToBeProcessed"/>
+	    </attribute-group>
+	</group-definitions>
+    </type-extension>
+
+    <type-extension type-id="Profile">
+	<custom-attribute-definitions>
+	    <attribute-definition attribute-id="subproCustomerID">
+		<display-name xml:lang="x-default">Subscribe Pro Customer ID</display-name>
+		<type>string</type>
+		<localizable-flag>false</localizable-flag>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+	    </attribute-definition>
+	</custom-attribute-definitions>
+	<group-definitions>
+	    <attribute-group group-id="subscribe-pro">
+		<display-name xml:lang="x-default">Subscribe Pro</display-name>
+		<attribute attribute-id="subproCustomerID"/>
+	    </attribute-group>
+	</group-definitions>
+    </type-extension>
+
+    <type-extension type-id="CustomerAddress">
+	<custom-attribute-definitions>
+	    <attribute-definition attribute-id="subproAddressID">
+		<display-name xml:lang="x-default">Subscribe Pro Address ID</display-name>
+		<type>string</type>
+		<localizable-flag>false</localizable-flag>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+	    </attribute-definition>
+	</custom-attribute-definitions>
+	<group-definitions>
+	    <attribute-group group-id="subscribe-pro">
+		<display-name xml:lang="x-default">Subscribe Pro</display-name>
+		<attribute attribute-id="subproAddressID"/>
+	    </attribute-group>
+	</group-definitions>
+    </type-extension>
+
+    <type-extension type-id="OrderAddress">
+	<custom-attribute-definitions>
+	    <attribute-definition attribute-id="subproAddressID">
+		<display-name xml:lang="x-default">Subscribe Pro Address ID</display-name>
+		<type>string</type>
+		<localizable-flag>false</localizable-flag>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+	    </attribute-definition>
+	    <attribute-definition attribute-id="customerAddressID">
+		<display-name xml:lang="x-default">Customer Address ID</display-name>
+		<type>string</type>
+		<localizable-flag>false</localizable-flag>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+	    </attribute-definition>
+	</custom-attribute-definitions>
+	<group-definitions>
+	    <attribute-group group-id="subscribe-pro">
+		<display-name xml:lang="x-default">Subscribe Pro</display-name>
+		<attribute attribute-id="customerAddressID"/>
+		<attribute attribute-id="subproAddressID"/>
+	    </attribute-group>
+	</group-definitions>
+    </type-extension>
+
+    <type-extension type-id="SitePreferences">
+	<custom-attribute-definitions>
+	    <attribute-definition attribute-id="subproCheckoutLoginMsg">
+		<display-name xml:lang="x-default">Subpro Checkout Login Message</display-name>
+		<description xml:lang="x-default">Message informing customer that he/she needs to be logged in as a registered customer to proceed checkout with SubPro Subscription products</description>
+		<type>string</type>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+		<min-length>0</min-length>
+		<default-value>Log in to place order with subscription</default-value>
+	    </attribute-definition>
+	    <attribute-definition attribute-id="subproApplePayLoginMsg">
+		<display-name xml:lang="x-default">Subpro Apple Pay Login Message</display-name>
+		<description xml:lang="x-default">Message informing customer that he/she needs to be logged in as a registered customer to use Apple Pay with SubPro Subscription products</description>
+		<type>string</type>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+		<min-length>0</min-length>
+		<default-value>You need to be logged in as a registered customer to use Apple Pay with SubPro Subscription products</default-value>
+	    </attribute-definition>
+	    <attribute-definition attribute-id="subproCreditCardRequirementMsg">
+		<display-name xml:lang="x-default">Subpro Credit Card Requirement Message</display-name>
+		<description xml:lang="x-default">Error message noting that a credit card is required for subscriptions</description>
+		<type>string</type>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+		<min-length>0</min-length>
+		<default-value>You need a credit card to pay for SubPro subscription</default-value>
+	    </attribute-definition>
+	    <attribute-definition attribute-id="subproSavedCreditMsg">
+		<display-name xml:lang="x-default">Subpro Saved Credit Card Message</display-name>
+		<description xml:lang="x-default">Error message noting that a credit card is required to be saved for subscriptions</description>
+		<type>string</type>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+		<min-length>0</min-length>
+		<default-value>Your credit card information will automatically be saved to your account for your subscriptions</default-value>
+	    </attribute-definition>
+	    <attribute-definition attribute-id="subproOrderProcessingErrorMail">
+		<display-name xml:lang="x-default">Subscribe Pro Order Processing Error Mail</display-name>
+		<description xml:lang="x-default">An email address that order subscriptions processing failures will be sent to</description>
+		<type>string</type>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+		<min-length>0</min-length>
+	    </attribute-definition>
+	    <attribute-definition attribute-id="subproWidgetScriptUrl">
+		<display-name xml:lang="x-default">Subscribe Pro Widget Script Url</display-name>
+		<type>string</type>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+		<min-length>0</min-length>
+		<default-value>https://widgets.subscribepro.com/subscribepro-widgets.min.js</default-value>
+	    </attribute-definition>
+	    <attribute-definition attribute-id="subproApiBaseUrl">
+		<display-name xml:lang="x-default">Subscribe Pro API Base Url</display-name>
+		<type>string</type>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+		<min-length>0</min-length>
+		<default-value>https://api.subscribepro.com</default-value>
+	    </attribute-definition>
+	    <attribute-definition attribute-id="subproAPICredSuffix">
+	      <display-name xml:lang="x-default">Suffix to append to the Subscribe Pro Web Service Credentials</display-name>
+	      <type>string</type>
+	      <mandatory-flag>false</mandatory-flag>
+	      <externally-managed-flag>false</externally-managed-flag>
+	      <min-length>0</min-length>
+	      <default-value>siteName</default-value>
+	    </attribute-definition>
+	</custom-attribute-definitions>
+	 <group-definitions>
+	    <attribute-group group-id="subscribe-pro">
+		<display-name xml:lang="x-default">Subscribe Pro</display-name>
+		<attribute attribute-id="subproCreditCardRequirementMsg"/>
+		<attribute attribute-id="subproCheckoutLoginMsg"/>
+		<attribute attribute-id="subproApplePayLoginMsg"/>
+		<attribute attribute-id="subproOrderProcessingErrorMail"/>
+		<attribute attribute-id="subproWidgetScriptUrl"/>
+		<attribute attribute-id="subproApiBaseUrl"/>
+		<attribute attribute-id="subproAPICredSuffix"/>
+	    </attribute-group>
+	</group-definitions>
+    </type-extension>
+
+    <type-extension type-id="PaymentCard">
+	<custom-attribute-definitions>
+	    <attribute-definition attribute-id="subproCardType">
+		<display-name xml:lang="x-default">Subscribe Pro Card Type</display-name>
+		<description xml:lang="x-default">This card type should match the available card types within Subscribe Pro</description>
+		<type>string</type>
+		<mandatory-flag>false</mandatory-flag>
+		<externally-managed-flag>false</externally-managed-flag>
+		<min-length>1</min-length>
+	    </attribute-definition>
+	  </custom-attribute-definitions>
+	   <group-definitions>
+	      <attribute-group group-id="subscribe-pro">
+		  <display-name xml:lang="x-default">Subscribe Pro</display-name>
+		  <attribute attribute-id="subproCardType"/>
+	      </attribute-group>
+	  </group-definitions>
+      </type-extension>
+</metadata>

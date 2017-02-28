@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jobs xmlns="http://www.demandware.com/xml/impex/jobs/2015-07-01">
+    <job job-id="ProcessSubproSubscriptions" priority="0">
+	<description>Process orders that have Subscribe Pro subscription</description>
+	<parameters/>
+	<flow>
+	    <context site-id="SiteGenesis"/>
+	    <step step-id="ProcessSubproSubscriptions-Process" type="ExecuteScriptModule" enforce-restart="false">
+		<description/>
+		<parameters>
+		    <parameter name="ExecuteScriptModule.Module">int_subscribe_pro/cartridge/scripts/subpro/job/ProcessOrderSubscriptions.js</parameter>
+		    <parameter name="ExecuteScriptModule.FunctionName">Start</parameter>
+		    <parameter name="ExecuteScriptModule.Transactional">true</parameter>
+		    <parameter name="ordersProcessInterval">24</parameter>
+		</parameters>
+	    </step>
+	</flow>
+	<rules>
+	    <on-running runtime-threshold="60m" enabled="true">
+		<mark-job-as-hanging/>
+	    </on-running>
+	</rules>
+	<triggers>
+	    <run-recurring enabled="false">
+		<recurrence>
+		    <date-from>2017-03-28Z</date-from>
+		    <start-time>22:52:51.000Z</start-time>
+		    <interval>15m</interval>
+		    <day-of-week>
+			<weekday>Saturday</weekday>
+			<weekday>Wednesday</weekday>
+			<weekday>Thursday</weekday>
+			<weekday>Sunday</weekday>
+			<weekday>Tuesday</weekday>
+			<weekday>Friday</weekday>
+			<weekday>Monday</weekday>
+		    </day-of-week>
+		</recurrence>
+		<rules>
+		    <on-exit status="ERROR">
+			<retry>
+			    <interval>1m</interval>
+			    <max-retries>3</max-retries>
+			</retry>
+		    </on-exit>
+		</rules>
+	    </run-recurring>
+	</triggers>
+    </job>
+
+</jobs>
