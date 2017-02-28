@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services xmlns="http://www.demandware.com/xml/impex/services/2014-09-26">
+	<service service-id="subpro.http.get.config">
+		<service-type>HTTP</service-type>
+		<enabled>true</enabled>
+		<log-prefix>subpro-config</log-prefix>
+		<comm-log-enabled>true</comm-log-enabled>
+		<mock-mode-enabled>false</mock-mode-enabled>
+		<profile-id>subpro.http.prof</profile-id>
+		<credential-id>subpro.http.cred</credential-id>
+	</service>
+
+	<service service-id="subpro.http.get.subscriptions">
+		<service-type>HTTP</service-type>
+		<enabled>true</enabled>
+		<log-prefix>subpro-subscriptions</log-prefix>
+		<comm-log-enabled>true</comm-log-enabled>
+		<mock-mode-enabled>false</mock-mode-enabled>
+		<profile-id>subpro.http.prof</profile-id>
+		<credential-id>subpro.http.cred</credential-id>
+	</service>
+
+	<service service-id="subpro.http.post.addresses">
+		<service-type>HTTPForm</service-type>
+		<enabled>true</enabled>
+		<log-prefix>subpro-post-address</log-prefix>
+		<comm-log-enabled>true</comm-log-enabled>
+		<mock-mode-enabled>false</mock-mode-enabled>
+		<profile-id>subpro.http.prof</profile-id>
+		<credential-id>subpro.http.cred</credential-id>
+	</service>
+
+</services>
