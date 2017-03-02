@@ -1,0 +1,5 @@
+{
+	"init": [
+		"./cartridge/scripts/subpro/init/httpServiceInit.js"
+	]
+}
