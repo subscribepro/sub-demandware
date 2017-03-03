@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
+    <type-extension type-id="Product">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="subproProductID">
+                <display-name xml:lang="x-default">Subscribe Pro Product ID</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="subscribe-pro">
+                <display-name xml:lang="x-default">Subscribe Pro</display-name>
+                <attribute attribute-id="subproProductID"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
+    <type-extension type-id="ProductLineItem">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="subproSubscriptionOptionMode">
+                <display-name xml:lang="x-default">Subscription Option Mode</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="subproSubscriptionInterval">
+                <display-name xml:lang="x-default">Subscription Refill Interval</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="subproSubscriptionCreated">
+                <display-name xml:lang="x-default">Subscription Created at Subscribe?</display-name>
+                <type>boolean</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="subproSubscriptionDateCreated">
+                <display-name xml:lang="x-default">Subscription Date Created</display-name>
+                <type>datetime</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="subproSubscriptionID">
+                <display-name xml:lang="x-default">Subscription ID</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="subscribe-pro">
+                <display-name xml:lang="x-default">Subscribe Pro</display-name>
+                <attribute attribute-id="subproSubscriptionOptionMode"/>
+                <attribute attribute-id="subproSubscriptionInterval"/>
+                <attribute attribute-id="subproSubscriptionCreated"/>
+                <attribute attribute-id="subproSubscriptionDateCreated"/>
+                <attribute attribute-id="subproSubscriptionID"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
+    <type-extension type-id="Order">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="subproContainsSubscriptions">
+                <display-name xml:lang="x-default">Contains Subscriptions</display-name>
+                <type>boolean</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="subproSubscriptionsToBeProcessed">
+                <display-name xml:lang="x-default">Subscriptions to be processed</display-name>
+                <type>boolean</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="subscribe-pro">
+                <display-name xml:lang="x-default">Subscribe Pro</display-name>
+                <attribute attribute-id="subproContainsSubscriptions"/>
+                <attribute attribute-id="subproSubscriptionsToBeProcessed"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
+    <type-extension type-id="Basket">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="subproContainsSubscriptions">
+                <display-name xml:lang="x-default">Contains Subscriptions</display-name>
+                <type>boolean</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="subproSubscriptionsToBeProcessed">
+                <display-name xml:lang="x-default">Subscriptions to be processed</display-name>
+                <type>boolean</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="subscribe-pro">
+                <display-name xml:lang="x-default">Subscribe Pro</display-name>
+                <attribute attribute-id="subproContainsSubscriptions"/>
+                <attribute attribute-id="subproSubscriptionsToBeProcessed"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
+    <type-extension type-id="Profile">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="subproCustomerID">
+                <display-name xml:lang="x-default">Subscribe Pro Customer ID</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="subscribe-pro">
+                <display-name xml:lang="x-default">Subscribe Pro</display-name>
+                <attribute attribute-id="subproCustomerID"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
+    <type-extension type-id="CustomerAddress">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="subproAddressID">
+                <display-name xml:lang="x-default">Subscribe Pro Address ID</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="subscribe-pro">
+                <display-name xml:lang="x-default">Subscribe Pro</display-name>
+                <attribute attribute-id="subproAddressID"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
+    <type-extension type-id="OrderAddress">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="subproAddressID">
+                <display-name xml:lang="x-default">Subscribe Pro Address ID</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="customerAddressID">
+                <display-name xml:lang="x-default">Customer Address ID</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="subscribe-pro">
+                <display-name xml:lang="x-default">Subscribe Pro</display-name>
+                <attribute attribute-id="customerAddressID"/>
+                <attribute attribute-id="subproAddressID"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
+</metadata>
