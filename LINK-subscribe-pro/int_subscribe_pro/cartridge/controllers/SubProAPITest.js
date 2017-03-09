@@ -96,3 +96,33 @@ exports.Addresses = function(){
  * Mark the controller endpoint as accessible via the web
  */
 exports.Addresses.public = true;
+
+/**
+ * Calls and return the results of the /product API end-point
+ * This method will return a JSON response
+ */
+exports.Products = function() {
+	const httpParameters = request.httpParameters;
+
+	/**
+	 * Check to ensure that a sku has been passed via the HTTP Parameters
+	 */
+	if (!httpParameters || !httpParameters.containsKey("sku")) {
+		r.renderJSON({
+			error: true,
+			msg: "The product API request requires a sku URL parameter to be set"
+		});
+
+		return;
+	}
+
+	let sku = httpParameters.get("sku").pop(),
+		result = SubscribeProLib.getProduct(sku);
+
+	r.renderJSON(result);
+}
+
+/**
+ * Mark the controller endpoint as accessible via the web
+ */
+exports.Products.public = true;

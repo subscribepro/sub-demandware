@@ -11,6 +11,7 @@ importPackage(dw.io);
 let ConfigMockData = require("../mock_data/ConfigMockData");
 let SubscriptionsMockData = require("../mock_data/SubscriptionsMockData");
 let AddressMockData = require("../mock_data/AddressMockData");
+let ProductMockData = require("../mock_data/ProductMockData");
 
 /**
  * Service: subpro.http.get.config
@@ -154,5 +155,32 @@ ServiceRegistry.configure("subpro.http.post.addresses", {
 	 */
 	mockCall: function(svc: HTTPService, client: HTTPClient) {
 		return getMockJSON(AddressMockData);
+	}
+});
+
+/**
+ * Service: subpro.http.get.products
+ */
+ServiceRegistry.configure("subpro.http.get.products", {
+	/**
+	 * Create the service request
+	 */
+	createRequest: function (svc: HTTPFormService, args) {
+		svc.setRequestMethod("GET");
+		setURL(svc, "products.json", "sku=" + args.sku);
+	},
+
+	/**
+	 * JSON parse the response text and return it
+	 */
+	parseResponse: function (svc: HTTPService, client: HTTPClient) {
+		return JSON.parse(client.text);
+	},
+
+	/**
+	 * Return the Mocked Address Data
+	 */
+	mockCall: function(svc: HTTPService, client: HTTPClient) {
+		return getMockJSON(ProductMockData);
 	}
 });

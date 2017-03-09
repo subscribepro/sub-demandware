@@ -98,8 +98,27 @@ let SubscribeProLib = {
 		let service = SubscribeProLib.getService("subpro.http.post.addresses");
 
 		return SubscribeProLib.handleResponse(service.call({address_id: addressID, address: address}));
+	},
+
+	/**
+	 * Get a single product by sku
+	 *
+	 * API Endpoint: GET /services/v2/products.{_format}
+	 *
+	 * @return Object an object containing whether or not this service returned an error and the results of the API request
+	 */
+	getProduct: function(sku) {
+		if (!sku) {
+			return {
+				error: true,
+				result: "sku is required for the getProduct method"
+			}
+		}
+
+		let service = SubscribeProLib.getService("subpro.http.get.products");
+
+		return SubscribeProLib.handleResponse(service.call({sku: sku}));
 	}
-	
 };
 
 module.exports = SubscribeProLib;
