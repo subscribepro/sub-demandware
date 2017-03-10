@@ -12,7 +12,7 @@ let SubscribeProLib = {
 	/**
 	 * Get a Web Service instance for the specified service name
 	 */
-	getService: function (serviceName) {
+	getService: function(serviceName) {
 		return ServiceRegistry.get(serviceName);
 	},
 
@@ -27,13 +27,13 @@ let SubscribeProLib = {
 
 		if (!result.object && result.errorMessage) {
 			let jsonObject;
-			
+
 			try {
 				jsonObject = JSON.parse(result.errorMessage);
 			} catch (e) {
 				jsonObject = result.errorMessage;
 			}
-			
+
 			return {
 				error: true,
 				result: jsonObject
@@ -58,7 +58,7 @@ let SubscribeProLib = {
 		let service = SubscribeProLib.getService("subpro.http.get.config");
 		return SubscribeProLib.handleResponse(service.call())
 	},
-	
+
 	/**
 	 * Request a list of subscriptions for the supplied customer id.
 	 * If a customer id is not found, an error will be returned.
@@ -67,7 +67,7 @@ let SubscribeProLib = {
 	 *
 	 * @return Object an object containing whether or not this service returned an error and the results of the API request
 	 */
-	getSubscription: function (customerID) {
+	getSubscription: function(customerID) {
 		if (!customerID) {
 			return {
 				error: true,
@@ -79,7 +79,7 @@ let SubscribeProLib = {
 
 		return SubscribeProLib.handleResponse(service.call({customer_id: customerID}));
 	},
-	
+
 	/**
 	 * Update an Address
 	 *
@@ -87,7 +87,7 @@ let SubscribeProLib = {
 	 *
 	 * @return Object an object containing whether or not this service returned an error and the results of the API request
 	 */
-	postUpdateAddress: function (addressID, address) {
+	postUpdateAddress: function(addressID, address) {
 		if (!addressID) {
 			return {
 				error: true,
@@ -98,6 +98,27 @@ let SubscribeProLib = {
 		let service = SubscribeProLib.getService("subpro.http.post.addresses");
 
 		return SubscribeProLib.handleResponse(service.call({address_id: addressID, address: address}));
+	},
+
+	/**
+	 * Request a list of addresses for the supplied customer id.
+	 * If a customer id is not found, an error will be returned.
+	 *
+	 * API Endpoint: GET /services/v2/addresses
+	 *
+	 * @return Object an object containing whether or not this service returned an error and the results of the API request
+	 */
+	getAddresses: function(customerID) {
+		if (!customerID) {
+			return {
+				error: true,
+				result: "Customer ID is required for the getAddresses method"
+			}
+		}
+
+		let service = SubscribeProLib.getService("subpro.http.get.addresses");
+
+		return SubscribeProLib.handleResponse(service.call({customer_id: customerID}));
 	},
 
 	/**
