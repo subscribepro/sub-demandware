@@ -139,6 +139,26 @@ let SubscribeProLib = {
 		let service = SubscribeProLib.getService("subpro.http.get.products");
 
 		return SubscribeProLib.handleResponse(service.call({sku: sku}));
+	},
+
+	/**
+	 * Get customer information based on ID
+	 *
+	 * API Endpoint: GET /services/v2/customers/{id}.{_format}
+	 *
+	 * @return Object an object containing whether or not this service returned an error and the results of the API request
+	 */
+	getCustomer: function(customerID) {
+		if (!customerID) {
+			return {
+				error: true,
+				result: "customerID is required for the getCustomer method"
+			}
+		}
+
+		let service = SubscribeProLib.getService("subpro.http.get.customers");
+
+		return SubscribeProLib.handleResponse(service.call({customer_id: customerID}));
 	}
 };
 

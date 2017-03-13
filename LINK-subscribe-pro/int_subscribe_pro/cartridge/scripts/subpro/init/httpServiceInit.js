@@ -13,6 +13,7 @@ let SubscriptionsMockData = require("../mock_data/SubscriptionsMockData");
 let AddressMockData = require("../mock_data/AddressMockData");
 let AddressesMockData = require("../mock_data/AddressesMockData");
 let ProductMockData = require("../mock_data/ProductMockData");
+let CustomerMockData = require("../mock_data/CustomerMockData");
 
 /**
  * Service: subpro.http.get.config
@@ -210,5 +211,32 @@ ServiceRegistry.configure("subpro.http.get.products", {
 	 */
 	mockCall: function(svc: HTTPService, client: HTTPClient) {
 		return getMockJSON(ProductMockData);
+	}
+});
+
+/**
+ * Service: subpro.http.get.customers
+ */
+ServiceRegistry.configure("subpro.http.get.customers", {
+	/**
+	 * Create the service request
+	 */
+	createRequest: function(svc: HTTPFormService, args) {
+		svc.setRequestMethod("GET");
+		setURL(svc, "customers/" + args.customer_id + ".json", "");
+	},
+
+	/**
+	 * JSON parse the response text and return it
+	 */
+	parseResponse: function(svc: HTTPService, client: HTTPClient) {
+		return JSON.parse(client.text);
+	},
+
+	/**
+	 * Return the Mocked Address Data
+	 */
+	mockCall: function(svc: HTTPService, client: HTTPClient) {
+		return getMockJSON(CustomerMockData);
 	}
 });

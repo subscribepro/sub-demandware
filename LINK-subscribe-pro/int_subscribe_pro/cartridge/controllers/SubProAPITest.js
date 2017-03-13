@@ -156,3 +156,33 @@ exports.Products = function() {
  * Mark the controller endpoint as accessible via the web
  */
 exports.Products.public = true;
+
+/**
+ * Calls and return the results of the /customers API end-point
+ * This method will return a JSON response
+ */
+exports.Customers = function() {
+	const httpParameters = request.httpParameters;
+
+	/**
+	 * Check to ensure that a customer_id has been passed via the HTTP Parameters
+	 */
+	if (!httpParameters || !httpParameters.containsKey("customer_id")) {
+		r.renderJSON({
+			error: true,
+			msg: "The customers API request requires a customer_id URL parameter to be set"
+		});
+
+		return;
+	}
+
+	let customerID = httpParameters.get("customer_id").pop(),
+		result = SubscribeProLib.getCustomer(customerID);
+
+	r.renderJSON(result);
+}
+
+/**
+ * Mark the controller endpoint as accessible via the web
+ */
+exports.Customers.public = true;
