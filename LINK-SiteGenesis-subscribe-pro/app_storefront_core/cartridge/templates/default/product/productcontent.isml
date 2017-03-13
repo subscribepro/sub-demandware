@@ -158,6 +158,17 @@
 				</isif>
 
 				<iscomment>
+					product SubPro options
+					=============================================================
+				</iscomment>
+
+				<div class="subscription">
+					<isif condition="${product.custom.subproSubscriptionEnabled}">
+						<isinclude url="${URLUtils.url('SubPro-PDP', 'sku', product.ID)}" />
+					</isif>
+				</div>
+
+				<iscomment>
 					product quantity
 					=============================================================
 				</iscomment>

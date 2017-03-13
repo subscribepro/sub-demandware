@@ -121,7 +121,15 @@ var CartModel = AbstractModel.extend({
                 }
             } else {
                 productOptionModel = productToAdd.updateOptionSelection(params);
-                cart.addProductItem(productToAdd.object, params.Quantity.doubleValue, productOptionModel);
+
+                if (params.subproSubscriptionInterval && params.subproSubscriptionOptionMode) {
+                    cart.addProductItem(productToAdd.object, params.Quantity.doubleValue, productOptionModel, {
+                        subscriptionInterval: params.subproSubscriptionInterval,
+                        subscriptionOptionMode: params.subproSubscriptionOptionMode
+                    });
+                } else {
+                    cart.addProductItem(productToAdd.object, params.Quantity.doubleValue, productOptionModel);
+                }
             }
 
             // When adding a new product to the cart, check to see if it has triggered a new bonus discount line item.
@@ -170,8 +178,9 @@ var CartModel = AbstractModel.extend({
      * @param {String} pid - ID of the product that is to be added to the basket.
      * @param {Number} quantity - The quantity of the product.
      * @param {dw.catalog.ProductOptionModel} productOptionModel - The option model of the product that is to be added to the basket.
+     * @param {Object} subproParams - Object containing options for SubPro subscription
      */
-    addProductItem: function (product, quantity, productOptionModel) {
+    addProductItem: function (product, quantity, productOptionModel, subproParams) {
         var cart = this;
         Transaction.wrap(function () {
             var i;
@@ -195,6 +204,11 @@ var CartModel = AbstractModel.extend({
                     productInCart.setQuantityValue(quantityToSet);
                 } else {
                     var productLineItem = cart.createProductLineItem(product, productOptionModel, shipment);
+
+                    if (subproParams) {
+                        productLineItem.custom.subproSubscriptionOptionMode = subproParams.subscriptionOptionMode;
+                        productLineItem.custom.subproSubscriptionInterval = subproParams.subscriptionInterval;
+                    }
 
                     if (quantity) {
                         productLineItem.setQuantityValue(quantity);
