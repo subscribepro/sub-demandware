@@ -159,6 +159,19 @@ let SubscribeProLib = {
 		let service = SubscribeProLib.getService("subpro.http.get.customers");
 
 		return SubscribeProLib.handleResponse(service.call({customer_id: customerID}));
+	},
+
+	/**
+	 * Create a new customer at Subscribe Pro
+	 *
+	 * API Endpoint: POST /services/v2/customer.{_format}
+	 *
+	 * @return Object an object containing whether or not this service returned an error and the results of the API request
+	 */
+	createCustomer: function(customer) {
+		let service = SubscribeProLib.getService("subpro.http.post.customer");
+
+		return SubscribeProLib.handleResponse(service.call({customer: customer}));
 	}
 };
 

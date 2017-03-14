@@ -186,3 +186,26 @@ exports.Customers = function() {
  * Mark the controller endpoint as accessible via the web
  */
 exports.Customers.public = true;
+
+/**
+ * Calls and return the results of posting new customer to the /customer API end-point
+ * This method will return a JSON response
+ */
+exports.Customer = function() {
+	let customer = {
+		"email": "test@mail.com",
+		"first_name": "Name",
+		"last_name": "Surname",
+		"middle_name": "mid",
+		"magento_customer_id": 1
+	}
+
+	let result = SubscribeProLib.createCustomer(customer);
+
+	r.renderJSON(result);
+};
+
+/**
+ * Mark the controller endpoint as accessible via the web
+ */
+exports.Customer.public = true;
