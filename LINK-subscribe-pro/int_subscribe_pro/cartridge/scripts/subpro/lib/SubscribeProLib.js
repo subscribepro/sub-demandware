@@ -172,6 +172,26 @@ let SubscribeProLib = {
 		let service = SubscribeProLib.getService("subpro.http.post.customer");
 
 		return SubscribeProLib.handleResponse(service.call({customer: customer}));
+	},
+
+	/**
+	 * Update a customer
+	 *
+	 * API Endpoint: POST /services/v2/customers/{id}.{_format}
+	 *
+	 * @return Object an object containing whether or not this service returned an error and the results of the API request
+	 */
+	updateCustomer: function(customerID, customer) {
+		if (!customerID) {
+			return {
+				error: true,
+				result: "customerID is required for the updateCustomer method"
+			}
+		}
+
+		let service = SubscribeProLib.getService("subpro.http.post.customers");
+
+		return SubscribeProLib.handleResponse(service.call({customer_id: customerID, customer: customer}));
 	}
 };
 

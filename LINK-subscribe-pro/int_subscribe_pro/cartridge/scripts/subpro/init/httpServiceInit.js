@@ -267,3 +267,39 @@ ServiceRegistry.configure("subpro.http.post.customer", {
 		return getMockJSON(CustomerMockData);
 	}
 });
+
+/**
+ * Service: subpro.http.post.customers
+ */
+ServiceRegistry.configure("subpro.http.post.customers", {
+	/**
+	 * Create the service request
+	 */
+	createRequest: function(svc: HTTPFormService, args) {
+		svc.setRequestMethod("POST");
+		setURL(svc, "customers/" + args.customer_id + ".json", "");
+
+		/**
+		 * Return the parameters to be POSTed to the URL, if there are any
+		 */
+		if (args) {
+			return JSON.stringify({customer: args.customer});
+		} else {
+			return null;
+		}
+	},
+
+	/**
+	 * JSON parse the response text and return it
+	 */
+	parseResponse: function(svc: HTTPService, client: HTTPClient) {
+		return JSON.parse(client.text);
+	},
+
+	/**
+	 * Return the Mocked Address Data
+	 */
+	mockCall: function(svc: HTTPService, client: HTTPClient) {
+		return getMockJSON(CustomerMockData);
+	}
+});

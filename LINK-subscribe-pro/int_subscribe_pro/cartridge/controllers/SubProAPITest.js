@@ -209,3 +209,42 @@ exports.Customer = function() {
  * Mark the controller endpoint as accessible via the web
  */
 exports.Customer.public = true;
+
+
+/**
+ * Calls and return the results of posting an updated customer to the /customer API end-point
+ * This method will return a JSON response
+ */
+exports.UpdateCustomer = function() {
+	const httpParameters = request.httpParameters;
+
+	/**
+	 * Check to ensure that a customer_id has been passed via the HTTP Parameters
+	 */
+	if (!httpParameters || !httpParameters.containsKey("customer_id")) {
+		r.renderJSON({
+			error: true,
+			msg: "The customers API request requires a customer_id URL parameter to be set"
+		});
+
+		return;
+	}
+
+	let customer = {
+		"email": "test@mail.com",
+		"first_name": "Name",
+		"last_name": "Surname",
+		"middle_name": "mid",
+		"magento_customer_id": 1
+	}
+
+	let customerID = httpParameters.get("customer_id").pop(),
+		result = SubscribeProLib.updateCustomer(customerID, customer);
+
+	r.renderJSON(result);
+};
+
+/**
+ * Mark the controller endpoint as accessible via the web
+ */
+exports.Customer.public = true;
