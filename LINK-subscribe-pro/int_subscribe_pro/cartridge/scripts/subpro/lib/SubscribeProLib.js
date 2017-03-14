@@ -100,6 +100,19 @@ let SubscribeProLib = {
 		return SubscribeProLib.handleResponse(service.call({address_id: addressID, address: address}));
 	},
 
+
+	/**
+	 * Find a matching address or create a new one
+	 *
+	 * API Endpoint: POST /services/v2/address/find-or-create.{_format}
+	 *
+	 * @return Object an object containing whether or not this service returned an error and the results of the API request
+	 */
+	findCreateAddress: function(address) {
+		let service = SubscribeProLib.getService("subpro.http.post.addressfindcreate");
+		return SubscribeProLib.handleResponse(service.call({address: address}));
+	},
+
 	/**
 	 * Request a list of addresses for the supplied customer id.
 	 * If a customer id is not found, an error will be returned.

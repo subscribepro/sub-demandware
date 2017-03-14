@@ -30,6 +30,16 @@
 		<credential-id>subpro.http.cred</credential-id>
 	</service>
 
+	<service service-id="subpro.http.post.addressfindcreate">
+		<service-type>HTTP</service-type>
+		<enabled>true</enabled>
+		<log-prefix>subpro-post-addressfind</log-prefix>
+		<comm-log-enabled>true</comm-log-enabled>
+		<mock-mode-enabled>false</mock-mode-enabled>
+		<profile-id>subpro.http.prof</profile-id>
+		<credential-id>subpro.http.cred</credential-id>
+	</service>
+
 	<service service-id="subpro.http.get.addresses">
 		<service-type>HTTP</service-type>
 		<enabled>true</enabled>

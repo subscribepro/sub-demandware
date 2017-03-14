@@ -161,6 +161,42 @@ ServiceRegistry.configure("subpro.http.post.addresses", {
 });
 
 /**
+ * Service: subpro.http.post.addressfindcreate
+ */
+ServiceRegistry.configure("subpro.http.post.addressfindcreate", {
+	/**
+	 * Create the service request
+	 */
+	createRequest: function(svc: HTTPFormService, args) {
+		svc.setRequestMethod("POST");
+		setURL(svc, "address/find-or-create.json", "");
+
+		/**
+		 * Return the parameters to be POSTed to the URL, if there are any
+		 */
+		if (args) {
+			return JSON.stringify({address: args.address});
+		} else {
+			return null;
+		}
+	},
+
+	/**
+	 * JSON parse the response text and return it
+	 */
+	parseResponse: function(svc: HTTPService, client: HTTPClient) {
+		return JSON.parse(client.text);
+	},
+
+	/**
+	 * Return the Mocked Address Data
+	 */
+	mockCall: function(svc: HTTPService, client: HTTPClient) {
+		return getMockJSON(AddressMockData);
+	}
+});
+
+/**
  * Service: subpro.http.get.addresses
  */
 ServiceRegistry.configure("subpro.http.get.addresses", {
@@ -250,7 +286,16 @@ ServiceRegistry.configure("subpro.http.post.customer", {
 	 */
 	createRequest: function(svc: HTTPFormService, args) {
 		svc.setRequestMethod("POST");
-		setURL(svc, "customer.json", args.customer);
+		setURL(svc, "customer.json", "");
+
+		/**
+		 * Return the parameters to be POSTed to the URL, if there are any
+		 */
+		if (args) {
+			return JSON.stringify({customer: args.customer});
+		} else {
+			return null;
+		}
 	},
 
 	/**
