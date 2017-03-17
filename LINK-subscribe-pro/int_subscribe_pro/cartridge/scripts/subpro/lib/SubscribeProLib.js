@@ -218,6 +218,37 @@ let SubscribeProLib = {
 		let service = SubscribeProLib.getService("subpro.http.post.customers");
 
 		return SubscribeProLib.handleResponse(service.call({customer_id: customerID, customer: customer}));
+	},
+
+	/**
+	 * Check if customer is registered. This is necessary to proceed to checkout with SubPro subscription
+	 *
+	 * @return boolean if customer is registered
+	 */
+	isCheckoutPermitted: function() {
+		return customer.authenticated && customer.registered;
+	},
+
+	/**
+	 * Check if cart has Product Line Items with SubPro subscription
+	 *
+	 * @return boolean if cart has items SubPro subscription
+	 */
+	isSubPro: function() {
+		const app = require('/app_storefront_controllers/cartridge/scripts/app');
+		let cart = app.getModel('Cart').get(),
+			plis = cart.getProductLineItems(),
+			isSubpro = false;
+
+		for (let i = 0, il = plis.length; i < il; i++) {
+			try {
+				isSubpro = plis[i].custom.subproSubscriptionOptionMode;
+				if (isSubpro)
+					break;
+			} catch (e) { }
+		}
+
+		return !!isSubpro;
 	}
 };
 

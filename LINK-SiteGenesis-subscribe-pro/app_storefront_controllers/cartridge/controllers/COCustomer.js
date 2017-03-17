@@ -55,7 +55,8 @@ function start() {
         pageMeta.update(loginAsset);
 
         app.getView({
-            ContinueURL: URLUtils.https('COCustomer-LoginForm').append('scope', 'checkout')
+            ContinueURL: URLUtils.https('COCustomer-LoginForm').append('scope', 'checkout'),
+            isSubpro: require('/int_subscribe_pro/cartridge/scripts/subpro/lib/SubscribeProLib.js').isSubPro()
         }).render('checkout/checkoutlogin');
     }
 
