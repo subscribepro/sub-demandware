@@ -9,6 +9,7 @@ importPackage(dw.io);
  * Mock Data
  */
 let ConfigMockData = require("../mock_data/ConfigMockData");
+let SubscriptionMockData = require("../mock_data/SubscriptionMockData");
 let SubscriptionsMockData = require("../mock_data/SubscriptionsMockData");
 let AddressMockData = require("../mock_data/AddressMockData");
 let AddressesMockData = require("../mock_data/AddressesMockData");
@@ -112,6 +113,42 @@ function getMockJSON(data) {
 		text: JSON.stringify(data)
 	};
 }
+
+/**
+ * Service: subpro.http.post.subscription
+ */
+ServiceRegistry.configure("subpro.http.post.subscription", {
+	/**
+	 * Create the service request
+	 */
+	createRequest: function(svc: HTTPService, args) {
+		svc.setRequestMethod("POST");
+		setURL(svc, "subscription.json", "");
+
+		/**
+		 * Return the parameters to be POSTed to the URL, if there are any
+		 */
+		if (args) {
+			return JSON.stringify({subscription: args.subscription});
+		} else {
+			return null;
+		}
+	},
+
+	/**
+	 * JSON parse the response text and return it
+	 */
+	parseResponse: function(svc: HTTPService, client: HTTPClient) {
+		return JSON.parse(client.text);
+	},
+
+	/**
+	 * Return the Mocked Subscriptions Data
+	 */
+	mockCall: function(svc: HTTPService, client: HTTPClient) {
+		return getMockJSON(SubscriptionMockData);
+	}
+});
 
 /**
  * Service: subpro.http.post.addresses

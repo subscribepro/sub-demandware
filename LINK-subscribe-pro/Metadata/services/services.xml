@@ -13,7 +13,17 @@
 	<service service-id="subpro.http.get.subscriptions">
 		<service-type>HTTP</service-type>
 		<enabled>true</enabled>
-		<log-prefix>subpro-subscriptions</log-prefix>
+		<log-prefix>subpro-get-subscriptions</log-prefix>
+		<comm-log-enabled>true</comm-log-enabled>
+		<mock-mode-enabled>false</mock-mode-enabled>
+		<profile-id>subpro.http.prof</profile-id>
+		<credential-id>subpro.http.cred</credential-id>
+	</service>
+
+	<service service-id="subpro.http.post.subscription">
+		<service-type>HTTP</service-type>
+		<enabled>true</enabled>
+		<log-prefix>subpro-post-subscription</log-prefix>
 		<comm-log-enabled>true</comm-log-enabled>
 		<mock-mode-enabled>false</mock-mode-enabled>
 		<profile-id>subpro.http.prof</profile-id>

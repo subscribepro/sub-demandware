@@ -81,6 +81,19 @@ let SubscribeProLib = {
 	},
 
 	/**
+	 * Create a new subscription.
+	 *
+	 * API Endpoint: POST /services/v2/subscription.{_format}
+	 *
+	 * @return Object an object containing whether or not this service returned an error and the results of the API request
+	 */
+	postSubscription: function(subscription) {
+		let service = SubscribeProLib.getService("subpro.http.post.subscription");
+
+		return SubscribeProLib.handleResponse(service.call({subscription: subscription}));
+	},
+
+	/**
 	 * Update an Address
 	 *
 	 * API Endpoint: GET /services/v2/addresses/{id}

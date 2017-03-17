@@ -54,6 +54,36 @@ exports.Subscriptions = function() {
 exports.Subscriptions.public = true;
 
 /**
+ * Calls and return the results of creating new subscription at the /subscription API end-point
+ * This method will return a JSON response
+ */
+exports.CreateSubscription = function() {
+	let subscription = {
+		"customer_id":"761431",
+		"payment_profile_id":1041328,
+		"requires_shipping": true,
+		"shipping_address":{
+			"first_name":"Test",
+			"last_name":"User",
+		},
+		"product_sku":"test-product",
+		"qty":1,
+		"use_fixed_price":false,
+		"interval":"Every 2 Months",
+		"next_order_date":"2017-04-23"
+	};
+
+	let result = SubscribeProLib.postSubscription(subscription);
+
+	r.renderJSON(result);
+};
+
+/**
+ * Mark the controller endpoint as accessible via the web
+ */
+exports.CreateSubscription.public = true;
+
+/**
  * Calls and return the results of posting and updated address to the /addresses API end-point
  * This method will return a JSON response
  */
