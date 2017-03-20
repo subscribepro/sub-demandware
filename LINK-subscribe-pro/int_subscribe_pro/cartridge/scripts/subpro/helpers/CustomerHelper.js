@@ -1,6 +1,6 @@
 'use strict';
 
-let Transaction = require('dw/system/Transaction');
+const Transaction = require('dw/system/Transaction');
 
 /**
  * Provides an interface to handle Subscribe Pro customer objects and map them to Sales Force Commerce Cloud Customer Object.
@@ -22,7 +22,7 @@ let CustomerHelper = {
         try {
             subproCustomerID = profile.custom.subproCustomerID;
         } catch (e) {
-            require('dw/system/Logger').error(e);
+            require('dw/system/Logger').error('Error getting subproCustomerID', e);
             subproCustomerID = '';
         }
 
@@ -38,10 +38,11 @@ let CustomerHelper = {
      * Save Subscribe Pro id to Customer Profile
      *
      * @param {dw.customer.Profile} profile Sales Force Commerce Cloud Customer Profile
+     * @param {String} subproCustomerID Subscribe Pro Customer ID
      */
-    setSubproCustomerID: function(profile, subproCustomer) {
+    setSubproCustomerID: function(profile, subproCustomerID) {
         Transaction.wrap(function() {
-            profile.custom.subproCustomerID = subproCustomer.id;
+            profile.custom.subproCustomerID = subproCustomerID;
         });
     }
 }

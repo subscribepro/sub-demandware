@@ -169,7 +169,7 @@ ServiceRegistry.configure("subpro.http.post.addresses", {
 		if (args.address_id) {
 			setURL(svc, "addresses/" + args.address_id, "");
 		} else {
-			setURL(svc, "addresses", "");
+			setURL(svc, "address", "");
 		}
 
 		/**

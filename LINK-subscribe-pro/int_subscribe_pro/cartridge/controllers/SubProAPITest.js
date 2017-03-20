@@ -128,12 +128,41 @@ exports.Addresses = function() {
 exports.Addresses.public = true;
 
 /**
+ * Calls and return the results of creating a new address to the /address API end-point
+ * This method will return a JSON response
+ */
+exports.CreateAddress = function() {
+	let address = {
+		"customer_id": "761431",
+		"first_name": "Foo",
+		"middle_name": "",
+		"last_name": "Date: " + new Date().toISOString(),
+		"street1": "123 Main Street",
+		"street2": "Apt 1F",
+		"city": "Baltimore",
+		"region": "MD",
+		"postcode": "22222",
+		"country": "United States",
+		"phone": "1234567890"
+	};
+
+	let result = SubscribeProLib.postCreateAddress(address);
+
+	r.renderJSON(result);
+};
+
+/**
+ * Mark the controller endpoint as accessible via the web
+ */
+exports.CreateAddress.public = true;
+
+/**
  * Calls and return the results of finding or creating address at the /address/find-or-create API end-point
  * This method will return a JSON response
  */
 exports.FindCreateAddress = function() {
 	let address = {
-		"customer_id":761431,
+		"customer_id": 761431,
 		"first_name": "Foo",
 		"last_name": "Date: " + new Date().toISOString(),
 		"street1": "123 Main Street",
