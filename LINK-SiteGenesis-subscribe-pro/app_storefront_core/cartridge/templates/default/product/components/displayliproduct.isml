@@ -112,6 +112,12 @@
 	</isloop>
 </isif>
 
+<div class="subscription">
+	<isif condition="${productLineItem.custom.subproSubscriptionOptionMode}">
+		<isinclude url="${URLUtils.url('SubPro-Cart', 'pliUUID', productLineItem.getUUID())}" />
+	</isif>
+</div>
+
 </div>
 
 

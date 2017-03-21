@@ -3,7 +3,8 @@
 var account = require('./account'),
     bonusProductsView = require('../bonus-products-view'),
     quickview = require('../quickview'),
-    cartStoreInventory = require('../storeinventory/cart');
+    cartStoreInventory = require('../storeinventory/cart'),
+    subscriptionOptions = require('./subscriptionOptions');
 
 /**
  * @private
@@ -25,7 +26,9 @@ function initializeEvents() {
 
     // override enter key for coupon code entry
     $('form input[name$="_couponCode"]').on('keydown', function (e) {
-        if (e.which === 13 && $(this).val().length === 0) { return false; }
+        if (e.which === 13 && $(this).val().length === 0) {
+            return false;
+        }
     });
 
     //to prevent multiple submissions of the form when removing a product from the cart
@@ -37,6 +40,18 @@ function initializeEvents() {
             removeItemEvent = true;
         }
     });
+
+    $('.subpro-options.cart input[name=subproSubscriptionOptionMode]').on('change', (event) => {
+        let $deliveryInteval = $('.subpro-options.cart #delivery-interval');
+
+        $(event.currentTarget).val() === 'regular'
+            ? $deliveryInteval.prop('disabled', false)
+            : $deliveryInteval.prop('disabled', true);
+
+        subscriptionOptions.ajaxUpdateOptions(subscriptionOptions.getOptionsState());
+    });
+
+    $('.subpro-options.cart #delivery-interval').on('change', () => subscriptionOptions.ajaxUpdateOptions(subscriptionOptions.getOptionsState()));
 }
 
 exports.init = function () {

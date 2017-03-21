@@ -198,7 +198,8 @@ ResourceHelper.getUrls = function(pageContext) {
         addEditAddress              : URLUtils.url('COShippingMultiple-AddEditAddressJSON').toString(),
         cookieHint                  : URLUtils.url('Page-Show', 'cid', 'cookie_hint').toString(),
         rateLimiterReset            : URLUtils.url('RateLimiter-HideCaptcha').toString(),
-        csrffailed                  : URLUtils.url('CSRF-Failed').toString()
+        csrffailed                  : URLUtils.url('CSRF-Failed').toString(),
+        subproSubscriptionOptions   : URLUtils.url('SubPro-UpdateOptions').toString()
     };
     return urls;
 }

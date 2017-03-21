@@ -124,8 +124,12 @@ var CartModel = AbstractModel.extend({
 
                 if (params.subproSubscriptionInterval && params.subproSubscriptionOptionMode) {
                     cart.addProductItem(productToAdd.object, params.Quantity.doubleValue, productOptionModel, {
-                        subscriptionInterval: params.subproSubscriptionInterval,
-                        subscriptionOptionMode: params.subproSubscriptionOptionMode
+                        "subscriptionInterval": params.subproSubscriptionInterval,
+                        "subscriptionOptionMode": params.subproSubscriptionOptionMode,
+                        "subproSubscriptionAvailableOptionMode": params.subproSubscriptionAvailableOptionMode,
+                        "subscriptionAvailableIntervals": params.subproSubscriptionAvailableIntervals,
+                        "subscriptionDiscount": params.subproSubscriptionDiscount,
+                        "subscriptionIsDiscountPercentage": params.subproSubscriptionIsDiscountPercentage == "true"
                     });
                 } else {
                     cart.addProductItem(productToAdd.object, params.Quantity.doubleValue, productOptionModel);
@@ -206,8 +210,12 @@ var CartModel = AbstractModel.extend({
                     var productLineItem = cart.createProductLineItem(product, productOptionModel, shipment);
 
                     if (subproParams) {
+                        productLineItem.custom.subproSubscriptionAvailableOptionMode = subproParams.subproSubscriptionAvailableOptionMode;
                         productLineItem.custom.subproSubscriptionOptionMode = subproParams.subscriptionOptionMode;
                         productLineItem.custom.subproSubscriptionInterval = subproParams.subscriptionInterval;
+                        productLineItem.custom.subproSubscriptionAvailableIntervals = subproParams.subscriptionAvailableIntervals,
+                        productLineItem.custom.subproSubscriptionDiscount = parseFloat(subproParams.subscriptionDiscount),
+                        productLineItem.custom.subproSubscriptionIsDiscountPercentage = subproParams.subscriptionIsDiscountPercentage
                     }
 
                     if (quantity) {

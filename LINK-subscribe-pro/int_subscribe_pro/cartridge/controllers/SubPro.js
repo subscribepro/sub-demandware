@@ -15,7 +15,7 @@ const ISML = require('dw/template/ISML');
 const SubscribeProLib = require('~/cartridge/scripts/subpro/lib/SubscribeProLib.js');
 
 /**
- * Renders product subscription options.
+ * Renders product subscription options on PDP.
  *
  * Gets product SKU from the httpParameterMap.
  */
@@ -29,7 +29,54 @@ function productSubscriptionsPDP() {
     let product = response.result.products.pop();
 
     ISML.renderTemplate('subpro/product/subprooptions.isml', {
-        product: product
+        product: product,
+        page: 'pdp'
+    });
+}
+
+/**
+ * Renders product subscription options on PDP.
+ *
+ * Gets ProductLineItem UUID as a parameter from the httpParameterMap
+ */
+function productSubscriptionsCart() {
+    let cart = app.getModel('Cart').get(),
+        pli = cart.getProductLineItemByUUID(params.pliUUID.stringValue);
+
+    if (!pli) {
+        return;
+    }
+
+    let product = {
+        "subscription_option_mode": pli.custom.subproSubscriptionAvailableOptionMode,
+        "selected_option_mode": pli.custom.subproSubscriptionOptionMode,
+        "selected_interval": pli.custom.subproSubscriptionInterval,
+        "intervals": pli.custom.subproSubscriptionAvailableIntervals.split(','),
+        "is_discount_percentage": pli.custom.subproSubscriptionIsDiscountPercentage,
+        "discount": pli.custom.subproSubscriptionDiscount
+    }
+
+    ISML.renderTemplate('subpro/product/subprooptions.isml', {
+        product: product,
+        page: 'cart'
+    });
+}
+
+/**
+ * Updates Subscription Options such as subproSubscriptionOptionMode and subproSubscriptionInterval on Product Line Item.
+ */
+function updateSubscriptionOptions() {
+    let options = JSON.parse(params.options),
+        cart = app.getModel('Cart').get(),
+        pli = cart.getProductLineItemByUUID(options.pliUUID);
+
+    if (!pli) {
+        return;
+    }
+
+    require('dw/system/Transaction').wrap(function() {
+        pli.custom.subproSubscriptionOptionMode = options.subscriptionMode;
+        pli.custom.subproSubscriptionInterval = options.deliveryInteval;
     });
 }
 
@@ -41,3 +88,15 @@ function productSubscriptionsPDP() {
  * @see module:controllers/SubPro~productSubscriptionsPDP
  */
 exports.PDP = guard.ensure(['get'], productSubscriptionsPDP);
+
+/**
+ * Renders template with subscription options for productLineItem.
+ * @see module:controllers/SubPro~productSubscriptionsCart
+ */
+exports.Cart = guard.ensure(['get'], productSubscriptionsCart);
+
+/**
+ * Updates Subscription Options on productLineItem.
+ * @see module:controllers/SubPro~updateSubscriptionOptions
+ */
+exports.UpdateOptions = guard.ensure(['post'], updateSubscriptionOptions);
