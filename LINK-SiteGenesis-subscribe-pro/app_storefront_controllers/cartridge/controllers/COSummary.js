@@ -27,10 +27,25 @@ var Cart = app.getModel('Cart');
 function start(context) {
     var cart = Cart.get();
 
+    const SubscribeProLib = require('/int_subscribe_pro/cartridge/scripts/subpro/lib/SubscribeProLib.js');
+    let isSubpro = SubscribeProLib.isSubPro(),
+        hasCreditCard = SubscribeProLib.hasCreditCard(cart);
+
     // Checks whether all payment methods are still applicable. Recalculates all existing non-gift certificate payment
     // instrument totals according to redeemed gift certificates or additional discounts granted through coupon
     // redemptions on this page.
     var COBilling = app.getController('COBilling');
+
+    if (isSubpro && !hasCreditCard) {
+        app.getView({
+            Basket: cart.object,
+            ContinueURL: URLUtils.https('COBilling-Billing'),
+            isSubPro: true
+        }).render('checkout/billing/billing');
+
+        return;
+    }
+
     if (!COBilling.ValidatePayment(cart)) {
         COBilling.Start();
         return;

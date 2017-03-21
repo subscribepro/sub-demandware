@@ -1,4 +1,4 @@
-importPackage( dw.svc );
+importPackage(dw.svc);
 
 /**
  * SubscribeProLib
@@ -243,6 +243,31 @@ let SubscribeProLib = {
 	},
 
 	/**
+	 * Check if has cart credit card payment method, required for processing orders with SubPro subscription.
+	 *
+	 * @param {module:models/CartModel~CartModel} cart - A CartModel wrapping the current Basket.
+	 *
+	 * @return boolean if cart has at least one credit card payment method
+	 */
+	hasCreditCard: function(cart) {
+		if (!cart) {
+			return;
+		}
+
+		let instruments = cart.object.paymentInstruments,
+			hasCreditCard = false;
+
+		for (let i = 0, count = instruments.length; i < count; i++) {
+			if (instruments[i].paymentMethod === 'CREDIT_CARD') {
+				hasCreditCard = true;
+				break;
+			}
+		}
+
+		return hasCreditCard;
+	},
+
+	/**
 	 * Check if cart has Product Line Items with SubPro subscription
 	 *
 	 * @return boolean if cart has items SubPro subscription
@@ -258,7 +283,7 @@ let SubscribeProLib = {
 				isSubpro = plis[i].custom.subproSubscriptionOptionMode;
 				if (isSubpro)
 					break;
-			} catch (e) { }
+			} catch (e) {}
 		}
 
 		return !!isSubpro;

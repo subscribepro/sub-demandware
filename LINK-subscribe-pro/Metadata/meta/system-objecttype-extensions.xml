@@ -219,14 +219,26 @@
             <attribute-definition attribute-id="subproCheckoutLoginMsg">
                 <display-name xml:lang="x-default">Subpro Checkout Login Message</display-name>
                 <description xml:lang="x-default">Message informing user that he need to be logged in as a registered customer to proceed checkout with SubPro Subscription products</description>
-                <type>text</type>
+                <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>You need to be logged in as a registered customer to proceed checkout with SubPro Subscription products</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="subproCreditCardRequirementMsg">
+                <display-name xml:lang="x-default">Subpro Credit Card Requirement Message</display-name>
+                <description xml:lang="x-default">Error message noting that a credit card is required for subscriptions.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>You need a credit card to pay for SubPro subscription</default-value>
             </attribute-definition>
         </custom-attribute-definitions>
          <group-definitions>
             <attribute-group group-id="subscribe-pro">
                 <display-name xml:lang="x-default">Subscribe Pro</display-name>
+                <attribute attribute-id="subproCreditCardRequirementMsg"/>
                 <attribute attribute-id="subproCheckoutLoginMsg"/>
             </attribute-group>
         </group-definitions>
