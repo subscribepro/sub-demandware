@@ -334,4 +334,4 @@ exports.UpdateCustomer = function() {
 /**
  * Mark the controller endpoint as accessible via the web
  */
-exports.Customer.public = true;
+exports.UpdateCustomer.public = true;

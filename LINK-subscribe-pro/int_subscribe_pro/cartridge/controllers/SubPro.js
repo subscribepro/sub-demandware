@@ -20,7 +20,7 @@ const SubscribeProLib = require('~/cartridge/scripts/subpro/lib/SubscribeProLib.
  * Gets product SKU from the httpParameterMap.
  */
 function productSubscriptionsPDP() {
-    let response = SubscribeProLib.getProduct(params.sku);
+    let response = SubscribeProLib.getProduct(params.sku.stringValue);
 
     if (response.error || !response.result.products.length) {
         return;
@@ -28,14 +28,14 @@ function productSubscriptionsPDP() {
 
     let product = response.result.products.pop();
 
-    ISML.renderTemplate('subpro/product/subprooptions.isml', {
+    ISML.renderTemplate('subpro/product/subprooptions', {
         product: product,
         page: 'pdp'
     });
 }
 
 /**
- * Renders product subscription options on PDP.
+ * Renders product subscription options on Cart Summary.
  *
  * Gets ProductLineItem UUID as a parameter from the httpParameterMap
  */
@@ -48,22 +48,52 @@ function productSubscriptionsCart() {
     }
 
     let product = {
-        "subscription_option_mode": pli.custom.subproSubscriptionAvailableOptionMode,
-        "selected_option_mode": pli.custom.subproSubscriptionOptionMode,
+        "subscription_option_mode": pli.custom.subproSubscriptionOptionMode,
+        "selected_option_mode": pli.custom.subproSubscriptionSelectedOptionMode,
         "selected_interval": pli.custom.subproSubscriptionInterval,
         "intervals": pli.custom.subproSubscriptionAvailableIntervals.split(','),
         "is_discount_percentage": pli.custom.subproSubscriptionIsDiscountPercentage,
         "discount": pli.custom.subproSubscriptionDiscount
     }
 
-    ISML.renderTemplate('subpro/product/subprooptions.isml', {
+    ISML.renderTemplate('subpro/product/subprooptions', {
         product: product,
         page: 'cart'
     });
 }
 
 /**
+ * Renders product subscription options on Order Summary Page.
+ *
+ * Gets ProductLineItem UUID and page type as a parameter from the httpParameterMap
+ */
+function productSubscriptionsOrderSummary() {
+    let cart = app.getModel('Cart').get(),
+        pli = cart.getProductLineItemByUUID(params.pliUUID.stringValue);
+
+    if (!pli) {
+        return;
+    }
+
+    let product = {
+        "subscription_option_mode": pli.custom.subproSubscriptionOptionMode,
+        "selected_option_mode": pli.custom.subproSubscriptionSelectedOptionMode,
+        "selected_interval": pli.custom.subproSubscriptionInterval,
+        "intervals": pli.custom.subproSubscriptionAvailableIntervals.split(','),
+        "is_discount_percentage": pli.custom.subproSubscriptionIsDiscountPercentage,
+        "discount": pli.custom.subproSubscriptionDiscount
+    }
+
+    ISML.renderTemplate('subpro/order/subprooptions', {
+        product: product,
+        page: 'order-summary'
+    });
+}
+
+/**
  * Updates Subscription Options such as subproSubscriptionOptionMode and subproSubscriptionInterval on Product Line Item.
+ *
+ * @transactional
  */
 function updateSubscriptionOptions() {
     let options = JSON.parse(params.options),
@@ -75,7 +105,7 @@ function updateSubscriptionOptions() {
     }
 
     require('dw/system/Transaction').wrap(function() {
-        pli.custom.subproSubscriptionOptionMode = options.subscriptionMode;
+        pli.custom.subproSubscriptionSelectedOptionMode = options.subscriptionMode;
         pli.custom.subproSubscriptionInterval = options.deliveryInteval;
     });
 }
@@ -94,6 +124,12 @@ exports.PDP = guard.ensure(['get'], productSubscriptionsPDP);
  * @see module:controllers/SubPro~productSubscriptionsCart
  */
 exports.Cart = guard.ensure(['get'], productSubscriptionsCart);
+
+/**
+ * Renders template with subscription options for productLineItem on order summary page.
+ * @see module:controllers/SubPro~productSubscriptionsOrderSummary
+ */
+exports.OrderSummary = guard.ensure(['get'], productSubscriptionsOrderSummary);
 
 /**
  * Updates Subscription Options on productLineItem.

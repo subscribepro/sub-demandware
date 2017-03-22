@@ -27,8 +27,9 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
-            <attribute-definition attribute-id="subproSubscriptionAvailableOptionMode">
-                <display-name xml:lang="x-default">Subscription Available Option Mode</display-name>
+            <attribute-definition attribute-id="subproSubscriptionSelectedOptionMode">
+                <display-name xml:lang="x-default">Subscription Selected Option Mode</display-name>
+                <description xml:lang="x-default">Subscription mode which was chosen on this ProductLineItem</description>
                 <type>string</type>
                 <localizable-flag>false</localizable-flag>
                 <mandatory-flag>false</mandatory-flag>
@@ -50,14 +51,14 @@
             </attribute-definition>
             <attribute-definition attribute-id="subproSubscriptionDiscount">
                 <display-name xml:lang="x-default">Subscription Discount</display-name>
-                <description xml:lang="x-default">Subscription discount offered on this product, as either a percentage or a fixed price, depending on the value of the subproSubscriptionIsDiscountPercentage property.</description>
+                <description xml:lang="x-default">Subscription discount offered on this product, as either a percentage or a fixed price, depending on the value of the subproSubscriptionIsDiscountPercentage property</description>
                 <type>double</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
             <attribute-definition attribute-id="subproSubscriptionIsDiscountPercentage">
                 <display-name xml:lang="x-default">Subscription Is Discount Percentage</display-name>
-                <description xml:lang="x-default">Is the discount on the product specified as a percentage or as a fixed price amount.</description>
+                <description xml:lang="x-default">Is the discount on the product specified as a percentage or as a fixed price amount</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -88,7 +89,7 @@
             <attribute-group group-id="subscribe-pro">
                 <display-name xml:lang="x-default">Subscribe Pro</display-name>
                 <attribute attribute-id="subproSubscriptionOptionMode"/>
-                <attribute attribute-id="subproSubscriptionAvailableOptionMode"/>
+                <attribute attribute-id="subproSubscriptionSelectedOptionMode"/>
                 <attribute attribute-id="subproSubscriptionInterval"/>
                 <attribute attribute-id="subproSubscriptionAvailableIntervals"/>
                 <attribute attribute-id="subproSubscriptionDiscount"/>
@@ -218,7 +219,7 @@
         <custom-attribute-definitions>
             <attribute-definition attribute-id="subproCheckoutLoginMsg">
                 <display-name xml:lang="x-default">Subpro Checkout Login Message</display-name>
-                <description xml:lang="x-default">Message informing user that he need to be logged in as a registered customer to proceed checkout with SubPro Subscription products</description>
+                <description xml:lang="x-default">Message informing customer that he/she needs to be logged in as a registered customer to proceed checkout with SubPro Subscription products</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -227,7 +228,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="subproCreditCardRequirementMsg">
                 <display-name xml:lang="x-default">Subpro Credit Card Requirement Message</display-name>
-                <description xml:lang="x-default">Error message noting that a credit card is required for subscriptions.</description>
+                <description xml:lang="x-default">Error message noting that a credit card is required for subscriptions</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>

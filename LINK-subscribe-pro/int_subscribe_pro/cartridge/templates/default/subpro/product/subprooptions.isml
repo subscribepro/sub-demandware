@@ -8,12 +8,12 @@
 <isset name="discount" value="${product.is_discount_percentage ? product.discount * 100 + '%' : currencySymbol + product.discount}" scope="page" />
 
 <div class="subpro-options ${pdict.page}">
-    <isif condition="${product.subscription_option_mode === 'subscription_and_onetime_purchase' || product.selected_option_mode === 'onetime'}">
+    <isif condition="${product.subscription_option_mode === 'subscription_and_onetime_purchase'}">
         <label for="onetime-delivery">
             ${Resource.msgf('product.subscription.delivery.onetime', 'product', null, price)}
             <isif condition="${product.discount}"> ${Resource.msgf('product.subscription.delivery.discount', 'product', null, discount)}</isif>
         </label>
-        <input type="radio" name="subproSubscriptionOptionMode" id="onetime-delivery" value="onetime" 
+        <input type="radio" name="subproSubscriptionOptionMode" id="onetime-delivery" value="onetime"
             <isif condition="${product.selected_option_mode !== 'regular'}">checked</isif>>
     </isif>
 
@@ -36,4 +36,3 @@
     <input type="hidden" name="subproSubscriptionDiscount" value="${product.discount}">
     <input type="hidden" name="subproSubscriptionIsDiscountPercentage" value="${product.is_discount_percentage}">
 </div>
-

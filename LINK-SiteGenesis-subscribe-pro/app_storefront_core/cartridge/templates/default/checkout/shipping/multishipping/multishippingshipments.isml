@@ -129,6 +129,11 @@
                             <td class="item-details">
                                 <iscomment>Display product line and product using module</iscomment>
                                 <isdisplayliproduct p_productli="${productLineItem}" p_editable="${false}"/>
+                                <isif condition="${productLineItem.custom.subproSubscriptionOptionMode}">
+                                    <div class="subscription">
+                                        <isinclude url="${URLUtils.url('SubPro-Cart', 'pliUUID', productLineItem.getUUID())}" />
+                                    </div>
+                                </isif>
                             </td>
 
                             <td class="item-quantity">
