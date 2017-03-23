@@ -65,7 +65,7 @@ function productSubscriptionsCart() {
 /**
  * Renders product subscription options on Order Summary Page.
  *
- * Gets ProductLineItem UUID and page type as a parameter from the httpParameterMap
+ * Gets ProductLineItem UUID as a parameter from the httpParameterMap
  */
 function productSubscriptionsOrderSummary() {
     let cart = app.getModel('Cart').get(),
@@ -76,18 +76,48 @@ function productSubscriptionsOrderSummary() {
     }
 
     let product = {
-        "subscription_option_mode": pli.custom.subproSubscriptionOptionMode,
         "selected_option_mode": pli.custom.subproSubscriptionSelectedOptionMode,
-        "selected_interval": pli.custom.subproSubscriptionInterval,
-        "intervals": pli.custom.subproSubscriptionAvailableIntervals.split(','),
-        "is_discount_percentage": pli.custom.subproSubscriptionIsDiscountPercentage,
-        "discount": pli.custom.subproSubscriptionDiscount
+        "selected_interval": pli.custom.subproSubscriptionInterval
     }
 
     ISML.renderTemplate('subpro/order/subprooptions', {
         product: product,
         page: 'order-summary'
     });
+}
+
+/**
+ * Renders product subscription options on Order Confirmation Page.
+ *
+ * Gets orderNo and product ID as a parameter from the httpParameterMap
+ */
+function productSubscriptionsOrderConfirmation() {
+    let order = require('dw/order/OrderMgr').getOrder(params.orderNo.stringValue),
+        productID = params.productID.stringValue;
+
+
+    if (!order) {
+        return;
+    }
+
+    let shipments = order.shipments;
+    for (let i = 0, sl = shipments.length; i < sl; i++) {
+        let plis = shipments[i].productLineItems;
+        for (let j = 0, pl = plis.length; j < pl; j++) {
+            let pli = plis[j];
+            if (pli.productID === productID) {
+                let product = {
+                    "selected_option_mode": pli.custom.subproSubscriptionSelectedOptionMode,
+                    "selected_interval": pli.custom.subproSubscriptionInterval
+                }
+
+                ISML.renderTemplate('subpro/order/subprooptions', {
+                    product: product,
+                    page: 'order-confirmation'
+                });
+            }
+        }
+    }
 }
 
 /**
@@ -130,6 +160,12 @@ exports.Cart = guard.ensure(['get'], productSubscriptionsCart);
  * @see module:controllers/SubPro~productSubscriptionsOrderSummary
  */
 exports.OrderSummary = guard.ensure(['get'], productSubscriptionsOrderSummary);
+
+/**
+ * Renders product subscription options on Order Confirmation Page.
+ * @see module:controllers/SubPro~productSubscriptionsOrderConfirmation
+ */
+exports.OrderConfirmation = guard.ensure(['get'], productSubscriptionsOrderConfirmation);
 
 /**
  * Updates Subscription Options on productLineItem.

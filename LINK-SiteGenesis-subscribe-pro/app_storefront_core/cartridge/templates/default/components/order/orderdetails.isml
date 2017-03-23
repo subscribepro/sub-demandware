@@ -136,6 +136,11 @@
 									</isif>
 									<iscomment>Display product line and product using module</iscomment>
 									<isdisplayliproduct p_productli="${productLineItem}" p_editable="${false}"/>
+									<isif condition="${productLineItem.custom.subproSubscriptionOptionMode}">
+										<div class="subscription">
+											<isinclude url="${URLUtils.url('SubPro-OrderConfirmation', 'orderNo', Order.orderNo, 'productID', productLineItem.productID)}" />
+										</div>
+									</isif>
 								</div>
 								<div class="line-item-quantity">
 									<isif condition="${pliloopstate.first}">
