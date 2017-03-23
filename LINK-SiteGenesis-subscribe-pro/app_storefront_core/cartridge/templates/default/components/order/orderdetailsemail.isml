@@ -96,6 +96,19 @@
 						<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
 							<iscomment>Display product line and product using module</iscomment>
 							<isdisplayliproduct p_productli="${productLineItem}" p_editable="${false}"/>
+							<isif condition="${productLineItem.custom.subproSubscriptionOptionMode}">
+								<table>
+									<tr>
+										<td colspan="2">${Resource.msg('order.subscription.info', 'order', null)}</td>
+									</tr>
+									<tr>
+										<td>${Resource.msg('order.subscription.delivery.mode', 'order', null)}</td><td>${productLineItem.custom.subproSubscriptionSelectedOptionMode}</td>
+									</tr>
+									<tr>
+										<td>${Resource.msg('order.subscription.delivery.interval', 'order', null)}</td><td>${productLineItem.custom.subproSubscriptionInterval}</td>
+									</tr>
+								</table>
+							</isif>
 						</td>
 
 						<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
