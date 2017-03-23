@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<project name="dwbuild.datagrid">
+
+    <condition property="isWindows">
+        <os family="windows" />
+    </condition>
+
+    <condition property="moce.binary"
+               value="${dw.build.soa}/bin/service.bat"
+               else="${dw.build.soa}/bin/service">
+          <isset property="isWindows" />
+    </condition>
+
+    <condition property="moce.is.installed">
+        <available file="${moce.binary}" />
+    </condition>
+
+    <target name="moce.status" description="Display the current state of the datagrid process">
+        <antcall target="status.unix"/>
+        <antcall target="status.windows"/>
+    </target>
+  
+    <target name="status.unix" unless="${isWindows}">
+        <exec executable="${moce.binary}"
+              dir="${dw.build.soa}">
+            <arg value="status" />
+        </exec>
+    </target>
+  
+    <target name="status.windows" if="${isWindows}">
+        <echo message="windows status is not supported"/>
+    </target>
+
+    <target name="moce.start" if="moce.is.installed">
+        <antcall target="moce.start.windows" />
+        <antcall target="moce.start.linux" />
+    </target>
+
+    <target name="moce.restart" if="moce.is.installed">
+        <antcall target="moce.stop" />
+        <antcall target="moce.start" />
+    </target>
+
+    <target name="moce.stop" if="moce.is.installed">
+        <antcall target="moce.stop.windows" />
+        <antcall target="moce.stop.linux" />
+    </target>
+
+    <target name="moce.start.linux" if="os.family.unix">
+        <echo message="Starting MOCE in ${dw.build.soa}" />
+        <exec executable="${moce.binary}"
+              dir="${dw.build.soa}"
+              failonerror="true">
+            <arg value="start" />
+        </exec>
+    </target>
+
+    <target name="moce.stop.linux" if="os.family.unix">
+        <echo message="Stopping MOCE in ${dw.build.soa}" />
+        <exec executable="${moce.binary}"
+              dir="${dw.build.soa}" >
+            <arg value="stop" />
+        </exec>
+    </target>
+
+    <target name="moce.start.windows" if="os.family.windows">
+        <echo message="Starting MOCE in ${dw.build.soa}" />
+        <exec executable="${moce.binary}"
+              dir="${dw.build.soa}" >
+            <arg line="start moce" />
+        </exec>
+    </target>
+
+    <target name="moce.stop.windows" if="os.family.windows">
+        <echo message="Stopping MOCE in ${dw.build.soa}" />
+        <exec executable="${moce.binary}"
+              dir="${dw.build.soa}" >
+            <arg line="stop moce" />
+        </exec>
+    </target>
+
+</project>

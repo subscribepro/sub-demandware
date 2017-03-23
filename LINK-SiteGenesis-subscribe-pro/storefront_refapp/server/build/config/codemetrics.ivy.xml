@@ -1,0 +1,35 @@
+<ivy-module version="2.0">
+    <info organisation="com.demandware" 
+          module="DWAPP" 
+          revision="1.0-SNAPSHOT" />
+    <configurations>
+        <conf name="findbugs" visibility="private" description="run findbugs analysis tool on the source" />
+        <conf name="pmd" visibility="private" description="run pmd analysis tool on the source" />
+        <conf name="checkstyle" visibility="private" description="run checkstyle analysis tool on the source" />
+        <conf name="jacoco" visibility="private" description="run the jacoco test coverage tool on the source" />
+    </configurations>
+
+    <publications>
+        <artifact />
+        <artifact name="source" />
+    </publications>
+
+    <dependencies>
+        <dependency org="com.google.code.findbugs" name="findbugs" rev="2.0.0" conf="findbugs->*">
+            <exclude module="ant"/>
+        </dependency>
+        <dependency org="net.sourceforge.pmd" name="pmd" rev="5.0.0" conf="pmd->*">
+            <exclude module="ant"/>
+            <exclude module="junit"/>
+        </dependency>
+        <dependency org="com.puppycrawl.tools" name="checkstyle" rev="5.5" conf="checkstyle->*">
+            <exclude module="ant"/>
+            <exclude module="junit"/>
+        </dependency>
+        <dependency org="org.jacoco" name="jacoco" rev="0.6.4.201312101107" conf="jacoco->*">
+            <exclude module="org.jacoco.examples"/>
+            <exclude module="org.jacoco.doc"/>
+        </dependency>
+    </dependencies>
+
+</ivy-module>

@@ -1,0 +1,502 @@
+<?xml version="1.0"?>
+<project name="dwbuild.package"
+         xmlns:ivy="antlib:org.apache.ivy.ant"
+         xmlns:rsel="antlib:org.apache.tools.ant.types.resources.selectors">
+
+    <include file="${dw.antlib}/dwbuild.lib.xml"/>
+
+    <condition property="do.add.jdk64" value="true">
+        <and>
+            <not>
+                <isset property="build.skip.packaging" />
+            </not>
+            <isset property="os.family.linux" />
+        </and>
+    </condition>
+
+    <target name="determine.artifact.name" unless="build.skip.packaging">
+        <ant antfile="${dw.antlib}/dwbuild.scm.xml" target="branch.to.artifactname" />
+        <property file="${dw.build.build}/temp/dw.artifact.prefix.properties" />
+    </target>
+    
+    <!-- this is a packaging-only step - we never use jdk64 outside prod -->
+    <target name="add.jdk64" if="do.add.jdk64">
+        <taskdef resource="org/apache/ivy/ant/antlib.xml"
+                 uri="antlib:org.apache.ivy.ant"
+                 classpath="${dw.build.libs.build}/ivy-${build.ivy.release}.jar" />
+
+        <!-- see if we can resolve everything before we delete -->
+        <ivy:configure file="${dw.build.build}/config/ivysettings.xml" />
+        <ivy:resolve file="${dw.build.source}/appserverinstance/ivy-jdk64.xml"  />
+        <ivy:retrieve pattern="${dw.build.source}/appserverinstance/build/tgz/[artifact]-[revision].[ext]"
+                      type="tar.gz" sync="false" conf="runtime" />
+
+        <untar dest="${cartridge.dist}/jdk64.unpack" compression="gzip">
+            <fileset dir="${cartridge.build}/tgz">
+                <include name="jdk*server*.tar.gz"/>
+            </fileset>
+        </untar>
+
+        <move todir="${dw.instance.java64.home}">
+            <fileset dir="${cartridge.dist}/jdk64.unpack" includes="**" />
+            <regexpmapper from="[^/]*(.*)" to="\1"  handledirsep="yes" />
+        </move>
+
+        <antcall target="dwbuild.lib.unix.make.executable">
+            <param name="target.dir" value="${dw.instance.java64.home}/bin"/>
+        </antcall>
+        <delete dir="${cartridge.dist}/jdk64.unpack" />
+    </target>
+
+    <target name="package.pre.build" 
+            unless="build.skip.packaging"
+            depends="determine.artifact.name, add.jdk64">
+        <mkdir dir="${dw.build.release}" />
+
+        <!-- using native tar command to preserve Unix file permissions -->
+        <exec executable="tar" dir="${dw.instance}">
+            <arg line="czf ${dw.artifact.prefix}-system.tar.gz" />
+            <arg line="--exclude=ROOT/WEB-INF/web.xml"/>
+            <arg line="--exclude=system/tools/deployment" />
+            <arg line="--exclude=system/engine/tomcat/lib" />
+            <arg line="--exclude=system/engine/tomcat/ivy" />
+            <arg line="--exclude=system/engine/tomcat/webapps/docs" />
+            <arg line="--exclude=system/tools/dev" />
+            <arg line="--exclude=.gitkeep" />
+            <arg value="system" />
+        </exec>
+
+        <tar destfile="${dw.artifact.prefix}-sharedata.tar.gz"
+             longfile="gnu"
+             compression="gzip">
+            <tarfileset dir="${dw.build.source}/appserverinstance/staticfiles/appserverinstance"
+                        includes="sharedata/**" excludes="**/*/.gitkeep"/>
+        </tar>
+
+        <tar destfile="${dw.artifact.prefix}-localdata.tar.gz"
+             longfile="gnu"
+             compression="gzip">
+            <tarfileset dir="${dw.build.source}/appserverinstance/staticfiles/appserverinstance"
+                        includes="localdata/**" excludes="**/*/.gitkeep"/>
+        </tar>
+    </target>
+
+    <target name="package.release" 
+            unless="build.skip.packaging"
+            depends="determine.artifact.name">
+        <echo message="Package release resources ${dw.artifact.prefix}" />
+        <antcall target="package.mock" />
+        <antcall target="package.tomcat.libs" />
+        <antcall target="package.system.cartridges" />
+        <antcall target="package.system.webapps" />
+        <antcall target="package.webadapter" />
+        <antcall target="package.systemsettings" />
+        <antcall target="package.demo" />
+        <antcall target="package.sites" />
+    </target>
+
+    <target name="package.test" 
+            unless="build.skip.packaging"
+            depends="determine.artifact.name">
+        <echo message="Package test resources ${dw.artifact.prefix}" />
+        <antcall target="package.test.cartridges" />
+    </target>
+
+    <target name="package.demo"
+            unless="build.skip.packaging"
+            depends="determine.artifact.name">
+        <tar destfile="${dw.artifact.prefix}-system-demo.tar.gz"
+                 longfile="gnu"
+                 compression="gzip">
+            <tarfileset file="${dw.instance.system}/resources/demosite/demosite-creation.zip"
+                        prefix="system/resources/demosite"/>
+        </tar>
+    </target>
+
+    <target name="package.sites"
+            unless="build.skip.packaging"
+            depends="determine.artifact.name">
+        <!-- sharedata/sites resources are collected at the source locations since they are not deleted below 'appserverinstance' as part of the build -->
+        <tar destfile="${dw.artifact.prefix}-sharedata-sites.tar.gz"
+             longfile="gnu"
+             compression="gzip">
+            <!-- collect sharedata/sites content from known locations in the source tree -->
+            <!-- copy 'root' site -->
+            <tarfileset dir="${dw.build.source}/appserverinstance/staticfiles/appserverinstance/sharedata/sites"
+                        prefix="sharedata/sites" />
+            <!-- copy 'Sites-Site' site -->
+            <tarfileset dir="${dw.build.source}/data_kernel/appserverinstance/sharedata/sites"
+                        prefix="sharedata/sites" />
+            <!-- copy active data CSV files of 'Sites-SiteGenesis-Site' site into tar ball, take the fresh version from source directory and not from instance sharedata-->
+            <tarfileset dir="${dw.build.source}/data_refapp/appserverinstance/sharedata/sites"
+                        prefix="sharedata/sites">
+                <include name="Sites-Site/units/Sites/impex/src/activedata/**" />
+            </tarfileset>
+            <!-- copy geolocation-sample.zip into tar ball, take the original version from source directory and not from instance sharedata-->
+            <tarfileset file="${dw.build.source}/storefront_refapp/dist/appserverinstance/sharedata/sites/Sites-Site/units/Sites/impex/src/instance/geolocation-sample.zip"
+                        prefix="sharedata/sites/Sites-Site/units/Sites/impex/src/instance"/>
+        </tar>
+    </target>
+
+    <target name="package.webserver"
+            unless="build.skip.packaging"
+            depends="determine.artifact.name" if="os.family.linux">
+        <property name="webserver.artifact"
+                  location="${dw.artifact.prefix}-webserver.tar.gz" />
+        <tar destfile="${webserver.artifact}"
+             longfile="gnu"
+             compression="gzip">
+            <tarfileset dir="${dw.home}" excludes="**/*/.gitkeep">
+              <exclude name="webserverinstance/httpd/logs/*" />
+              <exclude name="webserverinstance/httpd/include/**/*" />
+              <exclude name="webserverinstance/httpd/icons/**/*" />
+              <exclude name="webserverinstance/httpd/htdocs/**/*" />
+              <exclude name="webserverinstance/httpd/build/**/*" />
+              <exclude name="webserverinstance/webadapter/log/*" />
+              <exclude name="webserverinstance/webadapter/pagecache/**/*" />
+              <include name="webserverinstance/**/*" />
+            </tarfileset>
+            <tarfileset dir="${dw.build.source}/webserverinstance/staticfiles/webserverinstance.${os.family.id}"
+                        prefix="webserverinstance" excludes="**/*/.gitkeep">
+              <exclude name="httpd/include/**/*" />
+              <exclude name="httpd/icons/**/*" />
+              <exclude name="httpd/build/**/*" />
+              <exclude name="httpd/htdocs/**/*" />
+            </tarfileset>
+        </tar>
+        <!-- copy this to the database backup loc. for now to pack it up with the dump -->
+        <copy file="${webserver.artifact}"
+              todir="${build.dbbackup.location}" 
+              verbose="true"
+              failonerror="false" />
+    </target>
+
+    <target name="package.coverage.report" depends="determine.artifact.name">
+        <tar destfile="${dw.artifact.prefix}-coverage.tar.gz"
+             longfile="gnu"
+             compression="gzip">
+            <tarfileset dir="${dw.global.jacoco.report}" prefix="jacoco_code_coverage">
+                <include name="**" />
+            </tarfileset>
+        </tar>
+    </target>
+
+    <target name="package.docs"
+            unless="build.skip.documentation"
+            depends="determine.artifact.name">
+
+        <!-- 
+            Create the final artifact prefix name based on if the 
+            'determine.artifact.name' target actually created a 
+            value for 'dw.artifact.prefix'. if not use what we 
+            used to use.
+        -->
+      <property name="dw.docs.prefix" value="${setup.product.id}-${dwbuild.fullversion}"/>
+        <condition property="dw.artifact.prefix.docs" 
+            value="${dw.docs.prefix}"
+            else="${dw.artifact.prefix}">
+            <not>
+                <isset property="dw.artifact.prefix"/>
+            </not>
+        </condition>
+      
+      <!-- substring the prefix property. on the ci machine this is the full path to the 
+           release directory. -->
+      <scriptdef name="substring" language="javascript">
+          <attribute name="text"/>
+        <attribute name="property"/>
+        <![CDATA[
+          var text = attributes.get("text"); 
+        var idx = text.lastIndexOf("/");
+            if (idx >= 0)
+            {
+              project.setProperty(attributes.get("property"), text.substring(idx + 1)); 
+            }
+            else
+            {
+            project.setProperty(attributes.get("property"), text);
+            }
+      ]]>
+      </scriptdef>
+      <substring text="${dw.artifact.prefix.docs}" property="dw.artifact.prefix.docs.short" />
+    
+        <property name="api.doc.archive.name" 
+                  value="${dw.docs.prefix}-API-doc.zip" />
+        <property name="quota.manager.documentation.archive.name" 
+                  value="${dw.artifact.prefix.docs.short}-system-quota-manager.tar.gz" />
+        <property name="api.diff.archive.name" 
+                  value="${dw.docs.prefix}-API-diff.zip" />
+        <property name="doc.cartridge.home"
+                  location="${dw.build.source}/documentation" />
+        <property name="doc.cartridge.dist"
+                  location="${doc.cartridge.home}/dist" />
+        <property name="doc.cartridge.generated"
+                  location="${doc.cartridge.home}/build/generated" />
+        
+        <tar destfile="${dw.artifact.prefix.docs}-API-doc.tar.gz"
+             longfile="gnu"
+             compression="gzip">
+            <tarfileset dir="${doc.cartridge.generated}">
+                <include name="scriptapi/html/**" />
+                <include name="pipeletapi/html/**" />
+                <include name="quota/**" />
+                <include name="compareapi/**" />
+                <include name="xsd/**" />
+                <exclude name="*/xml/" />
+            </tarfileset>
+        </tar>
+
+        <tar destfile="${dw.artifact.prefix.docs}-system-quota-manager.tar.gz"
+             longfile="gnu"
+             compression="gzip">
+            <tarfileset dir="${doc.cartridge.dist}">
+                <include name="system/" />
+            </tarfileset>
+        </tar>
+
+        <zip destfile="${doc.cartridge.dist}/${api.diff.archive.name}">
+            <fileset dir="${doc.cartridge.generated}/compareapi">
+                <include name="images/**" />
+                <include name="styles/**" />
+                <include name="script/**" />
+                <include name="pipelet/**" />
+                <include name="html/**" />
+            </fileset>
+        </zip>
+
+        <!-- the mock builder will move this file away from the release folder-->
+        <zip destfile="${doc.cartridge.dist}/${api.doc.archive.name}">
+            <fileset dir="${doc.cartridge.generated}">
+                <include name="scriptapi/html/**" />
+                <include name="pipeletapi/html/**" />
+                <include name="compareapi/html/**" />
+                <include name="quota/html/**" />
+                <include name="xsd/**" />
+            </fileset>
+        </zip>
+
+        <available file="${doc.cartridge.generated}/internalapi/html" type="dir"
+            property="internalapi.present"/> 
+        <antcall target="package.docs.internalapi" />
+
+        <condition property="do.upload">
+            <and>
+                <isset property="build.do.ci.build" />
+            </and>
+        </condition>
+
+        <antcall target="package.docs.external.storage" />
+    </target>
+
+    <!-- only push the doc files to external storage if on CI machine -->
+    <target name="package.docs.external.storage" if="do.upload" >
+       
+      <!-- APP-16978: push api diff docs -->
+        <ant antfile="${dw.antlib}/dwbuild.external.storage.xml" 
+             target="s3.upload.single.file" 
+             inheritrefs="true">
+            <property name="s3.upload.source.file" value="${cartridge.dist}/${api.diff.archive.name}" />
+            <property name="s3.bucket" value="${dw.s3.apidoc.artifacts}/${dwbuild.fullversion}" />
+        </ant>
+    
+       <!-- APP-21191: push html zip -->
+        <ant antfile="${dw.antlib}/dwbuild.external.storage.xml" 
+             target="s3.upload.single.file" 
+             inheritrefs="true">
+            <property name="s3.upload.source.file" value="${cartridge.dist}/${api.doc.archive.name}" />
+            <property name="s3.bucket" value="${dw.s3.apidoc.artifacts}/${dwbuild.fullversion}" />
+        </ant>    
+    </target>
+
+    <target name="package.docs.internalapi" if="internalapi.present">
+
+        <tar destfile="${doc.cartridge.dist}/${dw.artifact.prefix}-internal.docs.tar.gz"
+             longfile="gnu"
+             compression="gzip">
+            <tarfileset dir="${doc.cartridge.generated}/internalapi/html" prefix="dw.internal.api-${dwbuild.fullversion}">
+                <exclude name="**/Test*" />
+                <exclude name="**/test*" />
+                <exclude name="**/test/unit/**" />
+                <exclude name="**/test/server/**" />
+            </tarfileset>
+        </tar>
+    </target>
+
+    <target name="package.tomcat.libs" depends="determine.artifact.name">
+        <tar destfile="${dw.artifact.prefix}-system-tomcat.libs.tar.gz"
+             longfile="gnu"
+             compression="gzip">
+            <tarfileset dir="${dw.instance}">
+                <include name="system/engine/tomcat/lib/**" />
+                <exclude name="system/engine/tomcat/lib/*_tests.jar" />
+            </tarfileset>
+        </tar>
+    </target>
+
+    <target name="package.systemsettings" depends="determine.artifact.name">
+        <tar destfile="${dw.artifact.prefix}-systemsettings.tar.gz"
+             longfile="gnu"
+             compression="gzip">
+            <tarfileset dir="${dw.instance}"
+                        includes="systemsettings/**" excludes="**/*/.gitkeep"/>
+        </tar>
+    </target>
+
+    <target name="package.system.cartridges" depends="determine.artifact.name">
+        <tar destfile="${dw.artifact.prefix}-system-cartridges.tar.gz"
+             longfile="gnu"
+             compression="gzip">
+            <tarfileset dir="${dw.instance}">
+                <include name="system/tools/**" />
+                <include name="system/resources/cartridges/**" />
+                <include name="system/resources/migration/**" />
+                <include name="system/resources/db_sources/**" />
+                <include name="system/resources/localization/**" />
+                <include name="system/resources/permission/**" />
+                <include name="system/resources/staging/**" />
+                <include name="system/resources/search/**" />
+                <include name="system/resources/search-engines/**" />
+                <include name="system/tools/deployment/**" />
+                <include name="system/resources/impex/schema/**" />
+            </tarfileset>
+        </tar>
+    </target>
+
+    <target name="package.system.webapps" depends="determine.artifact.name">
+        <tar destfile="${dw.artifact.prefix}-system-webapps.tar.gz"
+             longfile="gnu"
+             compression="gzip">
+            <tarfileset dir="${dw.instance}">
+                <include name="system/webapps/ROOT/WEB-INF/web.xml" />
+                <include name="system/webapps/ROOT/isml2jsp/cartridges/**/*"/>
+                <include name="system/work/org/apache/jsp/isml2jsp/cartridges/**/*" />
+                <exclude name="system/webapps/ROOT/isml2jsp/cartridges/*/default/test*" />
+                <exclude name="system/webapps/ROOT/isml2jsp/cartridges/*/default/test/**" />
+                <exclude name="system/work/org/apache/jsp/isml2jsp/cartridges/*/default_/test*" />
+                <exclude name="system/work/org/apache/jsp/isml2jsp/cartridges/*/default_/test/**" />
+            </tarfileset>
+        </tar>
+    </target>
+
+    <target name="package.mock" depends="determine.artifact.name">
+        <tar destfile="${dw.artifact.prefix}-system-mock.tar.gz"
+             longfile="gnu"
+             compression="gzip">
+            <tarfileset dir="${dw.instance}"
+                        includes="system/resources/studio/**" />
+        </tar>
+    </target>
+    
+    <target name="package.webadapter">
+        <tar destfile="${dw.artifact.prefix}-webadapter.tar.gz"
+             longfile="gnu"
+             compression="gzip">
+            <tarfileset dir="${dw.home}/webserverinstance/webadapter">
+                <include name="lib/*.so" />
+                <include name="rewrite.conf" />
+            </tarfileset>
+        </tar>
+    </target>
+
+    <target name="package.test.cartridges" unless="build.skip.packaging"
+            depends="determine.artifact.name">
+
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+             classpath="${dw.build.libs.build}/ant-contrib-1.0b3.jar" />
+
+        <propertyregex property="test.cartridges"
+              input="${dw.deployable.test.projects} "
+              regexp=" "
+              replace="\/dist\/appserverinstance\/\*\*\/\* "
+        />
+        
+        <property name="release.test-tarball" location="${dw.home}/release/test-tarball" />
+        <property name="release.test-tarball.system" location="${dw.home}/release/test-tarball/system" />
+        <property name="release.test-tarball.sharedata" location="${dw.home}/release/test-tarball/sharedata" />
+        <property name="release.test-tarball.system.resources" location="${dw.home}/release/test-tarball/system/resources" />
+        
+        <mkdir dir="${release.test-tarball}"/>
+
+        <copy todir="${release.test-tarball}" verbose="false">
+            <fileset dir="${dw.build.source}" includes="${test.cartridges}"/>
+            <regexpmapper from="(.*)appserverinstance(.*)" to="\2"/>
+        </copy>
+
+        <copy todir="${release.test-tarball.system}/engine/tomcat/lib" verbose="false">
+            <fileset dir="${dw.instance}/system/engine/tomcat/lib" includes="**/*_tests.jar"/>
+        </copy>
+
+        <copy tofile="${release.test-tarball.system}/resources/cartridges/cartridgelist.properties" verbose="true">
+            <file file="${dw.instance.system}/resources/cartridges/cartridgelist.properties"/>
+        </copy>
+        
+        <propertyfile file="${release.test-tarball.system.resources}/cartridges/cartridgelist.properties">
+            <entry key="cartridges" operation="+" value=" ${dw.deployable.test.projects.for.startup}"/>
+            <entry key="cartridges.dbinit" operation="+" value=" ${dw.deployable.test.projects.for.dbinit}"/>
+        </propertyfile>
+        
+        <copy tofile="${release.test-tarball.system}/engine/jdk/jre/lib/security/cacerts" verbose="true">
+            <file file="${dw.instance.system}/engine/jdk/jre/lib/security/cacerts"/>
+        </copy>
+        
+        <copy tofile="${release.test-tarball.sharedata}/certificates/keystore.jks" verbose="true">
+            <file file="${dw.instance.sharedata}/certificates/keystore.jks"/>
+        </copy>
+
+        <tar destfile="${dw.artifact.prefix}-system-test.tar.gz"
+             longfile="gnu" compression="gzip">
+            <tarfileset dir="${dw.home}/release/test-tarball/system" prefix="system" />
+        </tar>
+
+        <tar destfile="${dw.artifact.prefix}-sharedata-test.tar.gz"
+             longfile="gnu" compression="gzip">
+            <tarfileset dir="${dw.home}/release/test-tarball/sharedata" prefix="sharedata" />
+        </tar>
+
+        <delete dir="${dw.home}/release/test-tarball" failonerror="false"/>
+
+    </target>
+
+    <!-- create a single tarball as a single build artifact --> 
+    <target name="package.tarball">
+        <fail unless="tarball.path" message="Need parameter tarball.path" />
+        <delete dir="${dw.home}/release/tarball" failonerror="false"/>
+        <mkdir dir="${dw.home}/release/tarball"/>
+        
+        <fileset id="artifacts" dir="${dw.home}/release">
+            <include name="*${dwbuild.fullversion}*.tar.gz" />
+            <exclude name="*-doc*.tar.gz" />
+        </fileset>
+    
+        <pathconvert pathsep="," property="dwbuild.artifacts" refid="artifacts" />
+
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+                 classpath="${dw.build.libs.build}/ant-contrib-1.0b3.jar" />
+        
+        <foreach list="${dwbuild.artifacts}"
+                 target="unpack"
+                 param="artifact.name"
+                 inheritall="true"
+                 inheritrefs="true"
+                 parallel="true"
+                 maxThreads="2"
+                 trim="true">
+        </foreach>
+                
+        <tar destfile="${tarball.path}"
+             longfile="gnu"
+             compression="gzip">
+            <tarfileset dir="${dw.home}/release/tarball" />
+        </tar>
+        
+        <delete dir="${dw.home}/release/tarball" failonerror="false"/>
+    </target>
+
+    <target name="unpack">
+        <echo message="${artifact.name}"/>
+        <untar src="${artifact.name}" 
+               dest="${dw.home}/release/tarball"
+               overwrite="true"
+               compression="gzip"/>
+    </target>
+</project>

@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<project name="custombuild.storefront_refapp" xmlns:ivy="antlib:org.apache.ivy.ant">
+
+    <property name="app.name" value="project_${cartridge.name}" />
+    <property name="refapp.data" value="demo_data_no_hires_images" />
+
+    <condition property="jdk.artifactId" value="jdk-linux-i586">
+        <isset property="os.family.linux" />
+    </condition>
+    <condition property="jdk.artifactId" value="jdk-windows-server-x64">
+        <isset property="os.family.windows" />
+    </condition>
+    <condition property="jdk.artifactId" value="jdk-macosx-x64">
+        <isset property="os.family.mac" />
+    </condition>
+
+    <include file="${dw.antlib}/cartridgebuild.generate.xml"/>
+
+    <target name="precopy"/>
+    <target name="postcopy"/>
+    <target name="precompile"/>
+    <target name="postcompile"/>
+    <target name="prejar"/>
+    <target name="postjar" depends="retrieve.jdk">
+		<antcall target="copy.jdk"/>
+        <ant antfile="${cartridge.base}/prj_app_refapp2.xml" inheritRefs="true"/>
+    </target>
+    <target name="predeploy">
+        <!-- rename the refapp data directory to "demosite-creation" since the demosite-creation.zip must contain a directory with this name -->
+        <move todir="${cartridge.build}/${app.name}/demosite-creation">
+                <fileset dir="${cartridge.build}/${app.name}/${refapp.data}"/>
+        </move>
+
+        <!-- build the demosite-creation.zip out of what we downloaded from Nexus -->
+        <zip destfile="${cartridge.dist}/demosite-creation.zip"
+            basedir="${cartridge.build}/${app.name}"
+            includes="demosite-creation/**/*"
+        />
+
+        <!-- copy geolocation XML files from "build/project_storefront_refapp/demosite-creation/geolocations" directory to a directory "build/geolocation-sample/geolocations" -->
+        <copy todir="${cartridge.build}/geolocation-sample/geolocations" >
+            <fileset dir="${cartridge.build}/${app.name}/demosite-creation/geolocations" includes="**"/>
+        </copy>
+
+        <!-- build the geolocation-sample.zip out of what we downloaded from Nexus -->
+        <zip destfile="${cartridge.dist}/geolocation-sample.zip"
+            basedir="${cartridge.build}"
+            includes="geolocation-sample/**/*"
+        />
+    </target>
+    <target name="postdeploy">
+        <delete dir="${dw.instance.system}/resources/cartridges/${cartridge.name}" />
+    </target>
+    <target name="finally"/>
+
+    <target name="retrieve.jdk">
+        <taskdef resource="org/apache/ivy/ant/antlib.xml"
+                 uri="antlib:org.apache.ivy.ant"
+                 classpath="${dw.build.libs.build}/ivy-${build.ivy.release}.jar"/>
+        <ivy:configure file="${cartridge.base}/ivysettings.xml" />
+        <ivy:resolve file="${cartridge.base}/ivy.xml" refresh="true" />
+        <ivy:retrieve pattern="${cartridge.build}/tgz/[artifact].tar.gz" sync="false" conf="compile" />
+    </target>
+
+    <target name="copy.jdk">
+        <mkdir dir="${dw.instance.dependencies}" />
+        <mkdir dir="${cartridge.dist}/jdk.unpack" />
+        <untar dest="${cartridge.dist}/jdk.unpack" compression="gzip">
+            <fileset dir="${cartridge.build}/tgz">
+                <include name="jdk*.tar.gz"/>
+            </fileset>
+        </untar>
+
+        <move todir="${dw.instance.java.home}">
+            <fileset dir="${cartridge.dist}/jdk.unpack" includes="**" />
+            <regexpmapper from="[^/]*(.*)" to="\1"  handledirsep="yes" />
+        </move>
+        <chmod file="${dw.instance.java.home}/bin/*" perm="755"/>
+        <delete dir="${cartridge.dist}/jdk.unpack" />
+    </target>
+
+</project>
+
+
+

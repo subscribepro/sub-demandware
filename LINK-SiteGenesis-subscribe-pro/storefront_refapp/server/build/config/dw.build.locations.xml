@@ -1,0 +1,39 @@
+<!-- global file system references
+     dw.home needs to be set before invoking this -->
+
+<dw>
+    <build location="${dw.home}">
+        <server location="${dw.build}/server" />
+        <source location="${dw.build.server}/source" />
+        <build location="${dw.build.server}/build" />
+        <temp location="${dw.build.build}/temp" />
+        <config location="${dw.build.build}/config" />
+        <libs location="${dw.build.source}/appserverinstance/staticfiles/libs">
+            <build location="${dw.build.libs}/build"/>
+            <test location="${dw.build.libs}/test"/>
+        </libs>
+        <release location="${dw.build}/release" />
+        <target location="${dw.build}/target" />
+        <soa location="${dw.build}/soa" />
+        <webserverinstance location="${dw.build}/webserverinstance" />
+        <docs location="${dw.build}/docs" />
+        <!-- TODO: this needs to go some place else -->
+        <dist location="/dist" />
+        <ivy.home location="${user.home}/.ivy2" />
+        <dependencyPropertyFile location="${dw.build.config}/dw.dependencies.properties"/>
+    </build>
+    
+    <resources location="${dw.home}/resources" />
+
+    <!-- these two files are not in source control -->
+    <instancePropertyFile location="${dw.build.config}/install.devbuild.properties"/>
+    <localBuildSettingsPropertyFile location="${dw.build.config}/settings.devbuild.properties"/>
+
+    <globalBuildSettingsPropertyFile location="${dw.build.config}/build.properties"/>
+    <!-- the version number components to use for file names -->
+    <buildVersionPropertyFile location="${dw.build.config}/version.properties"/>
+    <cartridgelistFile location="${dw.build.config}/cartridgelist.properties"/>
+
+    <!-- this will be different in  production, where dw.build.locations does not exist -->
+    <is.home location="${dw.build}/appserverinstance" />
+</dw>

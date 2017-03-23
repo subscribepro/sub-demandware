@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<project name="cartridgebuild.generate">
+
+    <property name="cartridge.generated" value="${cartridge.build}/generated" />
+
+    <!--Call the JAXB schema compiler to generate Java binding objects-->
+    <target name="dw.xjc"
+            description="Generates and compiles JAX binding objects.">
+
+        <mkdir dir="${cartridge.generated}/jaxb/source" />
+
+        <property name="schemadir"
+                  value="${cartridge.base}/appserverinstance/system/resources/impex/schema" />
+
+        <taskdef name="xjc"
+                 classname="com.sun.tools.xjc.XJCTask"
+                 classpathref="dw.build.classpath" />
+
+        <xjc source="2.0"
+             removeOldOutput="yes"
+             extension="true"
+             destdir="${cartridge.generated}/jaxb/source">
+            <schema dir="${schemadir}" includes="*.xsd" />
+            <binding dir="${schemadir}" includes="*.xjb" />
+            <produces dir="${cartridge.generated}/jaxb" includes="**/*.java" />
+            <arg value="-Xlocator" />
+        </xjc>
+
+        <javac srcdir="${cartridge.generated}/jaxb/source"
+               destdir="${cartridge.classes}"
+               classpathref="dw.build.classpath"
+               failonerror="true"
+               encoding="UTF-8"
+               includeantruntime="false"
+               debug="true"
+               fork="true"
+               executable="${dw.javac.command}" />
+
+    </target>
+
+    <target name="pipeletlist">
+        <property name="pipeletlist.file"
+                  value="${cartridge.resources}/pipeline/pipelets.resource" />
+
+        <path id="cartridge.pipelets">
+            <fileset dir="${cartridge.source}" includes="**/*.xml">
+                <contains text="DPipelet dbo.type=" />
+            </fileset>
+            <fileset dir="${cartridge.source.test}" includes="**/*.xml" erroronmissingdir="false">
+                <contains text="DPipelet dbo.type=" />
+            </fileset>
+        </path>
+        <pathconvert refid="cartridge.pipelets"
+                     property="cartridge.pipeletlist"
+                     pathsep="${line.separator}">
+            <mapper>
+                <chainedmapper>
+                    <compositemapper>
+                        <globmapper from="${cartridge.source}${file.separator}*.xml" to="*" />
+                        <globmapper from="${cartridge.source.test}${file.separator}*.xml" to="*" />
+                    </compositemapper>
+                    <packagemapper from="*" to="*" />
+                </chainedmapper>
+            </mapper>
+        </pathconvert>
+
+        <condition property="cartridge.pipeletlist.empty">
+            <length string="${cartridge.pipeletlist}" when="eq" length="0" />
+        </condition>
+
+        <antcall target="write.pipelet.list" />
+    </target>
+
+    <target name="write.pipelet.list" unless="cartridge.pipeletlist.empty">
+        <echo message="Writing pipelet list ${pipeletlist.file}" />
+        <mkdir dir="${cartridge.resources}/pipeline" />
+        <echo message="${cartridge.pipeletlist}" file="${pipeletlist.file}" />
+    </target>
+
+    <!-- isml to jsp to java to class -->
+    <target name="compile.jsp" unless="cartridge.build.skip.compile.jsp">
+        <taskdef name="isml2jsp"
+                 classname="com.demandware.beehive.core.internal.template.ISML2JSP"
+                 classpathref="dw.build.classpath" />
+        <taskdef name="jsp2java"
+                 classname="org.apache.jasper.JspC"
+                 classpathref="dw.build.classpath" />
+
+        <!-- generate jsp files out of the isml files -->
+        <mkdir dir="${cartridge.jsp.dir}" />
+        <isml2jsp srcdir="${cartridge.templates}"
+                  destdir="${cartridge.jsp.dir}"
+                  postdataencoding="UTF-8" />
+        <!-- Also copy existing JSP pages into the webapps dir -->
+        <echo message="Copying generated jsp files to ${cartridge.jsp.dir}" />
+        <copy todir="${cartridge.jsp.dir}" verbose="false">
+            <fileset dir="${cartridge.templates}" includes="**/*.jsp" />
+        </copy>
+        <!-- generate java files out of jsp files -->
+        <echo message="Writing abcdef java files from ${cartridge.jspclass.uriroot} to ${cartridge.jspclass.dir}" />
+        <jsp2java uriroot="${cartridge.jspclass.uriroot}"
+                  outputDir="${cartridge.jspclass.dir}"
+                  verbose="0"
+                  javaEncoding="UTF-8" />
+        <!-- generate class files out of the java files -->
+        <echo message="Writing class files to ${cartridge.jspclass.dir}" />
+        <javac srcdir="${cartridge.jspclass.dir}"
+               destdir="${cartridge.jspclass.dir}"
+               includes="**/*.java"
+               classpathref="dw.build.classpath"
+               encoding="UTF-8"
+               includeantruntime="false"
+               fork="true"
+               executable="${dw.javac.command}"
+               failonerror="true"
+               memoryMaximumSize="512m" />
+    </target>
+
+</project>

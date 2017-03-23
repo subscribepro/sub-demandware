@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services xmlns="http://www.demandware.com/xml/impex/services/2014-09-26">
+	<service-credential service-credential-id="subpro.http.cred">
+		<url>https://api.subscribepro.com/services/v2/{ENDPOINT}?{PARAMS}</url>
+		<user-id>XXXXXXXX</user-id>
+		<password masked="true">********</password>
+	</service-credential>
+
+	<service-profile service-profile-id="subpro.http.prof">
+		<timeout-millis>5000</timeout-millis>
+		<rate-limit-enabled>false</rate-limit-enabled>
+		<rate-limit-calls>0</rate-limit-calls>
+		<rate-limit-millis>0</rate-limit-millis>
+		<cb-enabled>true</cb-enabled>
+		<cb-calls>3</cb-calls>
+		<cb-millis>1000</cb-millis>
+	</service-profile>
+
+</services>

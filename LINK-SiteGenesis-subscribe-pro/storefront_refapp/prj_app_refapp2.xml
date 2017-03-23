@@ -1,0 +1,163 @@
+<?xml version="1.0"?>
+
+<project name="project_generator.app_storefront_core" default="main"
+    basedir=".">
+
+    <property name="core.cartridge" value="app_storefront_core" />
+    <property name="controllers.cartridge" value="app_storefront_controllers" />
+
+    <property name="deploy.core.cartridge" value="sitegenesis_storefront_core" />
+    <property name="deploy.controllers.cartridge" value="sitegenesis_storefront_controllers" />
+
+
+    <property name="core.templates" location="${cartridge.base}/build/${app.name}/${core.cartridge}/cartridge/templates" />
+    <property name="controllers.templates" location="${cartridge.base}/build/${app.name}/${controllers.cartridge}/cartridge/templates" />
+
+    <property name="core.jsp.dir" location="${cartridge.jsp.dir}/../${deploy.core.cartridge}" />
+    <property name="controllers.jsp.dir" location="${cartridge.jsp.dir}/../${deploy.controllers.cartridge}" />
+    <property name="app.target" value="${cartridge.build}/${app.name}" />
+    <property name="zip.file.name" value="${cartridge.build}/project_storefront.zip" />
+
+    <target name="rebuild-structure" depends="generate,compile.jsp">
+        <delete file="${zip.file.name}" failonerror="false" />
+
+        <!-- create zip here, and exclude a few things -->
+        <zip destfile="${zip.file.name}" basedir="${app.target}"
+            excludes=".settings/**,javasource_test/**,.classpath,**/.project,cartridge/*.properties,cartridge/impex/**,${refapp.data}/**" />
+
+        <copy
+            todir="${cartridge.dist}/webapps">
+            <fileset dir="${cartridge.base}/build/webapps"
+                includes="**" />
+        </copy>
+    </target>
+
+    <!-- create app cartridge The idea is to first copy the source to the target
+        folder, then rename files and folders and eventually apply changes. -->
+    <target name="generate" depends="clean">
+        <echo level="info">
+            Generating ${app.name}
+            Using source cartridge: ${cartridge.name}
+        </echo>
+
+        <!-- copy source directories -->
+        <mkdir dir="${app.target}" />
+        <copy todir="${app.target}/app_storefront_core">
+            <fileset dir="${dw.build.source}/../app_storefront_core"/>
+        </copy>
+        <copy todir="${app.target}/app_storefront_controllers">
+            <fileset dir="${dw.build.source}/../app_storefront_controllers"/>
+        </copy>
+
+        <copy todir="${app.target}/demo_data_no_hires_images">
+            <fileset dir="${dw.build.source}/../demo_data_no_hires_images"/>
+        </copy>
+
+        <!-- remove all single line TODO comments from JS and ISML -->
+        <echo message="Remove all single line TODO comments from JS and ISML" />
+        <replaceregexp flags="g">
+            <regexp pattern="[ \t]*//\s*?TODO.*" />
+            <substitution expression="" />
+            <fileset dir="${app.target}">
+                <include name="**/*.js" />
+                <include name="**/*.isml" />
+                <exclude name="**/static/default/lib/**/*.*" />
+            </fileset>
+        </replaceregexp>
+
+        <!-- remove all multi line TODO comments from JS, ISML and CSS -->
+        <echo message="Remove all multi line TODO comments from JS, ISML and CSS" />
+        <replaceregexp flags="g">
+            <regexp pattern="(?ms)[\s]/\*{1,}\s*?TODO.*?\*/" />
+            <substitution expression="" />
+            <fileset dir="${app.target}">
+                <include name="**/*.css" />
+                <include name="**/*.js" />
+                <include name="**/*.isml" />
+                <exclude name="**/static/default/lib/**/*.*" />
+            </fileset>
+        </replaceregexp>
+
+        <!-- remove all ISML/HTML TODO comments form ISML -->
+        <echo message="Remove all ISML/HTML TODO comments form ISML" />
+        <replaceregexp flags="gs">
+            <regexp
+                pattern="[ \t]*((&lt;iscomment&gt;|&lt;!---?)\s*TODO.*?(&lt;/iscomment&gt;|--&gt;))" />
+            <substitution expression="" />
+            <fileset dir="${app.target}">
+                <include name="**/*.isml" />
+            </fileset>
+        </replaceregexp>
+
+        <delete file="${app.target}/${core.cartridge}/cartridge/${core.cartridge}.properties" failonerror="false" />
+        <delete file="${app.target}/${controllers.cartridge}/cartridge/${controllers.cartridge}.properties" failonerror="false" />
+
+
+        <echo append="true"
+            file="${app.target}/${core.cartridge}/cartridge/${deploy.core.cartridge}.properties">demandware.cartridges.sitegenesis_storefront_core.id=sitegenesis_storefront_core${line.separator}demandware.cartridges.sitegenesis_storefront_core.multipleLanguageStorefront=true${line.separator}demandware.cartridges.${deploy.core.cartridge}.treatAsCustom = true${line.separator}
+        </echo>
+
+        <echo append="true"
+            file="${app.target}/${controllers.cartridge}/cartridge/${deploy.controllers.cartridge}.properties">demandware.cartridges.sitegenesis_storefront_controllers.id=sitegenesis_storefront_controllers${line.separator}demandware.cartridges.sitegenesis_storefront_controllers.multipleLanguageStorefront=true${line.separator}demandware.cartridges.${deploy.controllers.cartridge}.treatAsCustom = true${line.separator}
+        </echo>
+    </target>
+
+    <target name="clean">
+        <delete dir="${app.target}" />
+        <delete dir="${cartridge.dist}" />
+        <delete dir="${core.jsp.dir}" />
+        <delete dir="${controllers.jsp.dir}" />
+        <delete dir="${cartridge.jspclass.dir}" />
+    </target>
+
+    <!-- isml to jsp to java to class -->
+    <target name="compile.jsp">
+        <taskdef name="isml2jsp"
+            classname="com.demandware.beehive.core.internal.template.ISML2JSP"
+            classpathref="dw.isml.classpath" />
+
+        <taskdef name="jsp2java" classname="org.apache.jasper.JspC"
+            classpathref="dw.isml.classpath" />
+
+        <!-- generate jsp files out of the isml files -->
+        <echo message="core.jsp.dir = ${core.jsp.dir}" />
+        <mkdir dir="${core.jsp.dir}" />
+        <echo message="controllers.jsp.dir = ${controllers.jsp.dir}" />
+        <mkdir dir="${controllers.jsp.dir}" />
+
+        <isml2jsp srcdir="${core.templates}" destdir="${core.jsp.dir}"
+            postdataencoding="UTF-8" />
+
+        <isml2jsp srcdir="${controllers.templates}" destdir="${controllers.jsp.dir}"
+            postdataencoding="UTF-8" />
+
+        <!-- Also copy existing JSP pages into the webapps dir -->
+        <echo
+            message="Copying ${deploy.core.cartridge} generated jsp files from ${core.templates} to ${core.jsp.dir}" />
+        <copy todir="${core.jsp.dir}" verbose="false">
+            <fileset dir="${core.templates}" includes="**/*.jsp" />
+        </copy>
+
+        <echo
+            message="Copying ${deploy.controllers.cartridge} generated jsp files from ${controllers.templates} to ${controllers.jsp.dir}" />
+        <copy todir="${controllers.jsp.dir}" verbose="false">
+            <fileset dir="${controllers.templates}" includes="**/*.jsp" />
+        </copy>
+
+        <!-- generate java files out of jsp files -->
+        <echo message="Writing java files to ${cartridge.jspclass.dir}" />
+        <mkdir dir="${cartridge.jspclass.dir}" />
+
+        <jsp2java uriroot="${cartridge.jspclass.uriroot}" outputDir="${cartridge.jspclass.dir}"
+            verbose="0" javaEncoding="UTF-8" />
+
+        <!-- generate class files out of the java files -->
+        <echo message="Writing class files to ${cartridge.jspclass.dir}" />
+        <javac srcdir="${cartridge.jspclass.dir}" destdir="${cartridge.jspclass.dir}"
+            includes="**/*.java" classpathref="dw.build.classpath" encoding="UTF-8"
+            includeantruntime="false" fork="true" executable="${dw.javac.command}"
+            failonerror="true" memoryMaximumSize="512m" />
+    </target>
+
+    <target name="main" depends="rebuild-structure" />
+</project>

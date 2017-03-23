@@ -1,0 +1,72 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>dw.ecom</groupId>
+        <artifactId>sitegen</artifactId>
+        <version>14.5.0.5-SNAPSHOT</version>
+    </parent>
+    
+	<!-- group id and version inherited from parent -->
+	<artifactId>sitegen.cartridge</artifactId>
+	<packaging>pom</packaging>
+	<name>SiteGenesis Site Cartridge</name>
+	<description>Salesforce Commerce Cloud SiteGenesis Site Cartridge</description>
+	
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.demandware.maventools</groupId>
+                <artifactId>dependency-bundle</artifactId>
+                <version>14.3.0.5</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
+    <properties>
+
+		<dw.dependencies.jdk>1.7.0.51_24</dw.dependencies.jdk>
+    </properties>
+    
+	<dependencies>
+		<dependency>
+			<groupId>ant-contrib</groupId>
+			<artifactId>ant-contrib</artifactId>
+			<version>1.0b3</version>
+		</dependency>
+    </dependencies>
+    
+	<build>
+        <plugins>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<configuration>
+							<target>
+								<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="maven.plugin.classpath" />
+								<ant antfile="${basedir}/build.xml">
+									<target name="main" />
+								</ant>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<phase>compile</phase>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>${basedir}/bin.xml</descriptor>
+					</descriptors>
+				</configuration>
+			</plugin>
+		</plugins>
+    </build>
+</project>

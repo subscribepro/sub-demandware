@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services xmlns="http://www.demandware.com/xml/impex/services/2014-09-26">
+	<service service-id="subpro.http.get.config">
+		<service-type>HTTP</service-type>
+		<enabled>true</enabled>
+		<log-prefix>subpro-config</log-prefix>
+		<comm-log-enabled>true</comm-log-enabled>
+		<mock-mode-enabled>false</mock-mode-enabled>
+		<profile-id>subpro.http.prof</profile-id>
+		<credential-id>subpro.http.cred</credential-id>
+	</service>
+
+	<service service-id="subpro.http.get.subscriptions">
+		<service-type>HTTP</service-type>
+		<enabled>true</enabled>
+		<log-prefix>subpro-get-subscriptions</log-prefix>
+		<comm-log-enabled>true</comm-log-enabled>
+		<mock-mode-enabled>false</mock-mode-enabled>
+		<profile-id>subpro.http.prof</profile-id>
+		<credential-id>subpro.http.cred</credential-id>
+	</service>
+
+	<service service-id="subpro.http.post.subscription">
+		<service-type>HTTP</service-type>
+		<enabled>true</enabled>
+		<log-prefix>subpro-post-subscription</log-prefix>
+		<comm-log-enabled>true</comm-log-enabled>
+		<mock-mode-enabled>false</mock-mode-enabled>
+		<profile-id>subpro.http.prof</profile-id>
+		<credential-id>subpro.http.cred</credential-id>
+	</service>
+
+	<service service-id="subpro.http.post.addresses">
+		<service-type>HTTPForm</service-type>
+		<enabled>true</enabled>
+		<log-prefix>subpro-post-address</log-prefix>
+		<comm-log-enabled>true</comm-log-enabled>
+		<mock-mode-enabled>false</mock-mode-enabled>
+		<profile-id>subpro.http.prof</profile-id>
+		<credential-id>subpro.http.cred</credential-id>
+	</service>
+
+	<service service-id="subpro.http.post.addressfindcreate">
+		<service-type>HTTP</service-type>
+		<enabled>true</enabled>
+		<log-prefix>subpro-post-addressfind</log-prefix>
+		<comm-log-enabled>true</comm-log-enabled>
+		<mock-mode-enabled>false</mock-mode-enabled>
+		<profile-id>subpro.http.prof</profile-id>
+		<credential-id>subpro.http.cred</credential-id>
+	</service>
+
+	<service service-id="subpro.http.get.addresses">
+		<service-type>HTTP</service-type>
+		<enabled>true</enabled>
+		<log-prefix>subpro-get-addresses</log-prefix>
+		<comm-log-enabled>true</comm-log-enabled>
+		<mock-mode-enabled>false</mock-mode-enabled>
+		<profile-id>subpro.http.prof</profile-id>
+		<credential-id>subpro.http.cred</credential-id>
+	</service>
+
+	<service service-id="subpro.http.get.products">
+		<service-type>HTTP</service-type>
+		<enabled>true</enabled>
+		<log-prefix>subpro-get-products</log-prefix>
+		<comm-log-enabled>true</comm-log-enabled>
+		<mock-mode-enabled>false</mock-mode-enabled>
+		<profile-id>subpro.http.prof</profile-id>
+		<credential-id>subpro.http.cred</credential-id>
+	</service>
+
+	<service service-id="subpro.http.get.customers">
+		<service-type>HTTP</service-type>
+		<enabled>true</enabled>
+		<log-prefix>subpro-get-customers</log-prefix>
+		<comm-log-enabled>true</comm-log-enabled>
+		<mock-mode-enabled>false</mock-mode-enabled>
+		<profile-id>subpro.http.prof</profile-id>
+		<credential-id>subpro.http.cred</credential-id>
+	</service>
+
+	<service service-id="subpro.http.post.customer">
+		<service-type>HTTP</service-type>
+		<enabled>true</enabled>
+		<log-prefix>subpro-post-customer</log-prefix>
+		<comm-log-enabled>true</comm-log-enabled>
+		<mock-mode-enabled>false</mock-mode-enabled>
+		<profile-id>subpro.http.prof</profile-id>
+		<credential-id>subpro.http.cred</credential-id>
+	</service>
+
+	<service service-id="subpro.http.post.customers">
+		<service-type>HTTP</service-type>
+		<enabled>true</enabled>
+		<log-prefix>subpro-post-customers</log-prefix>
+		<comm-log-enabled>true</comm-log-enabled>
+		<mock-mode-enabled>false</mock-mode-enabled>
+		<profile-id>subpro.http.prof</profile-id>
+		<credential-id>subpro.http.cred</credential-id>
+	</service>
+</services>

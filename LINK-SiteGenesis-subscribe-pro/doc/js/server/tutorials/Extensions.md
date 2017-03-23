@@ -1,0 +1,1 @@
+SiteGenesis comes with a couple of extension points which allow to easily drop in a different implementation for a certain aspect of the site. Please refer to the sub-tutorials for mored details on the specific extension points.

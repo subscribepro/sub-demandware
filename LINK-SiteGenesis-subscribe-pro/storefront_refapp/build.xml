@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<project name="ecom-storefront_refapp" default="main">
+
+    <!-- Determine cartridge base directory and name -->
+    <dirname  property="cartridge.base" file="${ant.file}"/>
+    <basename property="cartridge.name"  file="${cartridge.base}"/>
+  	
+    <property name="dw.home" location="${cartridge.base}"/>
+    <property name="dw.antlib" location="${dw.home}/server/build/lib/ant"/>
+	
+	<!-- added properties as part of mavenization -->
+    <property name="dw.build.source" location="${dw.home}"/>
+    <property name="dw.build.build" location="${dw.home}/server/build"/>
+    <property name="dw.build.libs.build" location="${dw.home}/dwlib"/>
+    <property name="dw.instance.system" location="${dw.home}/build"/>
+    <property name="dw.instance.java.home" location="${dw.instance.system}/jdk"/>
+    <!--<property name="dw.javac.command" location="${dw.instance.java.home}/bin/javac.exe"/>-->
+    <property name="dw.instance.tomcat.home" location="${dw.home}/tomcat"/>
+    <property name="build.ivy.release" value="2.3.0"/>
+	<property name="cartridge.deploy" value="false"/>
+	<property name="cartridge.jspclass.uriroot" value="${cartridge.base}/build"/>
+	
+    <!-- set all environment variables -->
+    <import file="${dw.antlib}/dwbuild.environment.xml"/>
+    <!-- import the generic cartridge project -->
+    <import file="${dw.antlib}/cartridgebuild.xml"/>
+
+</project>

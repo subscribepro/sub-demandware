@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<project name="dwbuild.external.storage">
+    <import file="${dw.antlib}/dwbuild.environment.xml" />
+
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="${dw.build.libs.build}/ant-contrib-1.0b3.jar" />
+
+    <path id="s3.classpath">
+        <path refid="dw.main.classpath" />
+        <fileset dir="${dw.build.libs.build}">
+            <include name="jets3t*jar" />
+        </fileset>
+    </path>
+
+    <condition property="do.upload">
+        <and>
+            <isset property="build.do.ci.build" />
+            <not><matches pattern="coverage.+" string="${env.JOB_NAME}"/></not>
+            <not><matches pattern="benchmark.+" string="${env.JOB_NAME}"/></not>
+        </and>
+    </condition>
+
+    <target name="s3.upload.api.logs" if="do.upload" description="upload the current api logs to s3">
+        <antcall target="s3.upload.single.file" inheritrefs="true">
+            <param name="s3.upload.source.file" value="${pipelet.api.log.file}" />
+            <param name="s3.bucket" value="${dw.s3.pipeletapi}" />
+        </antcall>
+
+        <antcall target="s3.upload.single.file" inheritrefs="true">
+            <param name="s3.upload.source.file" value="${script.api.log.file}" />
+            <param name="s3.bucket" value="${dw.s3.scriptapi}" />
+        </antcall>
+    </target>
+
+    <target name="s3.download.old.pipeletapi">
+        <mkdir dir="${pipelet.api.logs.dir}" />
+
+        <ant antfile="${dw.antlib}/dwbuild.external.storage.xml" target="s3.download.single.file" inheritrefs="true">
+            <property name="s3.target.path" location="${pipelet.api.logs.dir}" />
+            <property name="s3.source.path" value="pipeletapi.${old.api.version}.zip" />
+            <property name="s3.bucket" value="${dw.s3.pipeletapi}" />
+        </ant>
+    </target>
+
+    <target name="s3.list.pipeletapi">
+        <ant antfile="${dw.antlib}/dwbuild.external.storage.xml" target="s3.list.bucket" inheritrefs="true">
+            <property name="s3.bucket" value="${dw.s3.pipeletapi}" />
+        </ant>
+    </target>
+
+    <target name="s3.list.scriptapi">
+        <ant antfile="${dw.antlib}/dwbuild.external.storage.xml" target="s3.list.bucket" inheritrefs="true">
+            <property name="s3.bucket" value="${dw.s3.scriptapi}" />
+        </ant>
+    </target>
+
+    <target name="s3.download.old.scriptapi">
+        <mkdir dir="${script.api.logs.dir}" />
+
+        <ant antfile="${dw.antlib}/dwbuild.external.storage.xml" target="s3.download.single.file" inheritrefs="true">
+            <property name="s3.target.path" location="${script.api.logs.dir}" />
+            <property name="s3.source.path" value="scriptapi.${old.api.version}.xml" />
+            <property name="s3.bucket" value="${dw.s3.scriptapi}" />
+        </ant>
+
+        <move file="${script.api.logs.dir}/scriptapi.${old.api.version}.xml" tofile="${script.api.logs.dir}/${old.api.version}.xml" />
+    </target>
+
+    <!-- Parameters: s3.upload.source.file (ant location/absolute path)
+                     s3.bucket (existing buckets are in build.properties)
+                     [s3.prefix] -->
+
+    <target name="s3.upload.single.file">
+        <fail unless="s3.upload.source.file" message="s3.upload.source.file is not set" />
+        <fail unless="s3.bucket" message="s3.bucket is not set" />
+
+        <condition property="bucket.line" value="${s3.bucket}/${s3.prefix}" else="${s3.bucket}">
+            <isset property="s3.prefix" />
+        </condition>
+
+        <antcall target="jets3t.operation" inheritrefs="true">
+            <param name="s3.command.line" value=" -q  --nodelete UP ${bucket.line} ${s3.upload.source.file}" />
+        </antcall>
+    </target>
+
+    <target name="s3.download.single.file">
+        <fail unless="s3.source.path" message="s3.source.path is not set" />
+        <fail unless="s3.target.path" message="s3.target.path is not set" />
+        <fail unless="s3.bucket" message="s3.bucket is not set" />
+
+        <antcall target="jets3t.operation" inheritrefs="true">
+            <param name="s3.command.line" value=" -q --nodelete DOWN ${s3.bucket}/${s3.source.path} ${s3.target.path}" />
+        </antcall>
+    </target>
+
+    <target name="s3.list.bucket">
+        <fail unless="s3.bucket" message="s3.bucket is not set" />
+
+        <property name="s3.target.path" location="${java.io.tmpdir}" />
+        <property name="s3.source.path" value="" />
+
+        <antcall target="jets3t.operation" inheritrefs="true">
+            <param name="s3.command.line" value=" -p --reportlevel 1 --skipmetadata --nodelete --noaction DOWN ${s3.bucket}/${s3.source.path} ${s3.target.path}" />
+        </antcall>
+    </target>
+
+    <target name="s3.download.files">
+        <fail unless="s3.source.path" message="s3.source.path is not set" />
+        <fail unless="s3.target.path" message="s3.target.path is not set" />
+        <fail unless="s3.bucket" message="s3.bucket is not set" />
+
+        <antcall target="jets3t.operation" inheritrefs="true">
+            <param name="s3.command.line" value=" -q --reportlevel 1 --skipmetadata --nodelete DOWN ${s3.bucket}/${s3.source.path} ${s3.target.path}" />
+        </antcall>
+    </target>
+
+    <target name="jets3t.operation" unless="nos3">
+        <java classname="org.jets3t.apps.synchronize.Synchronize"
+              classpathref="s3.classpath"
+              fork="true"
+              jvm="${dw.java.command}"
+              maxmemory="512m"
+              failonerror="true"
+              output="${dw.build.build}/logs/s3-operations.log"
+              error="${dw.build.build}/logs/s3-operations-error.log"
+              append="true">
+            <jvmarg value="-DIS_HOME=${dw.instance}" />
+            <jvmarg value="-Dfile.encoding=UTF-8" />
+            <jvmarg value="-Duser.timezone=GMT" />
+            <jvmarg value="-Duser.language=en" />
+            <jvmarg value="-Duser.country=US" />
+            <arg line="${s3.command.line}" />
+        </java>
+    </target>
+
+</project>

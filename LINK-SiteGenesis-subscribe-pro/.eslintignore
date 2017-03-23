@@ -1,0 +1,5 @@
+doc/
+./*.js
+bin/
+app_storefront_core/cartridge/static/
+app_storefront_core/cartridge/scripts/
