@@ -48,6 +48,7 @@ function productSubscriptionsCart() {
     }
 
     let product = {
+        "ID": pli.productID,
         "subscription_option_mode": pli.custom.subproSubscriptionOptionMode,
         "selected_option_mode": pli.custom.subproSubscriptionSelectedOptionMode,
         "selected_interval": pli.custom.subproSubscriptionInterval,
@@ -94,7 +95,6 @@ function productSubscriptionsOrderSummary() {
 function productSubscriptionsOrderConfirmation() {
     let order = require('dw/order/OrderMgr').getOrder(params.orderNo.stringValue),
         productID = params.productID.stringValue;
-
 
     if (!order) {
         return;

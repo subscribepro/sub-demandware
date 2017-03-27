@@ -41,17 +41,8 @@ function initializeEvents() {
         }
     });
 
-    $('.subpro-options.cart input[name=subproSubscriptionOptionMode]').on('change', (event) => {
-        let $deliveryInteval = $('.subpro-options.cart #delivery-interval');
-
-        $(event.currentTarget).val() === 'regular'
-            ? $deliveryInteval.prop('disabled', false)
-            : $deliveryInteval.prop('disabled', true);
-
-        subscriptionOptions.ajaxUpdateOptions(subscriptionOptions.getOptionsState());
-    });
-
-    $('.subpro-options.cart #delivery-interval').on('change', () => subscriptionOptions.ajaxUpdateOptions(subscriptionOptions.getOptionsState()));
+    $('.subpro-options.cart input[name^=subproSubscriptionOptionMode], .subpro-options.cart #delivery-interval')
+        .on('change', (event) => subscriptionOptions.ajaxUpdateOptions(subscriptionOptions.getOptionsState($(event.currentTarget))));
 }
 
 exports.init = function () {
