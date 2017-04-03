@@ -15,6 +15,7 @@ let AddressMockData = require("../mock_data/AddressMockData");
 let AddressesMockData = require("../mock_data/AddressesMockData");
 let ProductMockData = require("../mock_data/ProductMockData");
 let CustomerMockData = require("../mock_data/CustomerMockData");
+let PaymentProfileMockData = require("../mock_data/PaymentProfileMockData");
 
 /**
  * Service: subpro.http.get.config
@@ -383,5 +384,41 @@ ServiceRegistry.configure("subpro.http.post.customers", {
 	 */
 	mockCall: function(svc: HTTPService, client: HTTPClient) {
 		return getMockJSON(CustomerMockData);
+	}
+});
+
+/**
+ * Service: subpro.http.post.paymentprofile.vault
+ */
+ServiceRegistry.configure("subpro.http.post.paymentprofile.vault", {
+	/**
+	 * Create the service request
+	 */
+	createRequest: function(svc: HTTPFormService, args) {
+		svc.setRequestMethod("POST");
+		setURL(svc, "vault/paymentprofile/external-vault.json", "");
+
+		/**
+		 * Return the parameters to be POSTed to the URL, if there are any
+		 */
+		if (args) {
+			return JSON.stringify({payment_profile: args.paymentProfile});
+		} else {
+			return null;
+		}
+	},
+
+	/**
+	 * JSON parse the response text and return it
+	 */
+	parseResponse: function(svc: HTTPService, client: HTTPClient) {
+		return JSON.parse(client.text);
+	},
+
+	/**
+	 * Return the Mocked Address Data
+	 */
+	mockCall: function(svc: HTTPService, client: HTTPClient) {
+		return getMockJSON(PaymentProfileMockData);
 	}
 });

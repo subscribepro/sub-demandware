@@ -1430,10 +1430,13 @@ var CartModel = AbstractModel.extend({
         var basket = this.object;
         var order;
         try {
-            Transaction.wrap(function () {
-                basket.custom.subproContainsSubscriptions = require('/int_subscribe_pro/cartridge/scripts/subpro/lib/SubscribeProLib.js').isSubPro();
-                basket.custom.subproSubscriptionsToBeProcessed = false;
-            });
+            let isSubPro = require('/int_subscribe_pro/cartridge/scripts/subpro/lib/SubscribeProLib.js').isSubPro();
+            if (isSubPro) {
+                Transaction.wrap(function () {
+                    basket.custom.subproContainsSubscriptions = isSubPro;
+                    basket.custom.subproSubscriptionsToBeProcessed = true;
+                });
+            }
 
             order = Transaction.wrap(function () {
                 return OrderMgr.createOrder(basket);

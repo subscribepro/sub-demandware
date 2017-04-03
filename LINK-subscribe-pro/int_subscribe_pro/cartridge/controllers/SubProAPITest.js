@@ -335,3 +335,47 @@ exports.UpdateCustomer = function() {
  * Mark the controller endpoint as accessible via the web
  */
 exports.UpdateCustomer.public = true;
+
+/**
+ * Calls and return the results of posting new payment method to the /vault/paymentprofile/external-vault API end-point
+ * This method will return a JSON response
+ */
+exports.SavePaymentProfile = function() {
+	let paymentProfile = {
+		"customer_id": "761431",
+		"payment_token": "ABCD-UNIQUE-PAY-TOKEN",
+		"creditcard_type": "visa",
+		"creditcard_first_digits": "41111",
+		"creditcard_last_digits": "1111",
+		"creditcard_month": "3",
+		"creditcard_year": "2025",
+		"vault_specific_fields": {
+			"sfcc": {
+				"payment_instrument_id": "12341234123",
+				"my_other_field": "stuff"
+			}
+		},
+		"billing_address": {
+			"first_name": "Bob",
+			"middle_name": "A",
+			"last_name": "Jones",
+			"company": "Bobs Emporium",
+			"street1": "123 Here St",
+			"street2": "Apt B",
+			"city": "Baltimore",
+			"region": "MD",
+			"postcode": "21212",
+			"country": "US",
+			"phone": "410-123-4567"
+		}
+	};
+
+	let result = SubscribeProLib.createPaymentProfile(paymentProfile);
+
+	r.renderJSON(result);
+};
+
+/**
+ * Mark the controller endpoint as accessible via the web
+ */
+exports.SavePaymentProfile.public = true;

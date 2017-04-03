@@ -234,6 +234,19 @@ let SubscribeProLib = {
 	},
 
 	/**
+	 * Create a new payment profile for an external vault
+	 *
+	 * API Endpoint: POST /services/v2/vault/paymentprofile/external-vault.{_format}
+	 *
+	 * @return Object an object containing whether or not this service returned an error and the results of the API request
+	 */
+	createPaymentProfile: function(paymentProfile) {
+		let service = SubscribeProLib.getService("subpro.http.post.paymentprofile.vault");
+
+		return SubscribeProLib.handleResponse(service.call({payment_profile: paymentProfile}));
+	},
+
+	/**
 	 * Check if customer is registered. This is necessary to proceed to checkout with SubPro subscription
 	 *
 	 * @return boolean if customer is registered
