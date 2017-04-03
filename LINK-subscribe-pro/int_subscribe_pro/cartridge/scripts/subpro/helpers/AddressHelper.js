@@ -13,7 +13,7 @@ let AddressHelper = {
      * @param {dw.customer.CustomerAddress} address Sales Force Commerce Cloud Customer Address Object.
      * @param {dw.customer.Profile} profile Sales Force Commerce Cloud Customer profile Object.
      *
-     * @return Object an object containing relevant address fields
+     * @return Object|undefined an object containing relevant address fields
      */
     getSubproAddress: function(address, profile) {
         if (!address || !profile) {
@@ -63,6 +63,6 @@ let AddressHelper = {
             customerAddress.custom.subproAddressID = subproAddressID;
         });
     }
-}
+};
 
 module.exports = AddressHelper;

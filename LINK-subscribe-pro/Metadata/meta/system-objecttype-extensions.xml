@@ -235,12 +235,30 @@
                 <min-length>0</min-length>
                 <default-value>You need a credit card to pay for SubPro subscription</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="subscribeProWidgetScriptUrl">
+                <display-name xml:lang="x-default">Subscribe Pro Widget Script Url</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>https://widgets.subscribepro.com/subscribepro-widgets.min.js</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="apiBaseUrl">
+                <display-name xml:lang="x-default">Subscribe Pro API Base Url</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>https://api.subscribepro.com</default-value>
+            </attribute-definition>
         </custom-attribute-definitions>
          <group-definitions>
             <attribute-group group-id="subscribe-pro">
                 <display-name xml:lang="x-default">Subscribe Pro</display-name>
                 <attribute attribute-id="subproCreditCardRequirementMsg"/>
                 <attribute attribute-id="subproCheckoutLoginMsg"/>
+                <attribute attribute-id="subscribeProWidgetScriptUrl"/>
+                <attribute attribute-id="apiBaseUrl"/>
             </attribute-group>
         </group-definitions>
     </type-extension>

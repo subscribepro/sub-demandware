@@ -6,13 +6,15 @@
  * @module controllers/SubPro
  */
 
-const params = request.httpParameterMap;
+/* API includes */
+const ISML = require('dw/template/ISML');
+const SubscribeProLib = require('~/cartridge/scripts/subpro/lib/SubscribeProLib.js');
 
 /* Script Modules */
 const app = require('/app_storefront_controllers/cartridge/scripts/app');
 const guard = require('/app_storefront_controllers/cartridge/scripts/guard');
-const ISML = require('dw/template/ISML');
-const SubscribeProLib = require('~/cartridge/scripts/subpro/lib/SubscribeProLib.js');
+
+const params = request.httpParameterMap;
 
 /**
  * Renders product subscription options on PDP.
@@ -79,7 +81,7 @@ function productSubscriptionsOrderSummary() {
     let product = {
         "selected_option_mode": pli.custom.subproSubscriptionSelectedOptionMode,
         "selected_interval": pli.custom.subproSubscriptionInterval
-    }
+    };
 
     ISML.renderTemplate('subpro/order/subprooptions', {
         product: product,
@@ -109,7 +111,7 @@ function productSubscriptionsOrderConfirmation() {
                 let product = {
                     "selected_option_mode": pli.custom.subproSubscriptionSelectedOptionMode,
                     "selected_interval": pli.custom.subproSubscriptionInterval
-                }
+                };
 
                 ISML.renderTemplate('subpro/order/subprooptions', {
                     product: product,

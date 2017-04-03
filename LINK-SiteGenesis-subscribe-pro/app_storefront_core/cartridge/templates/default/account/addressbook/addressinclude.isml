@@ -47,3 +47,33 @@
 	</ul>
 	
 </isif>
+
+<isif condition="${customer.profile.custom.subproCustomerID}">
+	<!-- Subscribe Pro Address Book Assist Widget -->
+	<h2>${Resource.msg('account.subpro.myaddressbook', 'account', null)}</h2>
+	<div id="sp-address-book-widget"></div>
+
+	<iscomment>
+		Configure the Subscribe Pro Address Book Assist Widget
+	</iscomment>
+
+	<!-- Load the Subscribe Pro widget script -->
+	<script src="${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subscribeProWidgetScriptUrl')}"></script>
+
+	<isset name="widgetConfig" scope="page"
+		value="${require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/WidgetsHelper').getWidgetConfig(customer.profile.custom.subproCustomerID, 'client_credentials', 'widget', 'sp-address-book-widget')}"/>
+
+	<!-- Pass configuration and init the Subscribe Pro widget -->
+	<script>
+		// Setup config for Subscribe Pro
+		var widgetConfig = {
+			widgetElementId: '${widgetConfig.widgetElementId}',
+			apiBaseUrl: '${widgetConfig.apiAccessToken}',
+			apiAccessToken: '${widgetConfig.apiAccessToken}',
+			environmentKey: '${widgetConfig.environmentKey}',
+			customerId: '${widgetConfig.customerId}'
+		};
+		// Call init
+		subscribepro.widgets.init('address-book-assist', widgetConfig);
+	</script>
+</isif>

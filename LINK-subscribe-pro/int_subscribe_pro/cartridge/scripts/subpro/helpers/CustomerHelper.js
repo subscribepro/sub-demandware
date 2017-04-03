@@ -45,6 +45,6 @@ let CustomerHelper = {
             profile.custom.subproCustomerID = subproCustomerID;
         });
     }
-}
+};
 
 module.exports = CustomerHelper;

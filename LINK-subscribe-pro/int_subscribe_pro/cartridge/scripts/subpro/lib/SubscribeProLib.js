@@ -234,6 +234,30 @@ let SubscribeProLib = {
 	},
 
 	/**
+	 * Get access token
+	 *
+	 * API Endpoint: GET|POST /oauth/v2/token
+	 *
+	 * @return Object an object containing whether or not this service returned an error and the results of the API request
+	 */
+	getToken: function(customerID, grantType, scope) {
+		if (!customerID || !grantType || !scope) {
+			return {
+				error: true,
+				result: "customerID or grantType or scope parameter is missing"
+			}
+		}
+
+		let service = SubscribeProLib.getService("subpro.http.get.token");
+
+		return SubscribeProLib.handleResponse(service.call({
+			customer_id: customerID,
+			grant_type: grantType,
+			scope: scope
+		}));
+	},
+
+	/**
 	 * Create a new payment profile for an external vault
 	 *
 	 * API Endpoint: POST /services/v2/vault/paymentprofile/external-vault.{_format}
@@ -264,7 +288,7 @@ let SubscribeProLib = {
 	 */
 	hasCreditCard: function(cart) {
 		if (!cart) {
-			return;
+			return false;
 		}
 
 		let instruments = cart.object.paymentInstruments,

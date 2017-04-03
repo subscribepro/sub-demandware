@@ -8,6 +8,7 @@ importPackage(dw.io);
 /**
  * Mock Data
  */
+let AccessTokenMockData = require("../mock_data/AccessTokenMockData");
 let ConfigMockData = require("../mock_data/ConfigMockData");
 let SubscriptionMockData = require("../mock_data/SubscriptionMockData");
 let SubscriptionsMockData = require("../mock_data/SubscriptionsMockData");
@@ -384,6 +385,35 @@ ServiceRegistry.configure("subpro.http.post.customers", {
 	 */
 	mockCall: function(svc: HTTPService, client: HTTPClient) {
 		return getMockJSON(CustomerMockData);
+	}
+});
+
+/**
+ * Service: subpro.http.get.token
+ */
+ServiceRegistry.configure("subpro.http.get.token", {
+	/**
+	 * Create the service request
+	 */
+	createRequest: function(svc: HTTPFormService, args) {
+		svc.setRequestMethod("GET");
+		setURL(svc, "token", "customer_id=" + args.customer_id +
+			"&grant_type=" + args.grant_type +
+			"&scope=" + args.scope);
+	},
+
+	/**
+	 * JSON parse the response text and return it
+	 */
+	parseResponse: function(svc: HTTPService, client: HTTPClient) {
+		return JSON.parse(client.text);
+	},
+
+	/**
+	 * Return the Mocked Address Data
+	 */
+	mockCall: function(svc: HTTPService, client: HTTPClient) {
+		return getMockJSON(AccessTokenMockData);
 	}
 });
 

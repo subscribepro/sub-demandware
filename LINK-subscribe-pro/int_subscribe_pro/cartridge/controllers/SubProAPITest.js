@@ -7,7 +7,7 @@
  * @module controllers/SubProAPITest
  */
 let r = require('/app_storefront_controllers/cartridge/scripts/util/Response');
-let SubscribeProLib = require("~/cartridge/scripts/subpro/lib/SubscribeProLib");
+let SubscribeProLib = require('~/cartridge/scripts/subpro/lib/SubscribeProLib');
 
 /**
  * Calls and return the results of the /config API end-point
@@ -237,7 +237,7 @@ exports.Products = function() {
 		result = SubscribeProLib.getProduct(sku);
 
 	r.renderJSON(result);
-}
+};
 
 /**
  * Mark the controller endpoint as accessible via the web
@@ -267,7 +267,7 @@ exports.Customers = function() {
 		result = SubscribeProLib.getCustomer(customerID);
 
 	r.renderJSON(result);
-}
+};
 
 /**
  * Mark the controller endpoint as accessible via the web
@@ -285,7 +285,7 @@ exports.Customer = function() {
 		"last_name": "Surname",
 		"middle_name": "mid",
 		"magento_customer_id": 1
-	}
+	};
 
 	let result = SubscribeProLib.createCustomer(customer);
 
@@ -323,7 +323,7 @@ exports.UpdateCustomer = function() {
 		"last_name": "Surname",
 		"middle_name": "mid",
 		"magento_customer_id": 1
-	}
+	};
 
 	let customerID = httpParameters.get("customer_id").pop(),
 		result = SubscribeProLib.updateCustomer(customerID, customer);
@@ -335,6 +335,41 @@ exports.UpdateCustomer = function() {
  * Mark the controller endpoint as accessible via the web
  */
 exports.UpdateCustomer.public = true;
+
+/**
+ * Calls and return the results of getting an access token from the /token API end-point
+ * This method will return a JSON response
+ */
+exports.GetTokenWidget = function() {
+	const httpParameters = request.httpParameters;
+
+	/**
+	 * Check to ensure that a customer_id has been passed via the HTTP Parameters
+	 */
+	if (!httpParameters ||
+		!httpParameters.containsKey("customer_id") ||
+		!httpParameters.containsKey("grant_type") ||
+		!httpParameters.containsKey("scope")) {
+		r.renderJSON({
+			error: true,
+			msg: "The customers API request requires a customer_id, grant_type and scope URL parameters to be set"
+		});
+
+		return;
+	}
+
+	let customerID = httpParameters.get("customer_id").pop(),
+		grantType = httpParameters.get("grant_type").pop(),
+		scope = httpParameters.get("scope").pop(),
+		result = SubscribeProLib.getToken(customerID, grantType, scope);
+
+	r.renderJSON(result);
+};
+
+/**
+ * Mark the controller endpoint as accessible via the web
+ */
+exports.GetTokenWidget.public = true;
 
 /**
  * Calls and return the results of posting new payment method to the /vault/paymentprofile/external-vault API end-point

@@ -13,6 +13,6 @@ let CustomerMockData = {
       "trial_subscription_count":0,
       "active_subscribed_qty":1
    }
-}
+};
 
 module.exports = CustomerMockData;

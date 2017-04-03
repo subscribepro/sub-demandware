@@ -15,6 +15,11 @@
 				<isinclude url="${ProductGridUtils.buildHitTileURL(LoopProductHit, pdict.CurrentHttpParameterMap.cgid.value)}"/>
 			</isobject>
 
+			<isif condition="${customer.profile.custom.subproCustomerID}">
+				<!-- Subscribe Pro Add to Order Widget -->
+				<div class="sp-add-to-order" data-product-sku="${LoopProductHit.productID}"></div>
+				<div id="sp-add-to-order-widget"></div>
+			</isif>
 		</li>
 	</isloop>
 </ul>

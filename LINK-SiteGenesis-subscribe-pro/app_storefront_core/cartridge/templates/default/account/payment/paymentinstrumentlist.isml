@@ -2,6 +2,7 @@
 <isdecorate template="account/pt_account">
 	<isinclude template="util/modules"/>
 	<isset name="bctext2" value="${Resource.msg('global.paymentsettings','locale',null)}" scope="pdict"/>
+	<isset name="isSubproCustomer" value="${customer.profile.custom.subproCustomerID}" scope="page" />
 	<isslot id="account-banner" description="Banner for My Account pages" context="global" />
 	<div class="paymentslist">
 		<h1>${Resource.msg('account.paymentinstrumentlist.header','account',null)}</h1>
@@ -25,5 +26,37 @@
 				</isloop>
 			</ul>
 		</isif>
+
+		<isif condition="${isSubproCustomer}">
+			<!-- Subscribe Pro Wallet Assist Widget -->
+			<h2>${Resource.msg('account.subpro.mywallet', 'account', null)}</h2>
+			<div id="sp-wallet-assist-widget"></div>
+		</isif>
 	</div>
+
+	<isif condition="${isSubproCustomer}">
+		<iscomment>
+			Configure the Subscribe Pro Wallet Assist Widget
+		</iscomment>
+
+		<!-- Load the Subscribe Pro widget script -->
+		<script src="${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subscribeProWidgetScriptUrl')}"></script>
+
+		<isset name="widgetConfig" scope="page"
+			value="${require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/WidgetsHelper').getWidgetConfig(customer.profile.custom.subproCustomerID, 'client_credentials', 'widget', 'sp-wallet-assist-widget')}"/>
+
+		<!-- Pass configuration and init the Subscribe Pro widget -->
+		<script>
+			// Setup config for Subscribe Pro
+			var widgetConfig = {
+				widgetElementId: '${widgetConfig.widgetElementId}',
+				apiBaseUrl: '${widgetConfig.apiAccessToken}',
+				apiAccessToken: '${widgetConfig.apiAccessToken}',
+				environmentKey: '${widgetConfig.environmentKey}',
+				customerId: '${widgetConfig.customerId}'
+			};
+			// Call init
+			subscribepro.widgets.init('wallet-assist', widgetConfig);
+		</script>
+	</isif>
 </isdecorate>
