@@ -4,7 +4,7 @@ var account = require('./account'),
     bonusProductsView = require('../bonus-products-view'),
     quickview = require('../quickview'),
     cartStoreInventory = require('../storeinventory/cart'),
-    subscriptionOptions = require('./subscriptionOptions');
+    subscriptionOptions = require('../../../../../LINK-subscribe-pro/int_subscribe_pro/cartridge/js/subscriptionOptions');
 
 /**
  * @private
@@ -41,8 +41,7 @@ function initializeEvents() {
         }
     });
 
-    $('.subpro-options.cart input[name^=subproSubscriptionOptionMode], .subpro-options.cart #delivery-interval')
-        .on('change', (event) => subscriptionOptions.ajaxUpdateOptions(subscriptionOptions.getOptionsState($(event.currentTarget))));
+    subscriptionOptions.cartInit();
 }
 
 exports.init = function () {

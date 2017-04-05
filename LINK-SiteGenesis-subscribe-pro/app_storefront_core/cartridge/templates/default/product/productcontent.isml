@@ -77,7 +77,7 @@
 
 	<isset name="pam" value="${pdict.Product.getAttributeModel()}" scope="page"/>
 	<isset name="group" value="${pam.getAttributeGroup('mainAttributes')}" scope="page"/>
-	<isset name="isSubproCustomer" value="${customer.profile.custom.subproCustomerID}" scope="page" />
+	<isset name="isSubproCustomer" value="${customer.authenticated && customer.profile.custom.subproCustomerID}" scope="page" />
 	<isinclude template="product/components/group"/>
 
 	<iscomment>
@@ -235,7 +235,7 @@
 				<isif condition="${!disabledAttr}">
 					<button id="add-to-cart" type="submit" title="${buttonTitle}" value="${buttonTitle}" class="button-fancy-large add-to-cart">${buttonTitle}</button>
 
-					<isif condition="${customer.authenticated && isSubproCustomer}">
+					<isif condition="${isSubproCustomer}">
 						<!-- Subscribe Pro Add to Order Widget -->
 						<div class="sp-add-to-order" data-product-sku="${pid}"></div>
 						<div id="sp-add-to-order-widget"></div>
@@ -299,7 +299,7 @@
 		</div>
 	</isif>
 
-	<isif condition="${customer.authenticated && isSubproCustomer}">
+	<isif condition="${isSubproCustomer}">
 		<iscomment>
 			Configure the Subscribe Pro Add to Order Widget
 		</iscomment>

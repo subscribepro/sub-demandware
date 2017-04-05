@@ -24,12 +24,14 @@
     <input type="radio" name="subproSubscriptionOptionMode${product.ID || ''}" id="regular-delivery" value="regular"
         <isif condition="${product.subscription_option_mode === 'subscription_only' || product.selected_option_mode === 'regular'}">checked</isif>>
 
-    <label for="delivery-interval">${Resource.msg('product.subscription.delivery.every', 'product', null)}</label>
-    <select id="delivery-interval" name="subproSubscriptionInterval">
-        <isloop items="${product.intervals}" var="interval">
-            <option value="${interval}" <isif condition="${interval === product.selected_interval || interval === product.default_interval}">selected</isif>>${interval}</option>
-        </isloop>
-    </select>
+    <div class="delivery-interval-group" <isif condition="${product.selected_option_mode !== 'regular'}">hidden</isif>>
+        <label for="delivery-interval">${Resource.msg('product.subscription.delivery.every', 'product', null)}</label>
+        <select id="delivery-interval" name="subproSubscriptionInterval">
+            <isloop items="${product.intervals}" var="interval">
+                <option value="${interval}" <isif condition="${interval === product.selected_interval || interval === product.default_interval}">selected</isif>>${interval}</option>
+            </isloop>
+        </select>
+    </div>
 
     <input type="hidden" name="subproSubscriptionAvailableOptionMode" value="${product.subscription_option_mode.toString()}">
     <input type="hidden" name="subproSubscriptionAvailableIntervals" value="${product.intervals.toString()}">
