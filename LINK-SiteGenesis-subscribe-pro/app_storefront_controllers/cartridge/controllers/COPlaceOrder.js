@@ -91,19 +91,6 @@ function start() {
         return {};
     }
 
-    const SubscribeProLib = require('/int_subscribe_pro/cartridge/scripts/subpro/lib/SubscribeProLib.js');
-    const PaymentsHelper = require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/PaymentsHelper.js');
-
-    if (SubscribeProLib.isSubPro()) {
-        let paymentProfile = PaymentsHelper.setSubscriptionPaymentProfile(customer.profile, cart.object.paymentInstrument, cart.object.billingAddress),
-            response = SubscribeProLib.createPaymentProfile(paymentProfile);
-
-        if (response.error || !response.result.payment_profile) {
-            require('dw/system/Logger').error('Error creating payment profile to SubscribePro');
-            return {};
-        }
-    }
-
     var COShipping = app.getController('COShipping');
 
     // Clean shipments.

@@ -418,6 +418,33 @@ ServiceRegistry.configure("subpro.http.get.token", {
 });
 
 /**
+ * Service: subpro.http.get.paymentprofile
+ */
+ServiceRegistry.configure("subpro.http.get.paymentprofile", {
+	/**
+	 * Create the service request
+	 */
+	createRequest: function(svc: HTTPFormService, args) {
+		svc.setRequestMethod("GET");
+		setURL(svc, "vault/paymentprofiles/" + args.paymentprofile_id + ".json", "");
+	},
+
+	/**
+	 * JSON parse the response text and return it
+	 */
+	parseResponse: function(svc: HTTPService, client: HTTPClient) {
+		return JSON.parse(client.text);
+	},
+
+	/**
+	 * Return the Mocked Address Data
+	 */
+	mockCall: function(svc: HTTPService, client: HTTPClient) {
+		return getMockJSON(PaymentProfileMockData);
+	}
+});
+
+/**
  * Service: subpro.http.post.paymentprofile.vault
  */
 ServiceRegistry.configure("subpro.http.post.paymentprofile.vault", {

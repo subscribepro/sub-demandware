@@ -15,7 +15,7 @@ let AddressHelper = {
      *
      * @return Object|undefined an object containing relevant address fields
      */
-    getSubproAddress: function(address, profile) {
+    getSubproAddress: function (address, profile) {
         if (!address || !profile) {
             return;
         }
@@ -53,15 +53,54 @@ let AddressHelper = {
     },
 
     /**
-     * Save Subscribe Pro Address ID to CustomerAddress
+     * Save Subscribe Pro Address ID to Sales Force Commerce Cloud Customer Address Object
      *
-     * @param {dw.customer.CustomerAddress} customerAddress Sales Force Commerce Cloud Customer Address Object
+     * @param {dw.customer.CustomerAddress | dw.order.OrderAddress} address Sales Force Commerce Cloud Customer Address Object
      * @param {String} subproAddressID Subscribe Pro Address ID
      */
-    setSubproAddressID: function(customerAddress, subproAddressID) {
-        Transaction.wrap(function() {
-            customerAddress.custom.subproAddressID = subproAddressID;
+    setSubproAddressID: function (address, subproAddressID) {
+        Transaction.wrap(function () {
+            address.custom.subproAddressID = subproAddressID;
         });
+    },
+
+    /**
+     * Compare if two given addresses are equal
+     *
+     * @param {dw.customer.AddressBook} address1 first address to compare
+     * @param {dw.customer.AddressBook} address2 second address to compare
+     * @returns {boolean} if two given addresses are equal
+     */
+    compareAddresses: function (address1, address2) {
+        return address1.address1 === address2.address1 &&
+            address1.address2 === address2.address2 &&
+            address1.city === address2.city &&
+            address1.firstName === address2.firstName &&
+            address1.lastName === address2.lastName &&
+            address1.phone === address2.phone &&
+            address1.postalCode === address2.postalCode
+    },
+
+    /**
+     * Get customer address which is equal to specified
+     *
+     * @param {dw.customer.CustomerAddress} addressBook Sales Force Commerce Cloud Customer Address Object
+     * @param {dw.customer.CustomerAddress} address Sales Force Commerce Cloud Customer Address Object
+     *
+     * @returns {dw.customer.CustomerAddress | null} found address or null
+     */
+    getCustomerAddress: function (addressBook, address) {
+        let addresses = addressBook.addresses.iterator();
+        while (addresses.hasNext()) {
+            let currentAddress = addresses.next(),
+                areEqual = this.compareAddresses(currentAddress, address);
+
+            if (areEqual) {
+                return currentAddress;
+            }
+        }
+
+        return null;
     }
 };
 

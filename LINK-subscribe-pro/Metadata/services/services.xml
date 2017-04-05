@@ -110,6 +110,16 @@
 		<credential-id>subpro.http.cred.oauth</credential-id>
 	</service>
 
+	<service service-id="subpro.http.get.paymentprofile">
+		<service-type>HTTP</service-type>
+		<enabled>true</enabled>
+		<log-prefix>subpro-get-paymentprofile</log-prefix>
+		<comm-log-enabled>true</comm-log-enabled>
+		<mock-mode-enabled>false</mock-mode-enabled>
+		<profile-id>subpro.http.prof</profile-id>
+		<credential-id>subpro.http.cred.v1</credential-id>
+	</service>
+
 	<service service-id="subpro.http.post.paymentprofile.vault">
 		<service-type>HTTP</service-type>
 		<enabled>true</enabled>

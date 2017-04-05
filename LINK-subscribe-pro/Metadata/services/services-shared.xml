@@ -6,6 +6,12 @@
 		<password masked="true">********</password>
 	</service-credential>
 
+	<service-credential service-credential-id="subpro.http.cred.v1">
+		<url>https://api.subscribepro.com/services/v1/{ENDPOINT}?{PARAMS}</url>
+		<user-id>XXXXXXXX</user-id>
+		<password masked="true">********</password>
+	</service-credential>
+
 	<service-credential service-credential-id="subpro.http.cred.oauth">
 		<url>https://api.subscribepro.com/oauth/v2/{ENDPOINT}?{PARAMS}</url>
 		<user-id>XXXXXXXX</user-id>

@@ -1,6 +1,7 @@
 'use strict';
 
 const Transaction = require('dw/system/Transaction');
+const Logger = require('dw/system/Logger');
 
 /**
  * Provides an interface to handle Subscribe Pro customer objects and map them to Sales Force Commerce Cloud Customer Object.
@@ -17,17 +18,7 @@ let CustomerHelper = {
     getSubproCustomer: function(customer) {
         const profile = customer.getProfile();
 
-        let subproCustomerID;
-
-        try {
-            subproCustomerID = profile.custom.subproCustomerID;
-        } catch (e) {
-            require('dw/system/Logger').error('Error getting subproCustomerID', e);
-            subproCustomerID = '';
-        }
-
         return {
-            "id": subproCustomerID,
             "email": profile.getEmail(),
             "first_name": profile.getFirstName(),
             "last_name": profile.getLastName()
@@ -41,9 +32,13 @@ let CustomerHelper = {
      * @param {String} subproCustomerID Subscribe Pro Customer ID
      */
     setSubproCustomerID: function(profile, subproCustomerID) {
-        Transaction.wrap(function() {
-            profile.custom.subproCustomerID = subproCustomerID;
-        });
+        try {
+            Transaction.wrap(function() {
+                profile.custom.subproCustomerID = subproCustomerID;
+            });
+        } catch (e) {
+            Logger.error("Error while updating customer's subproCustomerID attribute", e);
+        }
     }
 };
 

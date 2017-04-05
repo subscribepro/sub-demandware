@@ -101,6 +101,25 @@
         </group-definitions>
     </type-extension>
 
+    <type-extension type-id="CustomerPaymentInstrument">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="subproPaymentProfileID">
+                <display-name xml:lang="x-default">Subscribe Pro Payment Profile ID</display-name>
+                <description xml:lang="x-default">This attribute will contain the payment profile id that is returned from Subscription Pro upon creating payment profile record in the Subscribe Pro system</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="subscribe-pro">
+                <display-name xml:lang="x-default">Subscribe Pro</display-name>
+                <attribute attribute-id="subproPaymentProfileID"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
     <type-extension type-id="Order">
         <custom-attribute-definitions>
             <attribute-definition attribute-id="subproContainsSubscriptions">
@@ -235,6 +254,14 @@
                 <min-length>0</min-length>
                 <default-value>You need a credit card to pay for SubPro subscription</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="subproOrderProcessingErrorMail">
+                <display-name xml:lang="x-default">Subscribe Pro Order Processing Error Mail</display-name>
+                <description xml:lang="x-default">An email address that order subscriptions processing failures will be sent to</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
             <attribute-definition attribute-id="subscribeProWidgetScriptUrl">
                 <display-name xml:lang="x-default">Subscribe Pro Widget Script Url</display-name>
                 <type>string</type>
@@ -257,6 +284,7 @@
                 <display-name xml:lang="x-default">Subscribe Pro</display-name>
                 <attribute attribute-id="subproCreditCardRequirementMsg"/>
                 <attribute attribute-id="subproCheckoutLoginMsg"/>
+                <attribute attribute-id="subproOrderProcessingErrorMail"/>
                 <attribute attribute-id="subscribeProWidgetScriptUrl"/>
                 <attribute attribute-id="apiBaseUrl"/>
             </attribute-group>

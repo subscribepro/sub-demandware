@@ -372,6 +372,36 @@ exports.GetTokenWidget = function() {
 exports.GetTokenWidget.public = true;
 
 /**
+ * Calls and return the results of the /vault/paymentprofiles API end-point
+ * This method will return a JSON response
+ */
+exports.GetPaymentProfile = function() {
+	const httpParameters = request.httpParameters;
+
+	/**
+	 * Check to ensure that a paymentprofile_id has been passed via the HTTP Parameters
+	 */
+	if (!httpParameters || !httpParameters.containsKey("paymentprofile_id")) {
+		r.renderJSON({
+			error: true,
+			msg: "The paymentprofiles API request requires a paymentprofile_id URL parameter to be set"
+		});
+
+		return;
+	}
+
+	let paymentProfileID = httpParameters.get("paymentprofile_id").pop(),
+		result = SubscribeProLib.getPaymentProfile(paymentProfileID);
+
+	r.renderJSON(result);
+}
+
+/**
+ * Mark the controller endpoint as accessible via the web
+ */
+exports.GetPaymentProfile.public = true;
+
+/**
  * Calls and return the results of posting new payment method to the /vault/paymentprofile/external-vault API end-point
  * This method will return a JSON response
  */

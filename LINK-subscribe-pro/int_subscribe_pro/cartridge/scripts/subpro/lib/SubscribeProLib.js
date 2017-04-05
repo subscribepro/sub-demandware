@@ -126,7 +126,6 @@ let SubscribeProLib = {
 		return SubscribeProLib.handleResponse(service.call({address_id: addressID, address: address}));
 	},
 
-
 	/**
 	 * Find a matching address or create a new one
 	 *
@@ -255,6 +254,26 @@ let SubscribeProLib = {
 			grant_type: grantType,
 			scope: scope
 		}));
+	},
+
+	/**
+	 * Retrieve a single payment profile by id
+	 *
+	 * API Endpoint: GET /services/v1/vault/paymentprofiles/{id}.{_format}
+	 *
+	 * @return Object an object containing whether or not this service returned an error and the results of the API request
+	 */
+	getPaymentProfile: function(paymentProfileID) {
+		if (!paymentProfileID) {
+			return {
+				error: true,
+				result: "paymentprofileID is required for the getPaymentProfile method"
+			}
+		}
+
+		let service = SubscribeProLib.getService("subpro.http.get.paymentprofile");
+
+		return SubscribeProLib.handleResponse(service.call({paymentprofile_id: paymentProfileID}));
 	},
 
 	/**
