@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <services xmlns="http://www.demandware.com/xml/impex/services/2014-09-26">
-	<service-credential service-credential-id="subpro.http.cred">
+	<service-credential service-credential-id="subpro.http.cred.v2">
 		<url>https://api.subscribepro.com/services/v2/{ENDPOINT}?{PARAMS}</url>
 		<user-id>XXXXXXXX</user-id>
 		<password masked="true">********</password>

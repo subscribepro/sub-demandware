@@ -444,7 +444,13 @@ ServiceRegistry.configure("subpro.http.get.paymentprofile", {
      */
     createRequest: function(svc: HTTPFormService, args) {
         svc.setRequestMethod("GET");
-        setURL(svc, "vault/paymentprofiles/" + args.paymentprofile_id + ".json", "");
+        if (args.paymentprofile_id) {
+        	setURL(svc, "vault/paymentprofiles/" + args.paymentprofile_id + ".json", "");
+        } else if (args.transaction_id) {
+        	setURL(svc, "vault/paymentprofiles.json", "transaction_id="+args.transaction_id);
+        } else {
+        	throw new Error("subpro.http.get.paymentprofile requires a paymentprofile_id or transaction_id");
+        }
     },
 
     /**

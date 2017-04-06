@@ -263,17 +263,24 @@ let SubscribeProLib = {
      *
      * @return Object an object containing whether or not this service returned an error and the results of the API request
      */
-    getPaymentProfile: function(paymentProfileID) {
-        if (!paymentProfileID) {
+    getPaymentProfile: function(paymentProfileID, transactionID) {
+        if (!paymentProfileID && !transactionID) {
             return {
                 error: true,
-                result: "paymentprofileID is required for the getPaymentProfile method"
+                result: "paymentprofileID or transactionID is required for the getPaymentProfile method"
             }
         }
 
         let service = SubscribeProLib.getService("subpro.http.get.paymentprofile");
+        let params = {};
+        
+        if (paymentProfileID) {
+        	params = {paymentprofile_id: paymentProfileID};
+        } else if (transactionID) {
+        	params = {transaction_id: transactionID};
+        }
 
-        return SubscribeProLib.handleResponse(service.call({paymentprofile_id: paymentProfileID}));
+        return SubscribeProLib.handleResponse(service.call(params));
     },
 
     /**
@@ -285,8 +292,11 @@ let SubscribeProLib = {
      */
     createPaymentProfile: function(paymentProfile) {
         let service = SubscribeProLib.getService("subpro.http.post.paymentprofile.vault");
+        var requestData = service.getRequestData();
 
-        return SubscribeProLib.handleResponse(service.call({payment_profile: paymentProfile}));
+        var returnObj = SubscribeProLib.handleResponse(service.call({paymentProfile: paymentProfile}));
+        
+        return returnObj;
     },
 
     /**

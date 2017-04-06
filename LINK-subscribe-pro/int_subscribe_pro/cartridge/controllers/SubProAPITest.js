@@ -381,7 +381,7 @@ exports.GetPaymentProfile = function() {
 	/**
 	 * Check to ensure that a paymentprofile_id has been passed via the HTTP Parameters
 	 */
-	if (!httpParameters || !httpParameters.containsKey("paymentprofile_id")) {
+	if (!httpParameters || (!httpParameters.containsKey("paymentprofile_id") && !httpParameters.containsKey("transaction_id"))) {
 		r.renderJSON({
 			error: true,
 			msg: "The paymentprofiles API request requires a paymentprofile_id URL parameter to be set"
@@ -390,8 +390,18 @@ exports.GetPaymentProfile = function() {
 		return;
 	}
 
-	let paymentProfileID = httpParameters.get("paymentprofile_id").pop(),
-		result = SubscribeProLib.getPaymentProfile(paymentProfileID);
+	let paymentProfileID = null, 
+		transactionID = null;
+	
+	if (httpParameters.containsKey("paymentprofile_id")) {
+		paymentProfileID = httpParameters.get("paymentprofile_id").pop()
+	}
+	
+	if (httpParameters.containsKey("transaction_id")) {
+		transactionID = httpParameters.get("transaction_id").pop()
+	}	
+	
+	let result = SubscribeProLib.getPaymentProfile(paymentProfileID, transactionID);
 
 	r.renderJSON(result);
 }
@@ -407,7 +417,7 @@ exports.GetPaymentProfile.public = true;
  */
 exports.SavePaymentProfile = function() {
 	let paymentProfile = {
-		"customer_id": "761431",
+		"customer_id": "348323",
 		"payment_token": "ABCD-UNIQUE-PAY-TOKEN",
 		"creditcard_type": "visa",
 		"creditcard_first_digits": "41111",

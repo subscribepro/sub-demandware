@@ -245,6 +245,15 @@
                 <min-length>0</min-length>
                 <default-value>You need to be logged in as a registered customer to proceed checkout with SubPro Subscription products</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="subproApplePayLoginMsg">
+                <display-name xml:lang="x-default">Subpro Apple Pay Login Message</display-name>
+                <description xml:lang="x-default">Message informing customer that he/she needs to be logged in as a registered customer to use Apple Pay with SubPro Subscription products</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>You need to be logged in as a registered customer to use Apple Pay with SubPro Subscription products</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="subproCreditCardRequirementMsg">
                 <display-name xml:lang="x-default">Subpro Credit Card Requirement Message</display-name>
                 <description xml:lang="x-default">Error message noting that a credit card is required for subscriptions</description>
@@ -284,6 +293,7 @@
                 <display-name xml:lang="x-default">Subscribe Pro</display-name>
                 <attribute attribute-id="subproCreditCardRequirementMsg"/>
                 <attribute attribute-id="subproCheckoutLoginMsg"/>
+                <attribute attribute-id="subproApplePayLoginMsg"/>
                 <attribute attribute-id="subproOrderProcessingErrorMail"/>
                 <attribute attribute-id="subscribeProWidgetScriptUrl"/>
                 <attribute attribute-id="apiBaseUrl"/>

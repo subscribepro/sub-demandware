@@ -7,7 +7,7 @@
 		<comm-log-enabled>true</comm-log-enabled>
 		<mock-mode-enabled>false</mock-mode-enabled>
 		<profile-id>subpro.http.prof</profile-id>
-		<credential-id>subpro.http.cred</credential-id>
+		<credential-id>subpro.http.cred.v2</credential-id>
 	</service>
 
 	<service service-id="subpro.http.get.subscriptions">
@@ -17,7 +17,7 @@
 		<comm-log-enabled>true</comm-log-enabled>
 		<mock-mode-enabled>false</mock-mode-enabled>
 		<profile-id>subpro.http.prof</profile-id>
-		<credential-id>subpro.http.cred</credential-id>
+		<credential-id>subpro.http.cred.v2</credential-id>
 	</service>
 
 	<service service-id="subpro.http.post.subscription">
@@ -27,7 +27,7 @@
 		<comm-log-enabled>true</comm-log-enabled>
 		<mock-mode-enabled>false</mock-mode-enabled>
 		<profile-id>subpro.http.prof</profile-id>
-		<credential-id>subpro.http.cred</credential-id>
+		<credential-id>subpro.http.cred.v2</credential-id>
 	</service>
 
 	<service service-id="subpro.http.post.addresses">
@@ -37,7 +37,7 @@
 		<comm-log-enabled>true</comm-log-enabled>
 		<mock-mode-enabled>false</mock-mode-enabled>
 		<profile-id>subpro.http.prof</profile-id>
-		<credential-id>subpro.http.cred</credential-id>
+		<credential-id>subpro.http.cred.v2</credential-id>
 	</service>
 
 	<service service-id="subpro.http.post.addressfindcreate">
@@ -47,7 +47,7 @@
 		<comm-log-enabled>true</comm-log-enabled>
 		<mock-mode-enabled>false</mock-mode-enabled>
 		<profile-id>subpro.http.prof</profile-id>
-		<credential-id>subpro.http.cred</credential-id>
+		<credential-id>subpro.http.cred.v2</credential-id>
 	</service>
 
 	<service service-id="subpro.http.get.addresses">
@@ -57,7 +57,7 @@
 		<comm-log-enabled>true</comm-log-enabled>
 		<mock-mode-enabled>false</mock-mode-enabled>
 		<profile-id>subpro.http.prof</profile-id>
-		<credential-id>subpro.http.cred</credential-id>
+		<credential-id>subpro.http.cred.v2</credential-id>
 	</service>
 
 	<service service-id="subpro.http.get.products">
@@ -67,7 +67,7 @@
 		<comm-log-enabled>true</comm-log-enabled>
 		<mock-mode-enabled>false</mock-mode-enabled>
 		<profile-id>subpro.http.prof</profile-id>
-		<credential-id>subpro.http.cred</credential-id>
+		<credential-id>subpro.http.cred.v2</credential-id>
 	</service>
 
 	<service service-id="subpro.http.get.customers">
@@ -77,7 +77,7 @@
 		<comm-log-enabled>true</comm-log-enabled>
 		<mock-mode-enabled>false</mock-mode-enabled>
 		<profile-id>subpro.http.prof</profile-id>
-		<credential-id>subpro.http.cred</credential-id>
+		<credential-id>subpro.http.cred.v2</credential-id>
 	</service>
 
 	<service service-id="subpro.http.post.customer">
@@ -87,7 +87,7 @@
 		<comm-log-enabled>true</comm-log-enabled>
 		<mock-mode-enabled>false</mock-mode-enabled>
 		<profile-id>subpro.http.prof</profile-id>
-		<credential-id>subpro.http.cred</credential-id>
+		<credential-id>subpro.http.cred.v2</credential-id>
 	</service>
 
 	<service service-id="subpro.http.post.customers">
@@ -97,7 +97,7 @@
 		<comm-log-enabled>true</comm-log-enabled>
 		<mock-mode-enabled>false</mock-mode-enabled>
 		<profile-id>subpro.http.prof</profile-id>
-		<credential-id>subpro.http.cred</credential-id>
+		<credential-id>subpro.http.cred.v2</credential-id>
 	</service>
 
 	<service service-id="subpro.http.get.token">
@@ -127,6 +127,6 @@
 		<comm-log-enabled>true</comm-log-enabled>
 		<mock-mode-enabled>false</mock-mode-enabled>
 		<profile-id>subpro.http.prof</profile-id>
-		<credential-id>subpro.http.cred</credential-id>
+		<credential-id>subpro.http.cred.v2</credential-id>
 	</service>
 </services>
