@@ -182,7 +182,7 @@ var CartModel = AbstractModel.extend({
      * @param {String} pid - ID of the product that is to be added to the basket.
      * @param {Number} quantity - The quantity of the product.
      * @param {dw.catalog.ProductOptionModel} productOptionModel - The option model of the product that is to be added to the basket.
-     * @param {Object} subproParams - Object containing options for SubPro subscription
+     * @param {Object} [subproParams] - Object containing options for SubPro subscription
      */
     addProductItem: function (product, quantity, productOptionModel, subproParams) {
         var cart = this;
@@ -210,11 +210,17 @@ var CartModel = AbstractModel.extend({
                     var productLineItem = cart.createProductLineItem(product, productOptionModel, shipment);
 
                     if (subproParams) {
+                        var discountValue = parseFloat(subproParams.subscriptionDiscount),
+                            discountToApply = subproParams.subscriptionIsDiscountPercentage
+                                ? new dw.campaign.PercentageDiscount(discountValue * 100)
+                                : new dw.campaign.FixedPriceDiscount(discountValue);
+
+                        productLineItem.createPriceAdjustment("SubscribeProDiscount", discountToApply);
                         productLineItem.custom.subproSubscriptionOptionMode = subproParams.subscriptionOptionMode;
                         productLineItem.custom.subproSubscriptionSelectedOptionMode = subproParams.subscriptionSelectedOptionMode;
                         productLineItem.custom.subproSubscriptionInterval = subproParams.subscriptionInterval;
                         productLineItem.custom.subproSubscriptionAvailableIntervals = subproParams.subscriptionAvailableIntervals;
-                        productLineItem.custom.subproSubscriptionDiscount = parseFloat(subproParams.subscriptionDiscount);
+                        productLineItem.custom.subproSubscriptionDiscount = discountValue;
                         productLineItem.custom.subproSubscriptionIsDiscountPercentage = subproParams.subscriptionIsDiscountPercentage;
                     }
 
