@@ -73,6 +73,7 @@ function start() {
 
         /**
          * Test Payment method
+         * Assume that the Credit Card Payment Instrument matches a saved Payment Instrument for the customer
          */
         let paymentProfileID = false;
         
@@ -89,7 +90,7 @@ function start() {
             	paymentProfileID = response.result.payment_profiles.pop().id;
             }
         } else {
-	        paymentProfileID = ('subproPaymentProfileID' in paymentInstrument.custom) ? paymentInstrument.custom.subproPaymentProfileID : false;
+	        paymentProfileID = ('subproPaymentProfileID' in customerPaymentInstrument.custom) ? customerPaymentInstrument.custom.subproPaymentProfileID : false;
 	        if (paymentProfileID) {
 	            // Payment Profile already exists.
 	            // Call service to verify that it still exists at Subscribe Pro
@@ -151,27 +152,6 @@ function start() {
                     /**
                      * Process Product LineItem
                      */
-                    let interval = pli.custom.subproSubscriptionInterval,
-                        orderCreationDate = Date.parse(order.creationDate),
-                        nextOrderDate;
-
-                    switch (interval) {
-                        case 'Every 2 Months':
-                            nextOrderDate = new Date(orderCreationDate + 5.256e+9);
-                            break;
-
-                        case 'Monthly' || 'Month':
-                            nextOrderDate = new Date(orderCreationDate + 2.628e+9);
-                            break;
-
-                        case 'Weekly':
-                            nextOrderDate = new Date(orderCreationDate + 6.048e+8);
-                            break
-                        default: //@todo this needs removed
-                        	nextOrderDate = new Date(orderCreationDate + 6.048e+8);
-                        	break;
-                    }
-
                     let subscription = {
                         'customer_id': customerSubproID,
                         'payment_profile_id': paymentProfileID,
@@ -181,7 +161,8 @@ function start() {
                         'qty': pli.quantityValue,
                         'use_fixed_price': false,
                         'interval': pli.custom.subproSubscriptionInterval,
-                        'next_order_date': nextOrderDate,
+                        'next_order_date': order.creationDate,
+                        'first_order_already_created': true,
                         'send_customer_notification_email': true
                     };
 

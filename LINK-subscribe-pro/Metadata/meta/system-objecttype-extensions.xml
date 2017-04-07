@@ -263,6 +263,15 @@
                 <min-length>0</min-length>
                 <default-value>You need a credit card to pay for SubPro subscription</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="subproSavedCreditMsg">
+                <display-name xml:lang="x-default">Subpro Saved Credit Card Message</display-name>
+                <description xml:lang="x-default">Error message noting that a credit card is required to be saved for subscriptions</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>Your credit card information will automatically be saved to your account for your subscriptions</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="subproOrderProcessingErrorMail">
                 <display-name xml:lang="x-default">Subscribe Pro Order Processing Error Mail</display-name>
                 <description xml:lang="x-default">An email address that order subscriptions processing failures will be sent to</description>
