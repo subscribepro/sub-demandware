@@ -23,16 +23,16 @@ let errors = [],
 function start() {
     let targetStartDateTime = new Date(Date.now() - parseInt(arguments[0].get('ordersProcessInterval')) * 3.6e+6),
         ordersToProcess = OrderMgr.searchOrders('creationDate >= {0} AND custom.subproSubscriptionsToBeProcessed = true', 'creationDate desc', targetStartDateTime);
-   
+
     while (ordersToProcess.hasNext()) {
-    	let order = ordersToProcess.next();
-    	
-    	if (!order.customer.registered) {
+        let order = ordersToProcess.next();
+
+        if (!order.customer.registered) {
             logError("Order Customer is not registered, skipping this order", 'getCustomer');
             continue;
-    	}
-        
-        var customer = CustomerMgr.getCustomerByLogin(order.customer.profile.credentials.login),
+        }
+
+        let customer = CustomerMgr.getCustomerByLogin(order.customer.profile.credentials.login),
             customerProfile = customer.profile,
             paymentInstrument = order.paymentInstrument,
             customerPaymentInstrument = PaymentsHelper.getCustomerPaymentInstrument(customerProfile.wallet.paymentInstruments, paymentInstrument),
@@ -45,7 +45,7 @@ function start() {
         /**
          * Test customer
          */
-        var customerSubproID = customerProfile.custom.subproCustomerID;
+        let customerSubproID = customerProfile.custom.subproCustomerID;
         if (customerSubproID) {
             // Customer is already a Subscribe Pro Customer.
             // Call service to verify that they are still a customer
@@ -75,46 +75,46 @@ function start() {
          * Test Payment method
          */
         let paymentProfileID = false;
-        
+
         if (paymentInstrument.getPaymentMethod() === "DW_APPLE_PAY") {
             let transactionID = paymentInstrument.getPaymentTransaction().getTransactionID();
             let response = SubscribeProLib.getPaymentProfile(null, transactionID);
-            
+
             if (response.error) {
                 // Some other error occurred
                 logError(response, 'getPaymentProfile');
 
                 continue;
             } else {
-            	paymentProfileID = response.result.payment_profiles.pop().id;
+                paymentProfileID = response.result.payment_profiles.pop().id;
             }
         } else {
-	        paymentProfileID = ('subproPaymentProfileID' in paymentInstrument.custom) ? paymentInstrument.custom.subproPaymentProfileID : false;
-	        if (paymentProfileID) {
-	            // Payment Profile already exists.
-	            // Call service to verify that it still exists at Subscribe Pro
-	            let response = SubscribeProLib.getPaymentProfile(paymentProfileID);
-	            if (response.error && response.result.code === 404) {
-	                // Payment Profile not found. Create new Payment Profile record
-	                paymentProfileID = createSubproPaymentProfile(customerProfile, customerPaymentInstrument, order.billingAddress);
-	            } else if (response.error) {
-	                // Some other error occurred
-	                logError(response, 'getPaymentProfile');
-	
-	                continue;
-	            }
-	        } else {
-	            // Call service to create Payment Profile record
-	            paymentProfileID = createSubproPaymentProfile(customerProfile, customerPaymentInstrument, order.billingAddress);
-	        }
+            paymentProfileID = ('subproPaymentProfileID' in paymentInstrument.custom) ? paymentInstrument.custom.subproPaymentProfileID : false;
+            if (paymentProfileID) {
+                // Payment Profile already exists.
+                // Call service to verify that it still exists at Subscribe Pro
+                let response = SubscribeProLib.getPaymentProfile(paymentProfileID);
+                if (response.error && response.result.code === 404) {
+                    // Payment Profile not found. Create new Payment Profile record
+                    paymentProfileID = createSubproPaymentProfile(customerProfile, customerPaymentInstrument, order.billingAddress);
+                } else if (response.error) {
+                    // Some other error occurred
+                    logError(response, 'getPaymentProfile');
+
+                    continue;
+                }
+            } else {
+                // Call service to create Payment Profile record
+                paymentProfileID = createSubproPaymentProfile(customerProfile, customerPaymentInstrument, order.billingAddress);
+            }
         }
-        
+
         if (!paymentProfileID) {
             logError('Could not get Subscribe Pro Payment profile ID. Skipping this order.');
 
             continue;
-        }        
-        
+        }
+
         /**
          * Iterate over shipments and Product Line Items
          */
@@ -131,7 +131,7 @@ function start() {
                      */
                     let shippingAddress = AddressHelper.getCustomerAddress(customer.addressBook, shipment.shippingAddress);
                     if (!shippingAddress) {
-                    	shippingAddress = app.getModel('Profile').get(order.customer.profile).addAddressToAddressBook(shipment.shippingAddress);
+                        shippingAddress = app.getModel('Profile').get(order.customer.profile).addAddressToAddressBook(shipment.shippingAddress);
                     }
 
                     let subproAddress = AddressHelper.getSubproAddress(shippingAddress, customerProfile),
@@ -166,10 +166,11 @@ function start() {
 
                         case 'Weekly':
                             nextOrderDate = new Date(orderCreationDate + 6.048e+8);
-                            break
+                            break;
+
                         default: //@todo this needs removed
-                        	nextOrderDate = new Date(orderCreationDate + 6.048e+8);
-                        	break;
+                            nextOrderDate = new Date(orderCreationDate + 6.048e+8);
+                            break;
                     }
 
                     let subscription = {
@@ -246,13 +247,24 @@ function logError(response, serviceName) {
  * @returns {number|undefined} id unique identifier of created customer or undefined
  */
 function createSubproCustomer(customer) {
-    let response = SubscribeProLib.createCustomer(CustomerHelper.getSubproCustomer(customer));
+    let customerToPost = CustomerHelper.getSubproCustomer(customer),
+        response = SubscribeProLib.createCustomer(customerToPost);
 
     if (!response.error) {
         // Customer creates successfully. Save Subscribe Pro Customer ID to the Commerce Cloud Customer Profile
-        CustomerHelper.setSubproCustomerID(customer.profile, response.result.customer.id);
+        let customerID = response.result.customer.id;
+        CustomerHelper.setSubproCustomerID(customer.profile, customerID);
 
-        return response.result.customer.id;
+        return customerID;
+    } else if (response.error && response.result.code === 409) {
+        // Customer's email address already exists, get customer by email
+        let response = SubscribeProLib.getCustomer(null, customerToPost.email);
+        if (!response.error) {
+            let customerID = response.result.customers.pop().id;
+            CustomerHelper.setSubproCustomerID(customer.profile, customerID);
+
+            return customerID;
+        }
     }
 }
 
@@ -271,9 +283,10 @@ function createSubproPaymentProfile(customerProfile, paymentInstrument, billingA
 
     if (!response.error) {
         // Payment profile creates successfully. Save Subscribe Pro Payment Profile ID to the Commerce Cloud Order Payment Instrument
-        PaymentsHelper.setSubproPaymentProfileID(paymentInstrument, response.result.payment_profile.id);
+        let paymentProfileID = response.result.payment_profile.id;
+        PaymentsHelper.setSubproPaymentProfileID(paymentInstrument, paymentProfileID);
 
-        return response.result.payment_profile.id;
+        return paymentProfileID;
     }
 }
 

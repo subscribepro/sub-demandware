@@ -186,17 +186,24 @@ let SubscribeProLib = {
      *
      * @return Object an object containing whether or not this service returned an error and the results of the API request
      */
-    getCustomer: function(customerID) {
-        if (!customerID) {
+    getCustomer: function(customerID, customerEmail) {
+        if (!customerID && !customerEmail) {
             return {
                 error: true,
-                result: "customerID is required for the getCustomer method"
+                result: "customerID or customerEmail is required for the getCustomer method"
             }
         }
 
         let service = SubscribeProLib.getService("subpro.http.get.customers");
+        let params = {};
 
-        return SubscribeProLib.handleResponse(service.call({customer_id: customerID}));
+        if (customerID){
+            params = {customer_id: customerID};
+        } else if (customerEmail) {
+            params = {email: customerEmail};
+        }
+
+        return SubscribeProLib.handleResponse(service.call(params));
     },
 
     /**

@@ -254,17 +254,26 @@ exports.Customers = function() {
 	/**
 	 * Check to ensure that a customer_id has been passed via the HTTP Parameters
 	 */
-	if (!httpParameters || !httpParameters.containsKey("customer_id")) {
+	if (!httpParameters || (!httpParameters.containsKey("customer_id") && !httpParameters.containsKey("email"))) {
 		r.renderJSON({
 			error: true,
-			msg: "The customers API request requires a customer_id URL parameter to be set"
+			msg: "The customers API request requires a customer_id or email URL parameter to be set"
 		});
 
 		return;
 	}
 
-	let customerID = httpParameters.get("customer_id").pop(),
-		result = SubscribeProLib.getCustomer(customerID);
+	let customerID, customerEmail;
+
+	if (httpParameters.containsKey("customer_id")) {
+		customerID = httpParameters.get("customer_id").pop();
+	}
+
+	if (httpParameters.containsKey("email")) {
+		customerEmail = httpParameters.get("email").pop();
+	}
+
+	let result = SubscribeProLib.getCustomer(customerID, customerEmail);
 
 	r.renderJSON(result);
 };

@@ -312,7 +312,12 @@ ServiceRegistry.configure("subpro.http.get.customers", {
      */
     createRequest: function(svc: HTTPFormService, args) {
         svc.setRequestMethod("GET");
-        setURL(svc, "customers/" + args.customer_id + ".json", "");
+
+        if (args.customer_id) {
+            setURL(svc, "customers/" + args.customer_id + ".json", "");
+        } else if (args.email) {
+            setURL(svc, "customers.json", "email=" + args.email);
+        }
     },
 
     /**
