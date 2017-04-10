@@ -116,6 +116,12 @@
 
 				</div>
 
+				<isif condition="${productLineItem.custom.subproSubscriptionOptionMode}">
+					<div class="mini-cart-subscription-options">
+						<isinclude url="${URLUtils.url('SubPro-OrderSummary', 'pliUUID', productLineItem.getUUID())}" />
+					</div>
+				</isif>
+
 			</div>
 
 			<isset name="itemCount" value="${itemCount+1}" scope="page"/>

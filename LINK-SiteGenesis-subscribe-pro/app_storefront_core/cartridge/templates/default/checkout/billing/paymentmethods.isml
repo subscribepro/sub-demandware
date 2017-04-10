@@ -1,8 +1,11 @@
 <iscontent type="text/html" charset="UTF-8" compact="true"/>
 <iscomment> TEMPLATENAME: paymentmethods.isml </iscomment>
 <isinclude template="util/modules"/>
+<isscript>
+var SubscribeProLib = require('/int_subscribe_pro/cartridge/scripts/subpro/lib/SubscribeProLib');
+</isscript>
 
-<isset name="isSubPro" value="${pdict.isSubPro}" scope="page" />
+<isset name="isSubPro" value="${SubscribeProLib.isSubPro()}" scope="page" />
 
 <isif condition="${pdict.OrderTotal > 0 || isSubPro}">
 	<fieldset>
@@ -109,7 +112,12 @@
 			<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.cvn}" type="input" rowclass="cvn" dynamicname="true" help="${help}"/>
 
 			<isif condition="${pdict.CurrentCustomer.authenticated}">
-				<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.saveCard}" type="checkbox"/>
+				<isif condition="${isSubPro}">
+					<div class="subpro-message"><isprint value="${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproSavedCreditMsg')}" /></div>
+					<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.saveCard}" type="hidden" value="true" />
+				<iselse>
+					<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.saveCard}" type="checkbox" />
+				</isif>
 			</isif>
 
 		</div>

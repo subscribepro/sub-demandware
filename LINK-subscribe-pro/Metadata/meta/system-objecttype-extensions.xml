@@ -101,6 +101,25 @@
         </group-definitions>
     </type-extension>
 
+    <type-extension type-id="CustomerPaymentInstrument">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="subproPaymentProfileID">
+                <display-name xml:lang="x-default">Subscribe Pro Payment Profile ID</display-name>
+                <description xml:lang="x-default">This attribute will contain the payment profile id that is returned from Subscription Pro upon creating payment profile record in the Subscribe Pro system</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="subscribe-pro">
+                <display-name xml:lang="x-default">Subscribe Pro</display-name>
+                <attribute attribute-id="subproPaymentProfileID"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
     <type-extension type-id="Order">
         <custom-attribute-definitions>
             <attribute-definition attribute-id="subproContainsSubscriptions">
@@ -226,6 +245,15 @@
                 <min-length>0</min-length>
                 <default-value>You need to be logged in as a registered customer to proceed checkout with SubPro Subscription products</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="subproApplePayLoginMsg">
+                <display-name xml:lang="x-default">Subpro Apple Pay Login Message</display-name>
+                <description xml:lang="x-default">Message informing customer that he/she needs to be logged in as a registered customer to use Apple Pay with SubPro Subscription products</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>You need to be logged in as a registered customer to use Apple Pay with SubPro Subscription products</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="subproCreditCardRequirementMsg">
                 <display-name xml:lang="x-default">Subpro Credit Card Requirement Message</display-name>
                 <description xml:lang="x-default">Error message noting that a credit card is required for subscriptions</description>
@@ -235,12 +263,49 @@
                 <min-length>0</min-length>
                 <default-value>You need a credit card to pay for SubPro subscription</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="subproSavedCreditMsg">
+                <display-name xml:lang="x-default">Subpro Saved Credit Card Message</display-name>
+                <description xml:lang="x-default">Error message noting that a credit card is required to be saved for subscriptions</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>Your credit card information will automatically be saved to your account for your subscriptions</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="subproOrderProcessingErrorMail">
+                <display-name xml:lang="x-default">Subscribe Pro Order Processing Error Mail</display-name>
+                <description xml:lang="x-default">An email address that order subscriptions processing failures will be sent to</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="subscribeProWidgetScriptUrl">
+                <display-name xml:lang="x-default">Subscribe Pro Widget Script Url</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>https://widgets.subscribepro.com/subscribepro-widgets.min.js</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="apiBaseUrl">
+                <display-name xml:lang="x-default">Subscribe Pro API Base Url</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>https://api.subscribepro.com</default-value>
+            </attribute-definition>
         </custom-attribute-definitions>
          <group-definitions>
             <attribute-group group-id="subscribe-pro">
                 <display-name xml:lang="x-default">Subscribe Pro</display-name>
                 <attribute attribute-id="subproCreditCardRequirementMsg"/>
                 <attribute attribute-id="subproCheckoutLoginMsg"/>
+                <attribute attribute-id="subproApplePayLoginMsg"/>
+                <attribute attribute-id="subproOrderProcessingErrorMail"/>
+                <attribute attribute-id="subscribeProWidgetScriptUrl"/>
+                <attribute attribute-id="apiBaseUrl"/>
             </attribute-group>
         </group-definitions>
     </type-extension>

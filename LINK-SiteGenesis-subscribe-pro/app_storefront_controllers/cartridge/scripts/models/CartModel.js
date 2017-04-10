@@ -122,14 +122,14 @@ var CartModel = AbstractModel.extend({
             } else {
                 productOptionModel = productToAdd.updateOptionSelection(params);
 
-                if (params.subproSubscriptionInterval && params.subproSubscriptionOptionMode) {
+                if (params.subproSubscriptionInterval.value && params.subproSubscriptionOptionMode.value) {
                     cart.addProductItem(productToAdd.object, params.Quantity.doubleValue, productOptionModel, {
-                        "subscriptionInterval": params.subproSubscriptionInterval,
-                        "subscriptionOptionMode": params.subproSubscriptionAvailableOptionMode,
-                        "subscriptionSelectedOptionMode": params.subproSubscriptionOptionMode,
-                        "subscriptionAvailableIntervals": params.subproSubscriptionAvailableIntervals,
-                        "subscriptionDiscount": params.subproSubscriptionDiscount,
-                        "subscriptionIsDiscountPercentage": params.subproSubscriptionIsDiscountPercentage == "true"
+                        "subscriptionInterval": params.subproSubscriptionInterval.value,
+                        "subscriptionOptionMode": params.subproSubscriptionAvailableOptionMode.value,
+                        "subscriptionSelectedOptionMode": params.subproSubscriptionOptionMode.value,
+                        "subscriptionAvailableIntervals": params.subproSubscriptionAvailableIntervals.value,
+                        "subscriptionDiscount": params.subproSubscriptionDiscount.value,
+                        "subscriptionIsDiscountPercentage": params.subproSubscriptionIsDiscountPercentage.booleanValue
                     });
                 } else {
                     cart.addProductItem(productToAdd.object, params.Quantity.doubleValue, productOptionModel);
@@ -182,7 +182,7 @@ var CartModel = AbstractModel.extend({
      * @param {String} pid - ID of the product that is to be added to the basket.
      * @param {Number} quantity - The quantity of the product.
      * @param {dw.catalog.ProductOptionModel} productOptionModel - The option model of the product that is to be added to the basket.
-     * @param {Object} subproParams - Object containing options for SubPro subscription
+     * @param {Object} [subproParams] - Object containing options for SubPro subscription
      */
     addProductItem: function (product, quantity, productOptionModel, subproParams) {
         var cart = this;
@@ -210,11 +210,17 @@ var CartModel = AbstractModel.extend({
                     var productLineItem = cart.createProductLineItem(product, productOptionModel, shipment);
 
                     if (subproParams) {
+                        var discountValue = parseFloat(subproParams.subscriptionDiscount),
+                            discountToApply = subproParams.subscriptionIsDiscountPercentage
+                                ? new dw.campaign.PercentageDiscount(discountValue * 100)
+                                : new dw.campaign.FixedPriceDiscount(discountValue);
+
+                        productLineItem.createPriceAdjustment("SubscribeProDiscount", discountToApply);
                         productLineItem.custom.subproSubscriptionOptionMode = subproParams.subscriptionOptionMode;
                         productLineItem.custom.subproSubscriptionSelectedOptionMode = subproParams.subscriptionSelectedOptionMode;
                         productLineItem.custom.subproSubscriptionInterval = subproParams.subscriptionInterval;
                         productLineItem.custom.subproSubscriptionAvailableIntervals = subproParams.subscriptionAvailableIntervals;
-                        productLineItem.custom.subproSubscriptionDiscount = parseFloat(subproParams.subscriptionDiscount);
+                        productLineItem.custom.subproSubscriptionDiscount = discountValue;
                         productLineItem.custom.subproSubscriptionIsDiscountPercentage = subproParams.subscriptionIsDiscountPercentage;
                     }
 
@@ -1430,6 +1436,14 @@ var CartModel = AbstractModel.extend({
         var basket = this.object;
         var order;
         try {
+            let isSubPro = require('/int_subscribe_pro/cartridge/scripts/subpro/lib/SubscribeProLib.js').isSubPro();
+            if (isSubPro) {
+                Transaction.wrap(function () {
+                    basket.custom.subproContainsSubscriptions = isSubPro;
+                    basket.custom.subproSubscriptionsToBeProcessed = true;
+                });
+            }
+
             order = Transaction.wrap(function () {
                 return OrderMgr.createOrder(basket);
             });

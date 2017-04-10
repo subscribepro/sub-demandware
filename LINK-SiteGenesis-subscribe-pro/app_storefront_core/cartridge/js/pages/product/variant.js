@@ -5,7 +5,8 @@ var ajax = require('../../ajax'),
     progress = require('../../progress'),
     productStoreInventory = require('../../storeinventory/product'),
     tooltip = require('../../tooltip'),
-    util = require('../../util');
+    util = require('../../util'),
+    subscriptionOptions = require('../../../../../../LINK-subscribe-pro/int_subscribe_pro/cartridge/js/subscriptionOptions');
 
 
 /**
@@ -32,6 +33,7 @@ var updateContent = function (href) {
             }
             image.replaceImages();
             tooltip.init();
+            subscriptionOptions.variantInit();
         }
     });
 };
@@ -68,4 +70,6 @@ module.exports = function () {
         if ($(this).val().length === 0) { return; }
         updateContent($(this).val());
     });
+    
+    subscriptionOptions.variantInit();
 };

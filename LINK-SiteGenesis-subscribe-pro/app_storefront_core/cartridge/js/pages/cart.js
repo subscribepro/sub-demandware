@@ -4,7 +4,7 @@ var account = require('./account'),
     bonusProductsView = require('../bonus-products-view'),
     quickview = require('../quickview'),
     cartStoreInventory = require('../storeinventory/cart'),
-    subscriptionOptions = require('./subscriptionOptions');
+    subscriptionOptions = require('../../../../../LINK-subscribe-pro/int_subscribe_pro/cartridge/js/subscriptionOptions');
 
 /**
  * @private
@@ -41,17 +41,7 @@ function initializeEvents() {
         }
     });
 
-    $('.subpro-options.cart input[name=subproSubscriptionOptionMode]').on('change', (event) => {
-        let $deliveryInteval = $('.subpro-options.cart #delivery-interval');
-
-        $(event.currentTarget).val() === 'regular'
-            ? $deliveryInteval.prop('disabled', false)
-            : $deliveryInteval.prop('disabled', true);
-
-        subscriptionOptions.ajaxUpdateOptions(subscriptionOptions.getOptionsState());
-    });
-
-    $('.subpro-options.cart #delivery-interval').on('change', () => subscriptionOptions.ajaxUpdateOptions(subscriptionOptions.getOptionsState()));
+    subscriptionOptions.cartInit();
 }
 
 exports.init = function () {

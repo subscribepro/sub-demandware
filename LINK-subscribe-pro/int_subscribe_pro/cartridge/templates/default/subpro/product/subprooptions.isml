@@ -13,7 +13,7 @@
             ${Resource.msgf('product.subscription.delivery.onetime', 'product', null, price)}
             <isif condition="${product.discount}"> ${Resource.msgf('product.subscription.delivery.discount', 'product', null, discount)}</isif>
         </label>
-        <input type="radio" name="subproSubscriptionOptionMode" id="onetime-delivery" value="onetime"
+        <input type="radio" name="subproSubscriptionOptionMode${product.ID || ''}" id="onetime-delivery" value="onetime"
             <isif condition="${product.selected_option_mode !== 'regular'}">checked</isif>>
     </isif>
 
@@ -21,15 +21,17 @@
         ${Resource.msgf('product.subscription.delivery.regular', 'product', null, price)}
         <isif condition="${product.discount}"> ${Resource.msgf('product.subscription.delivery.discount', 'product', null, discount)}</isif>
     </label>
-    <input type="radio" name="subproSubscriptionOptionMode" id="regular-delivery" value="regular"
+    <input type="radio" name="subproSubscriptionOptionMode${product.ID || ''}" id="regular-delivery" value="regular"
         <isif condition="${product.subscription_option_mode === 'subscription_only' || product.selected_option_mode === 'regular'}">checked</isif>>
 
-    <label for="delivery-interval">${Resource.msg('product.subscription.delivery.every', 'product', null)}</label>
-    <select id="delivery-interval" name="subproSubscriptionInterval">
-        <isloop items="${product.intervals}" var="interval">
-            <option value="${interval}" <isif condition="${interval === product.selected_interval || interval === product.default_interval}">selected</isif>>${interval}</option>
-        </isloop>
-    </select>
+    <div class="delivery-interval-group" <isif condition="${product.selected_option_mode !== 'regular'}">hidden</isif>>
+        <label for="delivery-interval">${Resource.msg('product.subscription.delivery.every', 'product', null)}</label>
+        <select id="delivery-interval" name="subproSubscriptionInterval">
+            <isloop items="${product.intervals}" var="interval">
+                <option value="${interval}" <isif condition="${interval === product.selected_interval || interval === product.default_interval}">selected</isif>>${interval}</option>
+            </isloop>
+        </select>
+    </div>
 
     <input type="hidden" name="subproSubscriptionAvailableOptionMode" value="${product.subscription_option_mode.toString()}">
     <input type="hidden" name="subproSubscriptionAvailableIntervals" value="${product.intervals.toString()}">

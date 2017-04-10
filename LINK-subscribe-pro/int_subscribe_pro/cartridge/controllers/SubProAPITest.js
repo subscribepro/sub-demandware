@@ -7,7 +7,7 @@
  * @module controllers/SubProAPITest
  */
 let r = require('/app_storefront_controllers/cartridge/scripts/util/Response');
-let SubscribeProLib = require("~/cartridge/scripts/subpro/lib/SubscribeProLib");
+let SubscribeProLib = require('~/cartridge/scripts/subpro/lib/SubscribeProLib');
 
 /**
  * Calls and return the results of the /config API end-point
@@ -237,7 +237,7 @@ exports.Products = function() {
 		result = SubscribeProLib.getProduct(sku);
 
 	r.renderJSON(result);
-}
+};
 
 /**
  * Mark the controller endpoint as accessible via the web
@@ -254,20 +254,29 @@ exports.Customers = function() {
 	/**
 	 * Check to ensure that a customer_id has been passed via the HTTP Parameters
 	 */
-	if (!httpParameters || !httpParameters.containsKey("customer_id")) {
+	if (!httpParameters || (!httpParameters.containsKey("customer_id") && !httpParameters.containsKey("email"))) {
 		r.renderJSON({
 			error: true,
-			msg: "The customers API request requires a customer_id URL parameter to be set"
+			msg: "The customers API request requires a customer_id or email URL parameter to be set"
 		});
 
 		return;
 	}
 
-	let customerID = httpParameters.get("customer_id").pop(),
-		result = SubscribeProLib.getCustomer(customerID);
+	let customerID, customerEmail;
+
+	if (httpParameters.containsKey("customer_id")) {
+		customerID = httpParameters.get("customer_id").pop();
+	}
+
+	if (httpParameters.containsKey("email")) {
+		customerEmail = httpParameters.get("email").pop();
+	}
+
+	let result = SubscribeProLib.getCustomer(customerID, customerEmail);
 
 	r.renderJSON(result);
-}
+};
 
 /**
  * Mark the controller endpoint as accessible via the web
@@ -285,7 +294,7 @@ exports.Customer = function() {
 		"last_name": "Surname",
 		"middle_name": "mid",
 		"magento_customer_id": 1
-	}
+	};
 
 	let result = SubscribeProLib.createCustomer(customer);
 
@@ -323,7 +332,7 @@ exports.UpdateCustomer = function() {
 		"last_name": "Surname",
 		"middle_name": "mid",
 		"magento_customer_id": 1
-	}
+	};
 
 	let customerID = httpParameters.get("customer_id").pop(),
 		result = SubscribeProLib.updateCustomer(customerID, customer);
@@ -335,3 +344,122 @@ exports.UpdateCustomer = function() {
  * Mark the controller endpoint as accessible via the web
  */
 exports.UpdateCustomer.public = true;
+
+/**
+ * Calls and return the results of getting an access token from the /token API end-point
+ * This method will return a JSON response
+ */
+exports.GetTokenWidget = function() {
+	const httpParameters = request.httpParameters;
+
+	/**
+	 * Check to ensure that a customer_id has been passed via the HTTP Parameters
+	 */
+	if (!httpParameters ||
+		!httpParameters.containsKey("customer_id") ||
+		!httpParameters.containsKey("grant_type") ||
+		!httpParameters.containsKey("scope")) {
+		r.renderJSON({
+			error: true,
+			msg: "The customers API request requires a customer_id, grant_type and scope URL parameters to be set"
+		});
+
+		return;
+	}
+
+	let customerID = httpParameters.get("customer_id").pop(),
+		grantType = httpParameters.get("grant_type").pop(),
+		scope = httpParameters.get("scope").pop(),
+		result = SubscribeProLib.getToken(customerID, grantType, scope);
+
+	r.renderJSON(result);
+};
+
+/**
+ * Mark the controller endpoint as accessible via the web
+ */
+exports.GetTokenWidget.public = true;
+
+/**
+ * Calls and return the results of the /vault/paymentprofiles API end-point
+ * This method will return a JSON response
+ */
+exports.GetPaymentProfile = function() {
+	const httpParameters = request.httpParameters;
+
+	/**
+	 * Check to ensure that a paymentprofile_id has been passed via the HTTP Parameters
+	 */
+	if (!httpParameters || (!httpParameters.containsKey("paymentprofile_id") && !httpParameters.containsKey("transaction_id"))) {
+		r.renderJSON({
+			error: true,
+			msg: "The paymentprofiles API request requires a paymentprofile_id URL parameter to be set"
+		});
+
+		return;
+	}
+
+	let paymentProfileID = null, 
+		transactionID = null;
+	
+	if (httpParameters.containsKey("paymentprofile_id")) {
+		paymentProfileID = httpParameters.get("paymentprofile_id").pop()
+	}
+	
+	if (httpParameters.containsKey("transaction_id")) {
+		transactionID = httpParameters.get("transaction_id").pop()
+	}	
+	
+	let result = SubscribeProLib.getPaymentProfile(paymentProfileID, transactionID);
+
+	r.renderJSON(result);
+}
+
+/**
+ * Mark the controller endpoint as accessible via the web
+ */
+exports.GetPaymentProfile.public = true;
+
+/**
+ * Calls and return the results of posting new payment method to the /vault/paymentprofile/external-vault API end-point
+ * This method will return a JSON response
+ */
+exports.SavePaymentProfile = function() {
+	let paymentProfile = {
+		"customer_id": "348323",
+		"payment_token": "ABCD-UNIQUE-PAY-TOKEN",
+		"creditcard_type": "visa",
+		"creditcard_first_digits": "41111",
+		"creditcard_last_digits": "1111",
+		"creditcard_month": "3",
+		"creditcard_year": "2025",
+		"vault_specific_fields": {
+			"sfcc": {
+				"payment_instrument_id": "12341234123",
+				"my_other_field": "stuff"
+			}
+		},
+		"billing_address": {
+			"first_name": "Bob",
+			"middle_name": "A",
+			"last_name": "Jones",
+			"company": "Bobs Emporium",
+			"street1": "123 Here St",
+			"street2": "Apt B",
+			"city": "Baltimore",
+			"region": "MD",
+			"postcode": "21212",
+			"country": "US",
+			"phone": "410-123-4567"
+		}
+	};
+
+	let result = SubscribeProLib.createPaymentProfile(paymentProfile);
+
+	r.renderJSON(result);
+};
+
+/**
+ * Mark the controller endpoint as accessible via the web
+ */
+exports.SavePaymentProfile.public = true;
