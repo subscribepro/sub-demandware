@@ -122,14 +122,14 @@ var CartModel = AbstractModel.extend({
             } else {
                 productOptionModel = productToAdd.updateOptionSelection(params);
 
-                if (params.subproSubscriptionInterval && params.subproSubscriptionOptionMode) {
+                if (params.subproSubscriptionInterval.value && params.subproSubscriptionOptionMode.value) {
                     cart.addProductItem(productToAdd.object, params.Quantity.doubleValue, productOptionModel, {
-                        "subscriptionInterval": params.subproSubscriptionInterval,
-                        "subscriptionOptionMode": params.subproSubscriptionAvailableOptionMode,
-                        "subscriptionSelectedOptionMode": params.subproSubscriptionOptionMode,
-                        "subscriptionAvailableIntervals": params.subproSubscriptionAvailableIntervals,
-                        "subscriptionDiscount": params.subproSubscriptionDiscount,
-                        "subscriptionIsDiscountPercentage": params.subproSubscriptionIsDiscountPercentage == "true"
+                        "subscriptionInterval": params.subproSubscriptionInterval.value,
+                        "subscriptionOptionMode": params.subproSubscriptionAvailableOptionMode.value,
+                        "subscriptionSelectedOptionMode": params.subproSubscriptionOptionMode.value,
+                        "subscriptionAvailableIntervals": params.subproSubscriptionAvailableIntervals.value,
+                        "subscriptionDiscount": params.subproSubscriptionDiscount.value,
+                        "subscriptionIsDiscountPercentage": params.subproSubscriptionIsDiscountPercentage.booleanValue
                     });
                 } else {
                     cart.addProductItem(productToAdd.object, params.Quantity.doubleValue, productOptionModel);
