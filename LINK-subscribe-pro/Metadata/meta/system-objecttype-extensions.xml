@@ -296,6 +296,14 @@
                 <min-length>0</min-length>
                 <default-value>https://api.subscribepro.com</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="subproAPICredSuffix">
+              <display-name xml:lang="x-default">Suffix to append to the Subscribe Pro Web Service Credentials</display-name>
+              <type>string</type>
+              <mandatory-flag>false</mandatory-flag>
+              <externally-managed-flag>false</externally-managed-flag>
+              <min-length>0</min-length>
+              <default-value>siteName</default-value>
+            </attribute-definition>
         </custom-attribute-definitions>
          <group-definitions>
             <attribute-group group-id="subscribe-pro">
@@ -306,6 +314,7 @@
                 <attribute attribute-id="subproOrderProcessingErrorMail"/>
                 <attribute attribute-id="subproWidgetScriptUrl"/>
                 <attribute attribute-id="subproApiBaseUrl"/>
+                <attribute attribute-id="subproAPICredSuffix"/>
             </attribute-group>
         </group-definitions>
     </type-extension>

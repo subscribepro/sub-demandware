@@ -17,28 +17,7 @@ let AddressesMockData = require("../mock_data/AddressesMockData");
 let ProductMockData = require("../mock_data/ProductMockData");
 let CustomerMockData = require("../mock_data/CustomerMockData");
 let PaymentProfileMockData = require("../mock_data/PaymentProfileMockData");
-
-/**
- * Update the URL Parameter of the Service to include the 
- * specified endpoint and any supplied parameters 
- * 
- * @param svc : HTTPService HTTP Service to update URL on 
- * @param endpoint : String API Endpoint to call on the service
- * @param parameters : String GET URL parameters to append to the URL 
- */
-function setURL(svc, endpoint, parameters) {
-    /**
-     * Replace the URL parameters with the relevant values
-     */
-    let url = svc.getURL();
-    url = url.replace("{ENDPOINT}", endpoint);
-    url = url.replace("{PARAMS}", parameters);
-
-    /**
-     * Save the newly constructed url
-     */
-    svc.setURL(url);
-}
+let SubscribeProLib = require("../lib/SubscribeProLib");
 
 /**
  * Wrap the Mock JSON data with request information so
@@ -66,7 +45,7 @@ ServiceRegistry.configure("subpro.http.get.config", {
      */
     createRequest: function(svc: HTTPService, args) {
         svc.setRequestMethod("GET");
-        setURL(svc, "config.json", "");
+	SubscribeProLib.setURL(svc, "config.json", "");
         return null;
     },
 
@@ -101,7 +80,7 @@ ServiceRegistry.configure("subpro.http.get.subscriptions", {
      */
     createRequest: function(svc: HTTPService, args) {
         svc.setRequestMethod("GET");
-        setURL(svc, "subscriptions.json", "customer_id=" + args.customer_id);
+	SubscribeProLib.setURL(svc, "subscriptions.json", "customer_id=" + args.customer_id);
         return null;
     },
 
@@ -134,7 +113,7 @@ ServiceRegistry.configure("subpro.http.post.subscription", {
      */
     createRequest: function(svc: HTTPService, args) {
         svc.setRequestMethod("POST");
-        setURL(svc, "subscription.json", "");
+	SubscribeProLib.setURL(svc, "subscription.json", "");
 
         /**
          * Return the parameters to be POSTed to the URL, if there are any
@@ -179,9 +158,9 @@ ServiceRegistry.configure("subpro.http.post.addresses", {
          * Setup the URL
          */
         if (args.address_id) {
-            setURL(svc, "addresses/" + args.address_id, "");
+	    SubscribeProLib.setURL(svc, "addresses/" + args.address_id, "");
         } else {
-            setURL(svc, "address", "");
+	    SubscribeProLib.setURL(svc, "address", "");
         }
 
         /**
@@ -219,7 +198,7 @@ ServiceRegistry.configure("subpro.http.post.addressfindcreate", {
      */
     createRequest: function(svc: HTTPFormService, args) {
         svc.setRequestMethod("POST");
-        setURL(svc, "address/find-or-create.json", "");
+	SubscribeProLib.setURL(svc, "address/find-or-create.json", "");
 
         /**
          * Return the parameters to be POSTed to the URL, if there are any
@@ -256,7 +235,7 @@ ServiceRegistry.configure("subpro.http.get.addresses", {
      */
     createRequest: function(svc: HTTPFormService, args) {
         svc.setRequestMethod("GET");
-        setURL(svc, "addresses.json", "customer_id=" + args.customer_id);
+	SubscribeProLib.setURL(svc, "addresses.json", "customer_id=" + args.customer_id);
     },
 
     /**
@@ -284,7 +263,7 @@ ServiceRegistry.configure("subpro.http.get.products", {
      */
     createRequest: function(svc: HTTPFormService, args) {
         svc.setRequestMethod("GET");
-        setURL(svc, "products.json", "sku=" + args.sku);
+	SubscribeProLib.setURL(svc, "products.json", "sku=" + args.sku);
     },
 
     /**
@@ -314,9 +293,9 @@ ServiceRegistry.configure("subpro.http.get.customers", {
         svc.setRequestMethod("GET");
 
         if (args.customer_id) {
-            setURL(svc, "customers/" + args.customer_id + ".json", "");
+	    SubscribeProLib.setURL(svc, "customers/" + args.customer_id + ".json", "");
         } else if (args.email) {
-            setURL(svc, "customers.json", "email=" + args.email);
+	    SubscribeProLib.setURL(svc, "customers.json", "email=" + args.email);
         }
     },
 
@@ -345,7 +324,7 @@ ServiceRegistry.configure("subpro.http.post.customer", {
      */
     createRequest: function(svc: HTTPFormService, args) {
         svc.setRequestMethod("POST");
-        setURL(svc, "customer.json", "");
+	SubscribeProLib.setURL(svc, "customer.json", "");
 
         /**
          * Return the parameters to be POSTed to the URL, if there are any
@@ -382,7 +361,7 @@ ServiceRegistry.configure("subpro.http.post.customers", {
      */
     createRequest: function(svc: HTTPFormService, args) {
         svc.setRequestMethod("POST");
-        setURL(svc, "customers/" + args.customer_id + ".json", "");
+	SubscribeProLib.setURL(svc, "customers/" + args.customer_id + ".json", "");
 
         /**
          * Return the parameters to be POSTed to the URL, if there are any
@@ -419,7 +398,7 @@ ServiceRegistry.configure("subpro.http.get.token", {
      */
     createRequest: function(svc: HTTPFormService, args) {
         svc.setRequestMethod("GET");
-        setURL(svc, "token", "customer_id=" + args.customer_id +
+	SubscribeProLib.setURL(svc, "token", "customer_id=" + args.customer_id +
             "&grant_type=" + args.grant_type +
             "&scope=" + args.scope);
     },
@@ -450,9 +429,9 @@ ServiceRegistry.configure("subpro.http.get.paymentprofile", {
     createRequest: function(svc: HTTPFormService, args) {
         svc.setRequestMethod("GET");
         if (args.paymentprofile_id) {
-            setURL(svc, "vault/paymentprofiles/" + args.paymentprofile_id + ".json", "");
+	    SubscribeProLib.setURL(svc, "vault/paymentprofiles/" + args.paymentprofile_id + ".json", "");
         } else if (args.transaction_id) {
-            setURL(svc, "vault/paymentprofiles.json", "transaction_id="+args.transaction_id);
+	    SubscribeProLib.setURL(svc, "vault/paymentprofiles.json", "transaction_id="+args.transaction_id);
         } else {
             throw new Error("subpro.http.get.paymentprofile requires a paymentprofile_id or transaction_id");
         }
@@ -483,7 +462,7 @@ ServiceRegistry.configure("subpro.http.post.paymentprofile.vault", {
      */
     createRequest: function(svc: HTTPFormService, args) {
         svc.setRequestMethod("POST");
-        setURL(svc, "vault/paymentprofile/external-vault.json", "");
+	SubscribeProLib.setURL(svc, "vault/paymentprofile/external-vault.json", "");
 
         /**
          * Return the parameters to be POSTed to the URL, if there are any
