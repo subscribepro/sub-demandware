@@ -280,7 +280,7 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-            <attribute-definition attribute-id="subscribeProWidgetScriptUrl">
+            <attribute-definition attribute-id="subproWidgetScriptUrl">
                 <display-name xml:lang="x-default">Subscribe Pro Widget Script Url</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
@@ -288,7 +288,7 @@
                 <min-length>0</min-length>
                 <default-value>https://widgets.subscribepro.com/subscribepro-widgets.min.js</default-value>
             </attribute-definition>
-            <attribute-definition attribute-id="apiBaseUrl">
+            <attribute-definition attribute-id="subproApiBaseUrl">
                 <display-name xml:lang="x-default">Subscribe Pro API Base Url</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
@@ -304,8 +304,8 @@
                 <attribute attribute-id="subproCheckoutLoginMsg"/>
                 <attribute attribute-id="subproApplePayLoginMsg"/>
                 <attribute attribute-id="subproOrderProcessingErrorMail"/>
-                <attribute attribute-id="subscribeProWidgetScriptUrl"/>
-                <attribute attribute-id="apiBaseUrl"/>
+                <attribute attribute-id="subproWidgetScriptUrl"/>
+                <attribute attribute-id="subproApiBaseUrl"/>
             </attribute-group>
         </group-definitions>
     </type-extension>

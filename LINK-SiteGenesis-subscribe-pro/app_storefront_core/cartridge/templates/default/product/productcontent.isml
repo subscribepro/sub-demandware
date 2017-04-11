@@ -305,7 +305,7 @@
 		</iscomment>
 
 		<!-- Load the Subscribe Pro widget script -->
-		<script src="${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subscribeProWidgetScriptUrl')}"></script>
+		<script src="${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproWidgetScriptUrl')}"></script>
 
 		<isset name="widgetConfig" scope="page"
 			value="${require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/WidgetsHelper').getWidgetConfig(customer.profile.custom.subproCustomerID, 'client_credentials', 'widget', 'sp-add-to-order-widget', 'sp-add-to-order')}"/>
