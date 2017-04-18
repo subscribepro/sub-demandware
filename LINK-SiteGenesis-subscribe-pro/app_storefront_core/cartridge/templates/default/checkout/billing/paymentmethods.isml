@@ -113,8 +113,18 @@ var SubscribeProLib = require('/int_subscribe_pro/cartridge/scripts/subpro/lib/S
 
 			<isif condition="${pdict.CurrentCustomer.authenticated}">
 				<isif condition="${isSubPro}">
-					<div class="subpro-message"><isprint value="${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproSavedCreditMsg')}" /></div>
-					<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.saveCard}" type="hidden" value="true" />
+					<isset name="saveInputField" value="${pdict.CurrentForms.billing.paymentMethods.creditCard.saveCard}" scope="page" />
+					
+					<div class="form-row  label-inline form-indent">
+						<div class="field-wrapper">
+							<input class="input-checkbox" type="checkbox" disabled="disabled" checked="checked" value="true">
+							<input type="hidden" id="${saveInputField.htmlName}" name="${saveInputField.htmlName}" value="true">
+						</div>
+						<label for="${saveInputField.htmlName}">
+							<span><isprint value="${Resource.msg(saveInputField.label, 'forms', null)}" /></span>
+						</label>
+						<div class="form-caption"><isprint value="${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproSavedCreditMsg')}" /></div>
+					</div>
 				<iselse>
 					<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.saveCard}" type="checkbox" />
 				</isif>
