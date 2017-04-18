@@ -50,7 +50,7 @@ let PaymentsHelper = {
                 "city": billingAddress.city,
                 "region": billingAddress.stateCode,
                 "postcode": billingAddress.postalCode,
-                "country": billingAddress.countryCode.toString(),
+                "country": (billingAddress.getCountryCode() ? billingAddress.getCountryCode().toString().toUpperCase() : ""),
                 "phone": billingAddress.phone || ""
             }
         }

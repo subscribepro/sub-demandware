@@ -47,7 +47,7 @@ let AddressHelper = {
             "street2": address.getAddress2() || "",
             "city": address.getCity() || "",
             "postcode": address.getPostalCode() || "",
-            "country": address.getCountryCode().toString() || "",
+            "country": (address.getCountryCode() ? address.getCountryCode().toString().toUpperCase() : ""),
             "phone": address.getPhone() || ""
         }
     },
