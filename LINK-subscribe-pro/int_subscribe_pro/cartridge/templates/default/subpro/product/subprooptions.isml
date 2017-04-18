@@ -14,7 +14,7 @@
             <isif condition="${product.discount}"> ${Resource.msgf('product.subscription.delivery.discount', 'product', null, discount)}</isif>
         </label>
         <input type="radio" name="subproSubscriptionOptionMode${product.ID || ''}" id="onetime-delivery" value="onetime"
-            <isif condition="${product.selected_option_mode !== 'regular'}">checked</isif>>
+            <isif condition="${product.selected_option_mode !== 'regular' || product.default_subscription_option === 'onetime_purchase'}">checked</isif>>
     </isif>
 
     <label for="regular-delivery">
@@ -22,7 +22,7 @@
         <isif condition="${product.discount}"> ${Resource.msgf('product.subscription.delivery.discount', 'product', null, discount)}</isif>
     </label>
     <input type="radio" name="subproSubscriptionOptionMode${product.ID || ''}" id="regular-delivery" value="regular"
-        <isif condition="${product.subscription_option_mode === 'subscription_only' || product.selected_option_mode === 'regular'}">checked</isif>>
+        <isif condition="${product.subscription_option_mode === 'subscription_only' || product.selected_option_mode === 'regular' || product.default_subscription_option === 'subscription'}">checked</isif>>
 
     <div class="delivery-interval-group" <isif condition="${product.selected_option_mode !== 'regular'}">hidden</isif>>
         <label for="delivery-interval">${Resource.msg('product.subscription.delivery.every', 'product', null)}</label>
