@@ -11,7 +11,6 @@
     <isif condition="${product.subscription_option_mode === 'subscription_and_onetime_purchase'}">
         <label for="onetime-delivery">
             ${Resource.msgf('product.subscription.delivery.onetime', 'product', null, price)}
-            <isif condition="${product.discount}"> ${Resource.msgf('product.subscription.delivery.discount', 'product', null, discount)}</isif>
         </label>
         <input type="radio" name="subproSubscriptionOptionMode${product.ID || ''}" id="onetime-delivery" value="onetime"
             <isif condition="${product.selected_option_mode !== 'regular' || product.default_subscription_option === 'onetime_purchase'}">checked</isif>>

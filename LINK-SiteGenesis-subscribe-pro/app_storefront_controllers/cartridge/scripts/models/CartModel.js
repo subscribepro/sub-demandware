@@ -215,7 +215,9 @@ var CartModel = AbstractModel.extend({
                                 ? new dw.campaign.PercentageDiscount(discountValue * 100)
                                 : new dw.campaign.AmountDiscount(discountValue);
 
-                        productLineItem.createPriceAdjustment("SubscribeProDiscount", discountToApply);
+                        if (subproParams.subscriptionSelectedOptionMode === 'regular') {
+                            productLineItem.createPriceAdjustment("SubscribeProDiscount", discountToApply);
+                        }
                         productLineItem.custom.subproSubscriptionOptionMode = subproParams.subscriptionOptionMode;
                         productLineItem.custom.subproSubscriptionSelectedOptionMode = subproParams.subscriptionSelectedOptionMode;
                         productLineItem.custom.subproSubscriptionInterval = subproParams.subscriptionInterval;
