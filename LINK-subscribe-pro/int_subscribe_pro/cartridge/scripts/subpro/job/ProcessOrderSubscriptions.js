@@ -76,7 +76,8 @@ function start() {
     /**
      * Retreive a list of orders to be processed
      */
-    let ordersToProcess = OrderMgr.searchOrders('creationDate >= {0} AND custom.subproSubscriptionsToBeProcessed = true', 'creationDate desc', targetStartDateTime);
+    let ordersToProcess = OrderMgr.searchOrders('status != {0} AND creationDate >= {1} AND custom.subproSubscriptionsToBeProcessed = true', 'creationDate desc',
+        dw.order.Order.ORDER_STATUS_FAILED, targetStartDateTime);
 
     /**
      * Iterate across the orders

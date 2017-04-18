@@ -18,20 +18,34 @@ let PaymentsHelper = {
      * @returns Object|undefined SubPro payment profile object with relevant fields or undefined
      */
     getSubscriptionPaymentProfile: function (profile, card, billingAddress) {
-        let customerID;
+        let customerID, subProCardType;
 
+        /**
+         * Try to get the Customer Subscribe Pro ID
+         */
         try {
             customerID = profile.custom.subproCustomerID;
         } catch (e) {
-            require('dw/system/Logger').error('Error getting subproCustomerID', e);
+            Logger.error('Error getting subproCustomerID', e);
+            return;
+        }
+        
+        /** 
+         * Try to get the Subscribe Pro Card Type
+         */
+        try {
+            let paymentCard = dw.order.PaymentMgr.getPaymentCard(card.creditCardType);
+            subProCardType = paymentCard.custom.subproCardType;
+        } catch (e) {
+            Logger.error('Unable to retreieve the Subscribe Pro Card type from: ' + card.creditCardType, e);
             return;
         }
 
-        return {
+        var returnObject = {
             "customer_id": customerID,
             "payment_token": card.creditCardToken,
-            "creditcard_type": card.creditCardType,
-            "creditcard_first_digits": card.creditCardNumber.substr(0, 5),
+            "creditcard_type": subProCardType,
+            "creditcard_first_digits": card.custom.subproCCPrefix,
             "creditcard_last_digits": card.creditCardNumberLastDigits,
             "creditcard_month": card.creditCardExpirationMonth,
             "creditcard_year": card.creditCardExpirationYear,
@@ -50,10 +64,12 @@ let PaymentsHelper = {
                 "city": billingAddress.city,
                 "region": billingAddress.stateCode,
                 "postcode": billingAddress.postalCode,
-                "country": billingAddress.countryCode.toString(),
+                "country": (billingAddress.getCountryCode() ? billingAddress.getCountryCode().toString().toUpperCase() : ""),
                 "phone": billingAddress.phone || ""
             }
-        }
+        };
+        
+        return returnObject;
     },
 
     /**
