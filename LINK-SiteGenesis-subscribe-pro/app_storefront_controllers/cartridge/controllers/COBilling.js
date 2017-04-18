@@ -786,17 +786,22 @@ function saveCreditCard() {
             newCreditCard.setCreditCardExpirationMonth(app.getForm('billing').object.paymentMethods.creditCard.expiration.month.value);
             newCreditCard.setCreditCardExpirationYear(app.getForm('billing').object.paymentMethods.creditCard.expiration.year.value);
             newCreditCard.setCreditCardType(app.getForm('billing').object.paymentMethods.creditCard.type.value);
+            
+            /**
+             * Subscribe Pro
+             */
+            newCreditCard.custom.subproCCPrefix = new String(app.getForm('billing').object.paymentMethods.creditCard.number.value).substr(0, 6);
 
-	    /**
-	     * This needs to be replaced with a valid PSP Tokenizer before going to production
-	     */
-	    let random = new dw.crypto.SecureRandom();
-	    let bytes = random.nextBytes(32);
-	    let tokenString = newCreditCard.getUUID() + new Date().getTime() + bytes.toString();
-	    let messageDigest = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_SHA_512);
-	    let hash = dw.crypto.Encoding.toBase64(messageDigest.digestBytes(new dw.util.Bytes(tokenString)));
-
-	    newCreditCard.setCreditCardToken(hash);
+            /**
+             * This needs to be replaced with a valid PSP Tokenizer before going to production
+             */
+            let random = new dw.crypto.SecureRandom();
+            let bytes = random.nextBytes(32);
+            let tokenString = newCreditCard.getUUID() + new Date().getTime() + bytes.toString();
+            let messageDigest = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_SHA_512);
+            let hash = dw.crypto.Encoding.toBase64(messageDigest.digestBytes(new dw.util.Bytes(tokenString)));
+    
+            newCreditCard.setCreditCardToken(hash);
 
             for (i = 0; i < creditCards.length; i++) {
                 var creditcard = creditCards[i];
