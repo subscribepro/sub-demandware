@@ -51,7 +51,6 @@ function productSubscriptionsCart() {
 
     let product = {
         "ID": pli.productID,
-        "price": pli.priceValue,
         "subscription_option_mode": pli.custom.subproSubscriptionOptionMode,
         "selected_option_mode": pli.custom.subproSubscriptionSelectedOptionMode,
         "selected_interval": pli.custom.subproSubscriptionInterval,
