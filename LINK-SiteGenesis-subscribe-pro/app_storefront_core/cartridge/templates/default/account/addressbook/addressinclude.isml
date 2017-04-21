@@ -50,7 +50,6 @@
 
 <isif condition="${customer.profile.custom.subproCustomerID}">
 	<!-- Subscribe Pro Address Book Assist Widget -->
-	<h2>${Resource.msg('account.subpro.myaddressbook', 'account', null)}</h2>
 	<div id="sp-address-book-widget"></div>
 
 	<iscomment>
