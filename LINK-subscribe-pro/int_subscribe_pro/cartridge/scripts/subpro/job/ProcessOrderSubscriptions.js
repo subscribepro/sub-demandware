@@ -172,7 +172,7 @@ function start() {
                 paymentProfileID = response.result.payment_profiles.pop().id;
             }
         } else {
-            paymentProfileID = ('subproPaymentProfileID' in customerPaymentInstrument.custom) ? customerPaymentInstrument.custom.subproPaymentProfileID : false;
+            paymentProfileID = (customerPaymentInstrument && ('subproPaymentProfileID' in customerPaymentInstrument.custom)) ? customerPaymentInstrument.custom.subproPaymentProfileID : false;
 
             /**
              * If Payment Profile already exists,
@@ -263,11 +263,30 @@ function start() {
                         'interval': pli.custom.subproSubscriptionInterval,
                         'next_order_date': order.creationDate,
                         'first_order_already_created': true,
-                        'send_customer_notification_email': true
+                        'send_customer_notification_email': true,
+                        'platform_specific_fields': {
+                            'sfcc': {
+                                'product_options': []
+                            }
+                        }
                     };
+                    
+                    let productOptions = pli.optionProductLineItems;
+                    
+                    if (productOptions.length > 0) {
+                        for (let poInc in productOptions) {
+                            let productOption = productOptions[poInc];
+                            subscription.platform_specific_fields.sfcc.product_options.push({
+                                'id': productOption.optionID,
+                                'value': productOption.optionValueID
+                            });
+                        }
+                    } else {
+                        delete subscription.platform_specific_fields.sfcc.product_options;
+                    }
 
                     let pliResponse = SubscribeProLib.postSubscription(subscription);
-
+                    
                     /**
                      * If there were no problems, save the attributes
                      * Otherwise, error out

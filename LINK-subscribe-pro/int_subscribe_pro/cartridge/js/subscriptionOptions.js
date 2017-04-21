@@ -15,14 +15,21 @@ let subscriptionOptions = {
         .on('change', (event) => subscriptionOptions.ajaxUpdateOptions(subscriptionOptions.getOptionsState($(event.currentTarget))));
 	},
 	variantInit: () => {
-	    if ($('.subpro-options.pdp input[name^=subproSubscriptionOptionMode]:checked').val() === 'regular') {
-	        $('.subpro-options.pdp .delivery-interval-group').attr('hidden', false);
-	    } else {
-	        $('.subpro-options.pdp .delivery-interval-group').attr('hidden', true);
-	    }
+	    let options = $('.subpro-options.pdp input[name^=subproSubscriptionOptionMode]:checked');
+
+	    for (let i = 0; i < options.length; i++) {
+            let option = $(options[i]);
+            
+            if (option.val() === 'regular') {
+                option.parent().parent().find('.delivery-interval-group').attr('hidden', false);
+            } else {
+                option.parent().parent().find('.delivery-interval-group').attr('hidden', true);
+            }
+        }
+	    
 	    $('.subpro-options.pdp input[name^=subproSubscriptionOptionMode]')
 	    .off('change')
-	    .on('change', (event) => subscriptionOptions.toggleDeliveryIntervalDropdown(event, $('.subpro-options.pdp .delivery-interval-group')));
+	    .on('change', (event) => subscriptionOptions.toggleDeliveryIntervalDropdown(event, $(event.currentTarget).parent().parent().find('.delivery-interval-group')));
 	},
 	
     getOptionsState: (target) => {
