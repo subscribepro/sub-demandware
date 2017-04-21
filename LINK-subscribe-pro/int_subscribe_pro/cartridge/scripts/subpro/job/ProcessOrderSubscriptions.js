@@ -260,6 +260,7 @@ function start() {
                             'payment_profile_id': paymentProfileID,
                             'requires_shipping': true,
                             'shipping_address_id': subproShippingAddressID,
+                            'shipping_method_code': shipment.shippingMethodID,
                             'product_sku': pli.productID,
                             'qty': pli.quantityValue,
                             'use_fixed_price': false,
