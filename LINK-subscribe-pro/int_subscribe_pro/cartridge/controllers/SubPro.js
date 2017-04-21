@@ -30,6 +30,18 @@ function productSubscriptionsPDP() {
 
     let product = response.result.products.pop();
 
+    if (params.selectedOptionMode.stringValue) {
+        product['selected_option_mode'] = params.selectedOptionMode.stringValue;
+    } else {
+        product['selected_option_mode'] = (product.subscription_option_mode === 'subscription_only' || product.default_subscription_option === 'subscription') ? 'regular' : 'onetime';
+    }
+
+    if (params.selectedInterval.stringValue) {
+        product['selected_interval'] = params.selectedInterval.stringValue;
+    } else {
+        product['selected_interval'] = product.default_interval;
+    }
+
     ISML.renderTemplate('subpro/product/subprooptions', {
         product: product,
         page: 'pdp'
@@ -136,9 +148,24 @@ function updateSubscriptionOptions() {
         return;
     }
 
-    require('dw/system/Transaction').wrap(function() {
+    require('dw/system/Transaction').wrap(function () {
         pli.custom.subproSubscriptionSelectedOptionMode = options.subscriptionMode;
         pli.custom.subproSubscriptionInterval = options.deliveryInteval;
+
+        let discountValue = parseFloat(options.discount),
+            discountToApply = options.isDiscountPercentage
+                ? new dw.campaign.PercentageDiscount(discountValue * 100)
+                : new dw.campaign.AmountDiscount(discountValue);
+
+        /**
+         * Remove previous 'SubscribeProDiscount' adjustments if any
+         */
+        let priceAdjustment = pli.getPriceAdjustmentByPromotionID('SubscribeProDiscount');
+        pli.removePriceAdjustment(priceAdjustment);
+
+        if (options.subscriptionMode === 'regular') {
+            pli.createPriceAdjustment('SubscribeProDiscount', discountToApply);
+        }
     });
 }
 

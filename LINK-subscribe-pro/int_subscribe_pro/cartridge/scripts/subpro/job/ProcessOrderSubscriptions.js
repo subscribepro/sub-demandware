@@ -85,211 +85,238 @@ function start() {
     while (ordersToProcess.hasNext()) {
         let order = ordersToProcess.next();
 
-        /**
-         * Checkouts that contain subscriptions must be submitted by a registered user
-         * This will check to ensure that's the case for this order
-         */
-        if (!order.customer.registered) {
-            logError("Order Customer is not registered, skipping this order", 'getCustomer');
-            continue;
-        }
-
-        /**
-         * Define and initialize some attributes to be used within this loop
-         */
-        let customer = CustomerMgr.getCustomerByLogin(order.customer.profile.credentials.login),
-            customerProfile = customer.profile,
-            paymentInstrument = order.paymentInstrument,
-            customerPaymentInstrument = PaymentsHelper.getCustomerPaymentInstrument(customerProfile.wallet.paymentInstruments, paymentInstrument),
-            shipments = order.shipments,
-            allPLIsProcessed = true;
-
-        /**
-         * Set this for the error log function to reference
-         */
-        currentOrderNo = order.orderNo;
-
-        /**
-         * Validate / Create the customer
-         * If the customer already has a reference to a Subscribe Pro customer
-         * Validate that the customer does in fact exist and if it doesn't or a
-         * customer hasn't been created yet, create one
-         * Else call service to create customer record
-         */
-        let customerSubproID = customerProfile.custom.subproCustomerID;
-
-        /**
-         * Customer is already a Subscribe Pro Customer
-         * Call service to verify that they are still a customer
-         */
-        if (customerSubproID) {
-            let response = SubscribeProLib.getCustomer(customerSubproID);
-
-            if (response.error && response.result.code === 404) {
-                // Customer not found. Create new customer record
-                customerSubproID = createSubproCustomer(customer);
-            } else if (response.error) {
-                // Some other error occurred
-                logError(response, 'getCustomer');
-
-                continue;
-            }
-        } else {
-            customerSubproID = createSubproCustomer(customer);
-        }
-
-        /**
-         * If the above code block didn't return a Subscribe Pro Customer, error out
-         */
-        if (!customerSubproID) {
-            logError('Could not get customer Subscribe Pro ID. Skipping this order.');
-
-            continue;
-        }
-
-        /**
-         * Validate / Create the payment profile
-         * If the payment instrument already has a reference to a Subscribe Pro payment profile
-         * Validate that the payment profile does in fact exist and if it doesn't or a
-         * payment profile hasn't been created yet, create one
-         */
-        let paymentProfileID = false;
-
-        /**
-         * Apple Pay otherwise assume Credit Card
-         */
-        if (paymentInstrument.getPaymentMethod() === "DW_APPLE_PAY") {
-            let transactionID = paymentInstrument.getPaymentTransaction().getTransactionID();
-            let response = SubscribeProLib.getPaymentProfile(null, transactionID);
+        try {
 
             /**
-             * If there was a problem creating the payment profile, error out
+             * Checkouts that contain subscriptions must be submitted by a registered user
+             * This will check to ensure that's the case for this order
              */
-            if (response.error) {
-                logError(response, 'getPaymentProfile');
+            if (!order.customer.registered) {
+                logError("Order Customer is not registered, skipping this order", 'getCustomer');
                 continue;
-            } else {
-                paymentProfileID = response.result.payment_profiles.pop().id;
             }
-        } else {
-            paymentProfileID = ('subproPaymentProfileID' in customerPaymentInstrument.custom) ? customerPaymentInstrument.custom.subproPaymentProfileID : false;
 
             /**
-             * If Payment Profile already exists,
-             * Call service to verify that it still exists at Subscribe Pro
+             * Define and initialize some attributes to be used within this loop
              */
-            if (paymentProfileID) {
+            let customer = CustomerMgr.getCustomerByLogin(order.customer.profile.credentials.login),
+                customerProfile = customer.profile,
+                paymentInstrument = order.paymentInstrument,
+                customerPaymentInstrument = PaymentsHelper.getCustomerPaymentInstrument(customerProfile.wallet.paymentInstruments, paymentInstrument),
+                shipments = order.shipments,
+                allPLIsProcessed = true;
 
-                let response = SubscribeProLib.getPaymentProfile(paymentProfileID);
+            /**
+             * Set this for the error log function to reference
+             */
+            currentOrderNo = order.orderNo;
 
-                /**
-                 * Payment Profile not found, create new Payment Profile record
-                 * Otherwise create the payment profile
-                 */
+            /**
+             * Validate / Create the customer
+             * If the customer already has a reference to a Subscribe Pro customer
+             * Validate that the customer does in fact exist and if it doesn't or a
+             * customer hasn't been created yet, create one
+             * Else call service to create customer record
+             */
+            let customerSubproID = customerProfile.custom.subproCustomerID;
+
+            /**
+             * Customer is already a Subscribe Pro Customer
+             * Call service to verify that they are still a customer
+             */
+            if (customerSubproID) {
+                let response = SubscribeProLib.getCustomer(customerSubproID);
+
                 if (response.error && response.result.code === 404) {
-                    paymentProfileID = createSubproPaymentProfile(customerProfile, customerPaymentInstrument, order.billingAddress);
-                    /**
-                     * Some other error occurred, error out
-                     */
+                    // Customer not found. Create new customer record
+                    customerSubproID = createSubproCustomer(customer);
                 } else if (response.error) {
-                    logError(response, 'getPaymentProfile');
+                    // Some other error occurred
+                    logError(response, 'getCustomer');
+
                     continue;
                 }
             } else {
-                paymentProfileID = createSubproPaymentProfile(customerProfile, customerPaymentInstrument, order.billingAddress);
+                customerSubproID = createSubproCustomer(customer);
             }
-        }
 
-        /**
-         * If the above code block didn't return a Subscribe Pro Payment Profile, error out
-         */
-        if (!paymentProfileID) {
-            logError('Could not get Subscribe Pro Payment profile ID. Skipping this order.');
-            continue;
-        }
+            /**
+             * If the above code block didn't return a Subscribe Pro Customer, error out
+             */
+            if (!customerSubproID) {
+                logError('Could not get customer Subscribe Pro ID. Skipping this order.');
+                continue;
+            }
 
-        /**
-         * Iterate over shipments and Product Line Items
-         */
-        for (let i = 0, sl = shipments.length; i < sl; i++) {
-            let shipment = shipments[i],
-                plis = shipment.productLineItems;
+            /**
+             * Validate / Create the payment profile
+             * If the payment instrument already has a reference to a Subscribe Pro payment profile
+             * Validate that the payment profile does in fact exist and if it doesn't or a
+             * payment profile hasn't been created yet, create one
+             */
+            let paymentProfileID = false;
 
-            for (let j = 0, pl = plis.length; j < pl; j++) {
-                let pli = plis[j];
+            /**
+             * Apple Pay otherwise assume Credit Card
+             */
+            if (paymentInstrument.getPaymentMethod() === "DW_APPLE_PAY") {
+                let transactionID = paymentInstrument.getPaymentTransaction().getTransactionID();
+                let response = SubscribeProLib.getPaymentProfile(null, transactionID);
 
-                if (pli.custom.subproSubscriptionOptionMode) {
+                /**
+                 * If there was a problem creating the payment profile, error out
+                 */
+                if (response.error) {
+                    logError(response, 'getPaymentProfile');
+                    continue;
+                } else {
+                    paymentProfileID = response.result.payment_profiles.pop().id;
+                }
+            } else {
+                paymentProfileID = (customerPaymentInstrument && ('subproPaymentProfileID' in customerPaymentInstrument.custom)) ? customerPaymentInstrument.custom.subproPaymentProfileID : false;
+
+                /**
+                 * If Payment Profile already exists,
+                 * Call service to verify that it still exists at Subscribe Pro
+                 */
+                if (paymentProfileID) {
+
+                    let response = SubscribeProLib.getPaymentProfile(paymentProfileID);
+
                     /**
-                     * Validate / Create shipping addresses using the customers saved address and
-                     * the Find / Create Subscribe Pro API
+                     * Payment Profile not found, create new Payment Profile record
+                     * Otherwise create the payment profile
                      */
-                    let shippingAddress = AddressHelper.getCustomerAddress(customer.addressBook, shipment.shippingAddress);
-
-                    if (!shippingAddress) {
-                        shippingAddress = app.getModel('Profile').get(order.customer.profile).addAddressToAddressBook(shipment.shippingAddress);
-                    }
-
-                    let subproAddress = AddressHelper.getSubproAddress(shippingAddress, customerProfile),
-                        shippingResponse = SubscribeProLib.findCreateAddress(subproAddress),
-                        subproShippingAddressID;
-
+                    if (response.error && response.result.code === 404) {
+                        paymentProfileID = createSubproPaymentProfile(customerProfile, customerPaymentInstrument, order.billingAddress);
                     /**
-                     * If there was any error, save the Subscribe Pro Address ID
-                     * Otherwise, error out
+                     * Some other error occurred, error out
                      */
-                    if (!shippingResponse.error) {
-                        subproShippingAddressID = shippingResponse.result.address.id;
-                        AddressHelper.setSubproAddressID(shippingAddress, subproShippingAddressID);
-                    } else {
-                        logError(shippingResponse, 'findCreateAddress');
+                    } else if (response.error) {
+                        logError(response, 'getPaymentProfile');
                         continue;
                     }
+                } else {
+                    paymentProfileID = createSubproPaymentProfile(customerProfile, customerPaymentInstrument, order.billingAddress);
+                }
+            }
 
-                    /**
-                     * Process Product LineItem and create the subscription,
-                     * if we made it this far in the code we will need:
-                     * - customerSubproID
-                     * - paymentProfileID
-                     * - subproShippingAddressID
-                     */
-                    let subscription = {
-                        'customer_id': customerSubproID,
-                        'payment_profile_id': paymentProfileID,
-                        'requires_shipping': true,
-                        'shipping_address_id': subproShippingAddressID,
-                        'product_sku': pli.productID,
-                        'qty': pli.quantityValue,
-                        'use_fixed_price': false,
-                        'interval': pli.custom.subproSubscriptionInterval,
-                        'next_order_date': order.creationDate,
-                        'first_order_already_created': true,
-                        'send_customer_notification_email': true
-                    };
+            /**
+             * If the above code block didn't return a Subscribe Pro Payment Profile, error out
+             */
+            if (!paymentProfileID) {
+                logError('Could not get Subscribe Pro Payment profile ID. Skipping this order.');
+                continue;
+            }
 
-                    let pliResponse = SubscribeProLib.postSubscription(subscription);
+            /**
+             * Iterate over shipments and Product Line Items
+             */
+            for (let i = 0, sl = shipments.length; i < sl; i++) {
+                let shipment = shipments[i],
+                    plis = shipment.productLineItems;
 
-                    /**
-                     * If there were no problems, save the attributes
-                     * Otherwise, error out
-                     */
-                    if (!pliResponse.error) {
-                        pli.custom.subproSubscriptionCreated = true;
-                        pli.custom.subproSubscriptionDateCreated = new Date(pliResponse.result.subscription.created);
-                        pli.custom.subproSubscriptionID = pliResponse.result.subscription.id;
-                    } else {
-                        allPLIsProcessed = false;
+                for (let j = 0, pl = plis.length; j < pl; j++) {
+                    let pli = plis[j];
 
-                        logError(pliResponse, 'postSubscription');
+                    if (pli.custom.subproSubscriptionOptionMode) {
+                        /**
+                         * Validate / Create shipping addresses using the customers saved address and
+                         * the Find / Create Subscribe Pro API
+                         */
+                        let shippingAddress = AddressHelper.getCustomerAddress(customer.addressBook, shipment.shippingAddress);
+
+                        if (!shippingAddress) {
+                            shippingAddress = app.getModel('Profile').get(order.customer.profile).addAddressToAddressBook(shipment.shippingAddress);
+                        }
+
+                        let subproAddress = AddressHelper.getSubproAddress(shippingAddress, customerProfile),
+                            shippingResponse = SubscribeProLib.findCreateAddress(subproAddress),
+                            subproShippingAddressID;
+
+                        /**
+                         * If there was any error, save the Subscribe Pro Address ID
+                         * Otherwise, error out
+                         */
+                        if (!shippingResponse.error) {
+                            subproShippingAddressID = shippingResponse.result.address.id;
+                            AddressHelper.setSubproAddressID(shippingAddress, subproShippingAddressID);
+                        } else {
+                            logError(shippingResponse, 'findCreateAddress');
+                            continue;
+                        }
+
+                        /**
+                         * Process Product LineItem and create the subscription,
+                         * if we made it this far in the code we will need:
+                         * - customerSubproID
+                         * - paymentProfileID
+                         * - subproShippingAddressID
+                         */
+                        let orderCreationDate = order.getCreationDate();
+
+                        let subscription = {
+                            'customer_id': customerSubproID,
+                            'payment_profile_id': paymentProfileID,
+                            'requires_shipping': true,
+                            'shipping_address_id': subproShippingAddressID,
+                            'shipping_method_code': shipment.shippingMethodID,
+                            'product_sku': pli.productID,
+                            'qty': pli.quantityValue,
+                            'use_fixed_price': false,
+                            'interval': pli.custom.subproSubscriptionInterval,
+                            'next_order_date': dw.util.StringUtils.formatCalendar(new dw.util.Calendar(orderCreationDate), 'yyy-MM-dd'),
+                            'first_order_already_created': true,
+                            'send_customer_notification_email': true,
+                            'platform_specific_fields': {
+                                'sfcc': {
+                                    'product_options': []
+                                }
+                            }
+                        };
+
+                        let productOptions = pli.optionProductLineItems;
+
+                        if (productOptions.length > 0) {
+                            for (let poInc in productOptions) {
+                                let productOption = productOptions[poInc];
+                                subscription.platform_specific_fields.sfcc.product_options.push({
+                                    'id': productOption.optionID,
+                                    'value': productOption.optionValueID
+                                });
+                            }
+                        } else {
+                            delete subscription.platform_specific_fields.sfcc.product_options;
+                        }
+
+                        let pliResponse = SubscribeProLib.postSubscription(subscription);
+
+                        /**
+                         * If there were no problems, save the attributes
+                         * Otherwise, error out
+                         */
+                        if (!pliResponse.error) {
+                            pli.custom.subproSubscriptionCreated = true;
+                            pli.custom.subproSubscriptionDateCreated = new Date(pliResponse.result.subscription.created);
+                            pli.custom.subproSubscriptionID = pliResponse.result.subscription.id;
+                        } else {
+                            allPLIsProcessed = false;
+
+                            logError(pliResponse, 'postSubscription');
+                        }
                     }
                 }
             }
-        }
 
-        /**
-         * If all product line items were processed, update the order
-         */
-        if (allPLIsProcessed) {
-            order.custom.subproSubscriptionsToBeProcessed = false;
+            /**
+             * If all product line items were processed, update the order
+             */
+            if (allPLIsProcessed) {
+                order.custom.subproSubscriptionsToBeProcessed = false;
+            }
+        } catch (e) {
+            logError('Error processing order: ' + e);
+            continue;
         }
     }
 

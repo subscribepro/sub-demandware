@@ -82,7 +82,11 @@ var CartModel = AbstractModel.extend({
                 productOptionModel = productModel.updateOptionSelection(params);
 
                 Transaction.wrap(function () {
-                    cart.updateLineItem(lineItem, productToAdd, quantity, productOptionModel);
+                    if (params.subproSubscriptionInterval.value && params.subproSubscriptionOptionMode.value) {
+                        cart.updateLineItem(lineItem, productToAdd, quantity, productOptionModel, this.getSubproParams(params));
+                    } else {
+                        cart.updateLineItem(lineItem, productToAdd, quantity, productOptionModel);
+                    }
                 });
 
                 if (format === 'ajax') {
@@ -123,14 +127,7 @@ var CartModel = AbstractModel.extend({
                 productOptionModel = productToAdd.updateOptionSelection(params);
 
                 if (params.subproSubscriptionInterval.value && params.subproSubscriptionOptionMode.value) {
-                    cart.addProductItem(productToAdd.object, params.Quantity.doubleValue, productOptionModel, {
-                        "subscriptionInterval": params.subproSubscriptionInterval.value,
-                        "subscriptionOptionMode": params.subproSubscriptionAvailableOptionMode.value,
-                        "subscriptionSelectedOptionMode": params.subproSubscriptionOptionMode.value,
-                        "subscriptionAvailableIntervals": params.subproSubscriptionAvailableIntervals.value,
-                        "subscriptionDiscount": params.subproSubscriptionDiscount.value,
-                        "subscriptionIsDiscountPercentage": params.subproSubscriptionIsDiscountPercentage.booleanValue
-                    });
+                    cart.addProductItem(productToAdd.object, params.Quantity.doubleValue, productOptionModel, this.getSubproParams(params));
                 } else {
                     cart.addProductItem(productToAdd.object, params.Quantity.doubleValue, productOptionModel);
                 }
@@ -210,20 +207,7 @@ var CartModel = AbstractModel.extend({
                     var productLineItem = cart.createProductLineItem(product, productOptionModel, shipment);
 
                     if (subproParams) {
-                        var discountValue = parseFloat(subproParams.subscriptionDiscount),
-                            discountToApply = subproParams.subscriptionIsDiscountPercentage
-                                ? new dw.campaign.PercentageDiscount(discountValue * 100)
-                                : new dw.campaign.AmountDiscount(discountValue);
-
-                        if (subproParams.subscriptionSelectedOptionMode === 'regular') {
-                            productLineItem.createPriceAdjustment("SubscribeProDiscount", discountToApply);
-                        }
-                        productLineItem.custom.subproSubscriptionOptionMode = subproParams.subscriptionOptionMode;
-                        productLineItem.custom.subproSubscriptionSelectedOptionMode = subproParams.subscriptionSelectedOptionMode;
-                        productLineItem.custom.subproSubscriptionInterval = subproParams.subscriptionInterval;
-                        productLineItem.custom.subproSubscriptionAvailableIntervals = subproParams.subscriptionAvailableIntervals;
-                        productLineItem.custom.subproSubscriptionDiscount = discountValue;
-                        productLineItem.custom.subproSubscriptionIsDiscountPercentage = subproParams.subscriptionIsDiscountPercentage;
+                        cart.addSubproParamsToPLI(productLineItem, subproParams);
                     }
 
                     if (quantity) {
@@ -526,8 +510,9 @@ var CartModel = AbstractModel.extend({
      * @param {dw.catalog.Product} product - The new product.
      * @param {Number} quantity - The quantity of the product line item after replacement.
      * @param {dw.catalog.ProductOptionModel} productOptionModel - The option model of the product to add to the basket.
+     * @param {Object} [subproParams] - Object containing options for SubPro subscription
      */
-    updateLineItem: function (lineItem, product, quantity, productOptionModel) {
+    updateLineItem: function (lineItem, product, quantity, productOptionModel, subproParams) {
         var optionValues = productOptionModel.getOptions();
 
         lineItem.replaceProduct(product);
@@ -535,6 +520,10 @@ var CartModel = AbstractModel.extend({
 
         if (optionValues.length) {
             lineItem.updateOptionValue(optionValues[0]);
+        }
+
+        if (subproParams) {
+            this.addSubproParamsToPLI(lineItem, subproParams);
         }
 
         if (product.isBundle()) {
@@ -1488,6 +1477,46 @@ var CartModel = AbstractModel.extend({
             }
         }
         return null;
+    },
+
+    /**
+     * Get Subscribe Pro subscription parameters and return them as an object.
+     *
+     * @param {object} params
+     * @returns {{subscriptionInterval, subscriptionOptionMode, subscriptionSelectedOptionMode, subscriptionAvailableIntervals, subscriptionDiscount, subscriptionIsDiscountPercentage: boolean}}
+     */
+    getSubproParams: function (params) {
+        return {
+            "subscriptionInterval": params.subproSubscriptionInterval.value,
+            "subscriptionOptionMode": params.subproSubscriptionAvailableOptionMode.value,
+            "subscriptionSelectedOptionMode": params.subproSubscriptionOptionMode.value,
+            "subscriptionAvailableIntervals": params.subproSubscriptionAvailableIntervals.value,
+            "subscriptionDiscount": params.subproSubscriptionDiscount.value,
+            "subscriptionIsDiscountPercentage": params.subproSubscriptionIsDiscountPercentage.booleanValue
+        }
+    },
+
+    /**
+     * Update Product Line Item with Subscribe Pro subscription parameters
+     *
+     * @param {dw.order.ProductLineItem} pli The product line item to update
+     * @param {object} subproParams Object containing Subscribe Pro subscription parameters which should be added to product line item
+     */
+    addSubproParamsToPLI: function (pli, subproParams) {
+        var discountValue = parseFloat(subproParams.subscriptionDiscount),
+            discountToApply = subproParams.subscriptionIsDiscountPercentage
+                ? new dw.campaign.PercentageDiscount(discountValue * 100)
+                : new dw.campaign.AmountDiscount(discountValue);
+
+        if (subproParams.subscriptionSelectedOptionMode === 'regular') {
+            pli.createPriceAdjustment("SubscribeProDiscount", discountToApply);
+        }
+        pli.custom.subproSubscriptionOptionMode = subproParams.subscriptionOptionMode;
+        pli.custom.subproSubscriptionSelectedOptionMode = subproParams.subscriptionSelectedOptionMode;
+        pli.custom.subproSubscriptionInterval = subproParams.subscriptionInterval;
+        pli.custom.subproSubscriptionAvailableIntervals = subproParams.subscriptionAvailableIntervals;
+        pli.custom.subproSubscriptionDiscount = discountValue;
+        pli.custom.subproSubscriptionIsDiscountPercentage = subproParams.subscriptionIsDiscountPercentage;
     }
 
 });

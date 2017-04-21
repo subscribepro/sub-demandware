@@ -75,6 +75,19 @@
 			<form action="${URLUtils.url('Cart-AddProduct')}" method="post" id="${uniqueFormID}">
 				<input type="hidden" name="availability" value="${pdict.Product.availabilityModel.availabilityStatus}"/>
 				<input type="hidden" name="pid" value="${pdict.Product.ID}" />
+				
+				<iscomment>
+                    product SubPro options
+                    =============================================================
+                </iscomment>
+
+                <isif condition="${pdict.Product.custom.subproSubscriptionEnabled}">
+                    <div class="subscription">
+                        <div class="sp-add-to-order"></div>
+                        <isinclude url="${URLUtils.url('SubPro-PDP', 'sku', pdict.Product.ID)}" />
+                    </div>
+                </isif>
+				
 				<div class="inventory">
 					<div class="quantity">
 					    <label for="${uniqueFormID}-quantity">${Resource.msg('global.qty','locale',null)}</label>

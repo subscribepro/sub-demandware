@@ -29,7 +29,6 @@
 
 		<isif condition="${isSubproCustomer}">
 			<!-- Subscribe Pro Wallet Assist Widget -->
-			<h2>${Resource.msg('account.subpro.mywallet', 'account', null)}</h2>
 			<div id="sp-wallet-assist-widget"></div>
 		</isif>
 	</div>
