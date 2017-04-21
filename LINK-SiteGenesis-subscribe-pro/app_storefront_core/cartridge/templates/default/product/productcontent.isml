@@ -166,7 +166,9 @@
 				<isif condition="${product.custom.subproSubscriptionEnabled}">
 					<div class="subscription">
 						<div class="sp-add-to-order"></div>
-						<isinclude url="${URLUtils.url('SubPro-PDP', 'sku', product.ID)}" />
+						<isinclude url="${URLUtils.url('SubPro-PDP', 'sku', product.ID,
+							'selectedOptionMode', pdict.CurrentHttpParameterMap.selectedOptionMode.stringValue || '', 
+							'selectedInterval', pdict.CurrentHttpParameterMap.selectedInterval.stringValue || '')}" />
 					</div>
 				</isif>
 
@@ -305,7 +307,6 @@
 		</iscomment>
 
 		<!-- Load the Subscribe Pro widget script -->
-		<script src="${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproWidgetScriptUrl')}"></script>
 
 		<isset name="widgetConfig" scope="page"
 			value="${require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/WidgetsHelper').getWidgetConfig(customer.profile.custom.subproCustomerID, 'client_credentials', 'widget', 'sp-add-to-order-widget', 'sp-add-to-order')}"/>
@@ -322,7 +323,13 @@
 				addToOrderElementClass: '${widgetConfig.addToOrderElementClass}'
 			};
 			// Call init
-			subscribepro.widgets.init('add-to-order', widgetConfig);
+			if (typeof subscribepro !== 'undefined') {
+				subscribepro.widgets.init('add-to-order', widgetConfig);
+			} else {
+				$.getScript( '${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproWidgetScriptUrl')}', function( data, textStatus, jqxhr ) {
+					subscribepro.widgets.init('add-to-order', widgetConfig);
+				});
+			}
 		</script>
 	</isif>
 </isif>

@@ -129,7 +129,9 @@
 					pid: productLineItem.productID,
 					Quantity: productLineItem.quantity.value.toFixed(),
 					uuid: productLineItem.UUID,
-					source: 'cart'
+					source: 'cart',
+					selectedOptionMode: productLineItem.custom.subproSubscriptionSelectedOptionMode,
+					selectedInterval: productLineItem.custom.subproSubscriptionInterval
 				};
 
 				// if item has a category context, forward this category context

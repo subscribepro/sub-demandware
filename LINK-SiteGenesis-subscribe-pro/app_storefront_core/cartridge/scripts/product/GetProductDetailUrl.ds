@@ -133,6 +133,14 @@ function GetProductDetailUrl(pdict) {
 		productlistid: pdict.CurrentHttpParameterMap.productlistid.stringValue
 	};
 
+	if (pdict.CurrentHttpParameterMap.selectedOptionMode.stringValue) {
+		urlParams['selectedOptionMode'] = pdict.CurrentHttpParameterMap.selectedOptionMode.stringValue;
+	}
+
+	if (pdict.CurrentHttpParameterMap.selectedInterval.stringValue) {
+		urlParams['selectedInterval'] = pdict.CurrentHttpParameterMap.selectedInterval.stringValue;
+	}
+
 	var variationAttributes = GetVariationAttributes(pdict);
 	var productOptions = GetProductOptions(pdict.CurrentOptionModel);
 
