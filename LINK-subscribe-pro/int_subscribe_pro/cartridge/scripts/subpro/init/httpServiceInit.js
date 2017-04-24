@@ -5,6 +5,8 @@ importPackage(dw.svc);
 importPackage(dw.net);
 importPackage(dw.io);
 
+let Encoding = require("dw/crypto/Encoding");
+
 /**
  * Mock Data
  */
@@ -22,7 +24,7 @@ let SubscribeProLib = require("../lib/SubscribeProLib");
 /**
  * Wrap the Mock JSON data with request information so
  * the mocked response looks how a normal response will look
- * 
+ *
  * @param data : JSONObject
  */
 function getMockJSON(data) {
@@ -43,23 +45,23 @@ ServiceRegistry.configure("subpro.http.get.config", {
      * - Set request method to be the HTTP GET method
      * - Append the customer as a URL parameter
      */
-    createRequest: function(svc: HTTPService, args) {
+    createRequest: function (svc: HTTPService, args) {
         svc.setRequestMethod("GET");
-	SubscribeProLib.setURL(svc, "config.json", "");
+        SubscribeProLib.setURL(svc, "config.json", "");
         return null;
     },
 
     /**
      * JSON parse the response text and return it
      */
-    parseResponse: function(svc: HTTPService, client: HTTPClient) {
+    parseResponse: function (svc: HTTPService, client: HTTPClient) {
         return JSON.parse(client.text);
     },
 
     /**
      * Return the Mocked Config Data
      */
-    mockCall: function(svc: HTTPService, client: HTTPClient) {
+    mockCall: function (svc: HTTPService, client: HTTPClient) {
         return {
             statusCode: 200,
             statusMessage: "Success",
@@ -78,23 +80,23 @@ ServiceRegistry.configure("subpro.http.get.subscriptions", {
      * - Set request method to be the HTTP GET method
      * - Append the customer as a URL parameter
      */
-    createRequest: function(svc: HTTPService, args) {
+    createRequest: function (svc: HTTPService, args) {
         svc.setRequestMethod("GET");
-	SubscribeProLib.setURL(svc, "subscriptions.json", "customer_id=" + args.customer_id);
+        SubscribeProLib.setURL(svc, "subscriptions.json", "customer_id=" + Encoding.toURI(args.customer_id));
         return null;
     },
 
     /**
      * JSON parse the response text and return it
      */
-    parseResponse: function(svc: HTTPService, client: HTTPClient) {
+    parseResponse: function (svc: HTTPService, client: HTTPClient) {
         return JSON.parse(client.text);
     },
 
     /**
      * Return the Mocked Subscriptions Data
      */
-    mockCall: function(svc: HTTPService, client: HTTPClient) {
+    mockCall: function (svc: HTTPService, client: HTTPClient) {
         return {
             statusCode: 200,
             statusMessage: "Success",
@@ -111,9 +113,9 @@ ServiceRegistry.configure("subpro.http.post.subscription", {
     /**
      * Create the service request
      */
-    createRequest: function(svc: HTTPService, args) {
+    createRequest: function (svc: HTTPService, args) {
         svc.setRequestMethod("POST");
-	SubscribeProLib.setURL(svc, "subscription.json", "");
+        SubscribeProLib.setURL(svc, "subscription.json", "");
 
         /**
          * Return the parameters to be POSTed to the URL, if there are any
@@ -128,14 +130,14 @@ ServiceRegistry.configure("subpro.http.post.subscription", {
     /**
      * JSON parse the response text and return it
      */
-    parseResponse: function(svc: HTTPService, client: HTTPClient) {
+    parseResponse: function (svc: HTTPService, client: HTTPClient) {
         return JSON.parse(client.text);
     },
 
     /**
      * Return the Mocked Subscriptions Data
      */
-    mockCall: function(svc: HTTPService, client: HTTPClient) {
+    mockCall: function (svc: HTTPService, client: HTTPClient) {
         return getMockJSON(SubscriptionMockData);
     }
 });
@@ -148,7 +150,7 @@ ServiceRegistry.configure("subpro.http.post.addresses", {
     /**
      * Create the service request
      */
-    createRequest: function(svc: HTTPFormService, args) {
+    createRequest: function (svc: HTTPFormService, args) {
         /**
          * Since the service type is HTTP Form, this is unnecessary but was added anyway to show the functionality
          */
@@ -158,9 +160,9 @@ ServiceRegistry.configure("subpro.http.post.addresses", {
          * Setup the URL
          */
         if (args.address_id) {
-	    SubscribeProLib.setURL(svc, "addresses/" + args.address_id, "");
+            SubscribeProLib.setURL(svc, "addresses/" + Encoding.toURI(args.address_id), "");
         } else {
-	    SubscribeProLib.setURL(svc, "address", "");
+            SubscribeProLib.setURL(svc, "address", "");
         }
 
         /**
@@ -176,14 +178,14 @@ ServiceRegistry.configure("subpro.http.post.addresses", {
     /**
      * JSON parse the response text and return it
      */
-    parseResponse: function(svc: HTTPService, client: HTTPClient) {
+    parseResponse: function (svc: HTTPService, client: HTTPClient) {
         return JSON.parse(client.text);
     },
 
     /**
      * Return the Mocked Address Data
      */
-    mockCall: function(svc: HTTPService, client: HTTPClient) {
+    mockCall: function (svc: HTTPService, client: HTTPClient) {
         return getMockJSON(AddressMockData);
     }
 });
@@ -196,9 +198,9 @@ ServiceRegistry.configure("subpro.http.post.addressfindcreate", {
     /**
      * Create the service request
      */
-    createRequest: function(svc: HTTPFormService, args) {
+    createRequest: function (svc: HTTPFormService, args) {
         svc.setRequestMethod("POST");
-	SubscribeProLib.setURL(svc, "address/find-or-create.json", "");
+        SubscribeProLib.setURL(svc, "address/find-or-create.json", "");
 
         /**
          * Return the parameters to be POSTed to the URL, if there are any
@@ -213,14 +215,14 @@ ServiceRegistry.configure("subpro.http.post.addressfindcreate", {
     /**
      * JSON parse the response text and return it
      */
-    parseResponse: function(svc: HTTPService, client: HTTPClient) {
+    parseResponse: function (svc: HTTPService, client: HTTPClient) {
         return JSON.parse(client.text);
     },
 
     /**
      * Return the Mocked Address Data
      */
-    mockCall: function(svc: HTTPService, client: HTTPClient) {
+    mockCall: function (svc: HTTPService, client: HTTPClient) {
         return getMockJSON(AddressMockData);
     }
 });
@@ -233,22 +235,22 @@ ServiceRegistry.configure("subpro.http.get.addresses", {
     /**
      * Create the service request
      */
-    createRequest: function(svc: HTTPFormService, args) {
+    createRequest: function (svc: HTTPFormService, args) {
         svc.setRequestMethod("GET");
-	SubscribeProLib.setURL(svc, "addresses.json", "customer_id=" + args.customer_id);
+        SubscribeProLib.setURL(svc, "addresses.json", "customer_id=" + Encoding.toURI(args.customer_id));
     },
 
     /**
      * JSON parse the response text and return it
      */
-    parseResponse: function(svc: HTTPService, client: HTTPClient) {
+    parseResponse: function (svc: HTTPService, client: HTTPClient) {
         return JSON.parse(client.text);
     },
 
     /**
      * Return the Mocked Address Data
      */
-    mockCall: function(svc: HTTPService, client: HTTPClient) {
+    mockCall: function (svc: HTTPService, client: HTTPClient) {
         return getMockJSON(AddressesMockData);
     }
 });
@@ -261,22 +263,22 @@ ServiceRegistry.configure("subpro.http.get.products", {
     /**
      * Create the service request
      */
-    createRequest: function(svc: HTTPFormService, args) {
+    createRequest: function (svc: HTTPFormService, args) {
         svc.setRequestMethod("GET");
-	SubscribeProLib.setURL(svc, "products.json", "sku=" + args.sku);
+        SubscribeProLib.setURL(svc, "products.json", "sku=" + Encoding.toURI(args.sku));
     },
 
     /**
      * JSON parse the response text and return it
      */
-    parseResponse: function(svc: HTTPService, client: HTTPClient) {
+    parseResponse: function (svc: HTTPService, client: HTTPClient) {
         return JSON.parse(client.text);
     },
 
     /**
      * Return the Mocked Address Data
      */
-    mockCall: function(svc: HTTPService, client: HTTPClient) {
+    mockCall: function (svc: HTTPService, client: HTTPClient) {
         return getMockJSON(ProductMockData);
     }
 });
@@ -289,27 +291,27 @@ ServiceRegistry.configure("subpro.http.get.customers", {
     /**
      * Create the service request
      */
-    createRequest: function(svc: HTTPFormService, args) {
+    createRequest: function (svc: HTTPFormService, args) {
         svc.setRequestMethod("GET");
 
         if (args.customer_id) {
-	    SubscribeProLib.setURL(svc, "customers/" + args.customer_id + ".json", "");
+            SubscribeProLib.setURL(svc, "customers/" + Encoding.toURI(args.customer_id) + ".json", "");
         } else if (args.email) {
-	    SubscribeProLib.setURL(svc, "customers.json", "email=" + args.email);
+            SubscribeProLib.setURL(svc, "customers.json", "email=" + Encoding.toURI(args.email));
         }
     },
 
     /**
      * JSON parse the response text and return it
      */
-    parseResponse: function(svc: HTTPService, client: HTTPClient) {
+    parseResponse: function (svc: HTTPService, client: HTTPClient) {
         return JSON.parse(client.text);
     },
 
     /**
      * Return the Mocked Address Data
      */
-    mockCall: function(svc: HTTPService, client: HTTPClient) {
+    mockCall: function (svc: HTTPService, client: HTTPClient) {
         return getMockJSON(CustomerMockData);
     }
 });
@@ -322,9 +324,9 @@ ServiceRegistry.configure("subpro.http.post.customer", {
     /**
      * Create the service request
      */
-    createRequest: function(svc: HTTPFormService, args) {
+    createRequest: function (svc: HTTPFormService, args) {
         svc.setRequestMethod("POST");
-	SubscribeProLib.setURL(svc, "customer.json", "");
+        SubscribeProLib.setURL(svc, "customer.json", "");
 
         /**
          * Return the parameters to be POSTed to the URL, if there are any
@@ -335,18 +337,17 @@ ServiceRegistry.configure("subpro.http.post.customer", {
             return null;
         }
     },
-
     /**
      * JSON parse the response text and return it
      */
-    parseResponse: function(svc: HTTPService, client: HTTPClient) {
+    parseResponse: function (svc: HTTPService, client: HTTPClient) {
         return JSON.parse(client.text);
     },
 
     /**
      * Return the Mocked Address Data
      */
-    mockCall: function(svc: HTTPService, client: HTTPClient) {
+    mockCall: function (svc: HTTPService, client: HTTPClient) {
         return getMockJSON(CustomerMockData);
     }
 });
@@ -359,9 +360,9 @@ ServiceRegistry.configure("subpro.http.post.customers", {
     /**
      * Create the service request
      */
-    createRequest: function(svc: HTTPFormService, args) {
+    createRequest: function (svc: HTTPFormService, args) {
         svc.setRequestMethod("POST");
-	SubscribeProLib.setURL(svc, "customers/" + args.customer_id + ".json", "");
+        SubscribeProLib.setURL(svc, "customers/" + Encoding.toURI(args.customer_id) + ".json", "");
 
         /**
          * Return the parameters to be POSTed to the URL, if there are any
@@ -376,14 +377,14 @@ ServiceRegistry.configure("subpro.http.post.customers", {
     /**
      * JSON parse the response text and return it
      */
-    parseResponse: function(svc: HTTPService, client: HTTPClient) {
+    parseResponse: function (svc: HTTPService, client: HTTPClient) {
         return JSON.parse(client.text);
     },
 
     /**
      * Return the Mocked Address Data
      */
-    mockCall: function(svc: HTTPService, client: HTTPClient) {
+    mockCall: function (svc: HTTPService, client: HTTPClient) {
         return getMockJSON(CustomerMockData);
     }
 });
@@ -396,9 +397,9 @@ ServiceRegistry.configure("subpro.http.get.token", {
     /**
      * Create the service request
      */
-    createRequest: function(svc: HTTPFormService, args) {
+    createRequest: function (svc: HTTPFormService, args) {
         svc.setRequestMethod("GET");
-	SubscribeProLib.setURL(svc, "token", "customer_id=" + args.customer_id +
+        SubscribeProLib.setURL(svc, "token", "customer_id=" + Encoding.toURI(args.customer_id) +
             "&grant_type=" + args.grant_type +
             "&scope=" + args.scope);
     },
@@ -406,14 +407,14 @@ ServiceRegistry.configure("subpro.http.get.token", {
     /**
      * JSON parse the response text and return it
      */
-    parseResponse: function(svc: HTTPService, client: HTTPClient) {
+    parseResponse: function (svc: HTTPService, client: HTTPClient) {
         return JSON.parse(client.text);
     },
 
     /**
      * Return the Mocked Address Data
      */
-    mockCall: function(svc: HTTPService, client: HTTPClient) {
+    mockCall: function (svc: HTTPService, client: HTTPClient) {
         return getMockJSON(AccessTokenMockData);
     }
 });
@@ -426,12 +427,12 @@ ServiceRegistry.configure("subpro.http.get.paymentprofile", {
     /**
      * Create the service request
      */
-    createRequest: function(svc: HTTPFormService, args) {
+    createRequest: function (svc: HTTPFormService, args) {
         svc.setRequestMethod("GET");
         if (args.paymentprofile_id) {
-	    SubscribeProLib.setURL(svc, "vault/paymentprofiles/" + args.paymentprofile_id + ".json", "");
+            SubscribeProLib.setURL(svc, "vault/paymentprofiles/" + Encoding.toURI(args.paymentprofile_id) + ".json", "");
         } else if (args.transaction_id) {
-	    SubscribeProLib.setURL(svc, "vault/paymentprofiles.json", "transaction_id="+args.transaction_id);
+            SubscribeProLib.setURL(svc, "vault/paymentprofiles.json", "transaction_id=" + Encoding.toURI(args.transaction_id));
         } else {
             throw new Error("subpro.http.get.paymentprofile requires a paymentprofile_id or transaction_id");
         }
@@ -440,14 +441,14 @@ ServiceRegistry.configure("subpro.http.get.paymentprofile", {
     /**
      * JSON parse the response text and return it
      */
-    parseResponse: function(svc: HTTPService, client: HTTPClient) {
+    parseResponse: function (svc: HTTPService, client: HTTPClient) {
         return JSON.parse(client.text);
     },
 
     /**
      * Return the Mocked Address Data
      */
-    mockCall: function(svc: HTTPService, client: HTTPClient) {
+    mockCall: function (svc: HTTPService, client: HTTPClient) {
         return getMockJSON(PaymentProfileMockData);
     }
 });
@@ -460,9 +461,9 @@ ServiceRegistry.configure("subpro.http.post.paymentprofile.vault", {
     /**
      * Create the service request
      */
-    createRequest: function(svc: HTTPFormService, args) {
+    createRequest: function (svc: HTTPFormService, args) {
         svc.setRequestMethod("POST");
-	SubscribeProLib.setURL(svc, "vault/paymentprofile/external-vault.json", "");
+        SubscribeProLib.setURL(svc, "vault/paymentprofile/external-vault.json", "");
 
         /**
          * Return the parameters to be POSTed to the URL, if there are any
@@ -477,14 +478,14 @@ ServiceRegistry.configure("subpro.http.post.paymentprofile.vault", {
     /**
      * JSON parse the response text and return it
      */
-    parseResponse: function(svc: HTTPService, client: HTTPClient) {
+    parseResponse: function (svc: HTTPService, client: HTTPClient) {
         return JSON.parse(client.text);
     },
 
     /**
      * Return the Mocked Address Data
      */
-    mockCall: function(svc: HTTPService, client: HTTPClient) {
+    mockCall: function (svc: HTTPService, client: HTTPClient) {
         return getMockJSON(PaymentProfileMockData);
     }
 });
