@@ -18,6 +18,11 @@ var app = require('~/cartridge/scripts/app');
 var guard = require('~/cartridge/scripts/guard');
 var Transaction = require('dw/system/Transaction');
 
+/* Subscribe Pro Module */
+var SubscribeProLib = require('/int_subscribe_pro/cartridge/scripts/subpro/lib/SubscribeProLib');
+var CustomerHelper = require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/CustomerHelper');
+var Logger = require('dw/system/Logger');
+
 /**
  * Gets a ContentModel object that wraps the myaccount-home content asset,
  * updates the page metadata, and renders the account/accountoverview template.
@@ -98,7 +103,18 @@ function editForm() {
             if (isProfileUpdateValid) {
                 hasEditSucceeded = Customer.editAccount(app.getForm('profile.customer.email').value(), app.getForm('profile.login.password').value(), app.getForm('profile.login.password').value(), app.getForm('profile'));
 
-                if (!hasEditSucceeded) {
+                if (hasEditSucceeded) {
+                    let customer = Customer.get();
+                    
+                    if (customer && customer.object && customer.object.profile && customer.object.profile.custom.subproCustomerID) {
+                        let customerToPost = CustomerHelper.getSubproCustomer(customer);
+                        let updateResponse = SubscribeProLib.updateCustomer(customer.object.profile.custom.subproCustomerID, customerToPost);
+                        
+                        if (updateResponse.error) {
+                            Logger.error('There was an issue updating the customer at subscribe pro: ' + JSON.stringify(updateResponse));
+                        }
+                    }
+                } else {
                     app.getForm('profile.login.password').invalidate();
                     isProfileUpdateValid = false;
                 }
