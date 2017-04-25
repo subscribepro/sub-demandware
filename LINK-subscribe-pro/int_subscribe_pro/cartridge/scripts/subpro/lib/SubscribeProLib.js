@@ -353,7 +353,7 @@ let SubscribeProLib = {
 
         for (let i = 0, il = plis.length; i < il; i++) {
             try {
-                isSubpro = plis[i].custom.subproSubscriptionOptionMode;
+                isSubpro = plis[i].custom.subproSubscriptionSelectedOptionMode === 'regular';
                 if (isSubpro)
                     break;
             } catch (e) {}
