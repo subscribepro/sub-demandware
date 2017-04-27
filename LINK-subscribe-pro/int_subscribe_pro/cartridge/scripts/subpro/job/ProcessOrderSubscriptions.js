@@ -99,7 +99,7 @@ function start() {
             /**
              * Define and initialize some attributes to be used within this loop
              */
-            let customer = CustomerMgr.getCustomerByLogin(order.customer.profile.credentials.login),
+	        let customer = CustomerMgr.getCustomerByLogin(order.customer.profile.credentials.login),
                 customerProfile = customer.profile,
                 paymentInstrument = order.paymentInstrument,
                 customerPaymentInstrument = PaymentsHelper.getCustomerPaymentInstrument(customerProfile.wallet.paymentInstruments, paymentInstrument),
@@ -110,7 +110,7 @@ function start() {
              * Set this for the error log function to reference
              */
             currentOrderNo = order.orderNo;
-
+            
             /**
              * Validate / Create the customer
              * If the customer already has a reference to a Subscribe Pro customer

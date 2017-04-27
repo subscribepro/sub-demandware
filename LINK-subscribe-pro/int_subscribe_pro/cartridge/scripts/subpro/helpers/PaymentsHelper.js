@@ -43,7 +43,7 @@ let PaymentsHelper = {
 
         var returnObject = {
             "customer_id": customerID,
-            "payment_token": card.creditCardToken,
+            "payment_token": card.UUID,
             "creditcard_type": subProCardType,
             "creditcard_first_digits": card.custom.subproCCPrefix,
             "creditcard_last_digits": card.creditCardNumberLastDigits,

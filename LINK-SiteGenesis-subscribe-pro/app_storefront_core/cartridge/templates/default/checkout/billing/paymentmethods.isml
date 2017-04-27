@@ -86,6 +86,8 @@ var SubscribeProLib = require('/int_subscribe_pro/cartridge/scripts/subpro/lib/S
 
 			<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.owner}" type="input"/>
 
+			<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.customerPaymentInstrumentID}" type="hidden" rowClass="visually-hidden" />
+
 			<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.type}" type="select"/>
 
 			<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.number}" type="input" dynamicname="true"/>
