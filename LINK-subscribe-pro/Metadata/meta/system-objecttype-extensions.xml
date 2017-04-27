@@ -251,7 +251,7 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>You need to be logged in as a registered customer to proceed checkout with SubPro Subscription products</default-value>
+                <default-value>Log in to place order with subscription</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="subproApplePayLoginMsg">
                 <display-name xml:lang="x-default">Subpro Apple Pay Login Message</display-name>

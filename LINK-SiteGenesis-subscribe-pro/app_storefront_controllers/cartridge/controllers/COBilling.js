@@ -776,40 +776,36 @@ function saveCreditCard() {
 
     if (customer.authenticated && app.getForm('billing').object.paymentMethods.creditCard.saveCard.value) {
         creditCards = customer.getProfile().getWallet().getPaymentInstruments(PaymentInstrument.METHOD_CREDIT_CARD);
-
+        
         Transaction.wrap(function () {
-            newCreditCard = customer.getProfile().getWallet().createPaymentInstrument(PaymentInstrument.METHOD_CREDIT_CARD);
+            var creditCardForm = app.getForm('billing').object.paymentMethods.creditCard;
+            var customerSelectedCreditCard = creditCardForm.customerPaymentInstrumentID ? creditCardForm.customerPaymentInstrumentID.value : false;
+            
+            if (customerSelectedCreditCard && customerSelectedCreditCard.length > 0) {
+                for (i = 0; i < creditCards.length; i++) {
+                    var creditcard = creditCards[i];
 
+                    if (creditcard.UUID == customerSelectedCreditCard) {
+                        newCreditCard = creditcard;
+                    }
+                }
+            }
+
+            if (!newCreditCard) {
+                newCreditCard = customer.getProfile().getWallet().createPaymentInstrument(PaymentInstrument.METHOD_CREDIT_CARD);
+            }
+            
             // copy the credit card details to the payment instrument
-            newCreditCard.setCreditCardHolder(app.getForm('billing').object.paymentMethods.creditCard.owner.value);
-            newCreditCard.setCreditCardNumber(app.getForm('billing').object.paymentMethods.creditCard.number.value);
-            newCreditCard.setCreditCardExpirationMonth(app.getForm('billing').object.paymentMethods.creditCard.expiration.month.value);
-            newCreditCard.setCreditCardExpirationYear(app.getForm('billing').object.paymentMethods.creditCard.expiration.year.value);
-            newCreditCard.setCreditCardType(app.getForm('billing').object.paymentMethods.creditCard.type.value);
+            newCreditCard.setCreditCardHolder(creditCardForm.owner.value);
+            newCreditCard.setCreditCardNumber(creditCardForm.number.value);
+            newCreditCard.setCreditCardExpirationMonth(creditCardForm.expiration.month.value);
+            newCreditCard.setCreditCardExpirationYear(creditCardForm.expiration.year.value);
+            newCreditCard.setCreditCardType(creditCardForm.type.value);
             
             /**
              * Subscribe Pro
              */
-            newCreditCard.custom.subproCCPrefix = new String(app.getForm('billing').object.paymentMethods.creditCard.number.value).substr(0, 6);
-
-            /**
-             * This needs to be replaced with a valid PSP Tokenizer before going to production
-             */
-            let random = new dw.crypto.SecureRandom();
-            let bytes = random.nextBytes(32);
-            let tokenString = newCreditCard.getUUID() + new Date().getTime() + bytes.toString();
-            let messageDigest = new dw.crypto.MessageDigest(dw.crypto.MessageDigest.DIGEST_SHA_512);
-            let hash = dw.crypto.Encoding.toBase64(messageDigest.digestBytes(new dw.util.Bytes(tokenString)));
-    
-            newCreditCard.setCreditCardToken(hash);
-
-            for (i = 0; i < creditCards.length; i++) {
-                var creditcard = creditCards[i];
-
-                if (creditcard.maskedCreditCardNumber === newCreditCard.maskedCreditCardNumber && creditcard.creditCardType === newCreditCard.creditCardType) {
-                    customer.getProfile().getWallet().removePaymentInstrument(creditcard);
-                }
-            }
+            newCreditCard.custom.subproCCPrefix = new String(creditCardForm.number.value).substr(0, 6);
         });
 
     }

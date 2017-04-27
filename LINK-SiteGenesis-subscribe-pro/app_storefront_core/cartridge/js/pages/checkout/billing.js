@@ -17,7 +17,9 @@ function setCCFields(data) {
     $creditCard.find('input[name*="_creditCard_number"]').val(data.maskedNumber).trigger('change');
     $creditCard.find('[name$="_month"]').val(data.expirationMonth).trigger('change');
     $creditCard.find('[name$="_year"]').val(data.expirationYear).trigger('change');
+    $creditCard.find('input[name$="_customerPaymentInstrumentID"]').val(data.customerPaymentInstrumentID).trigger('change');
     $creditCard.find('input[name$="_cvn"]').val('').trigger('change');
+
 }
 
 /**

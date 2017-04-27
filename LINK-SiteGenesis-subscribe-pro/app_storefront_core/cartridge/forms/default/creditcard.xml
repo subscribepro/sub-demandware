@@ -12,6 +12,8 @@
 	    description="creditcard.numberexample" binding="creditCardNumber"
 	    missing-error="creditcard.numbermissingerror" value-error="creditcard.numbervalueerror"/>
 	    
+    <field formid="customerPaymentInstrumentID" type="string" binding="customerPaymentInstrumentID" mandatory="false" />
+
 	<group formid="expiration"> 
 		<!-- field for credit card expiration month -->
 	    <field formid="month" label="resource.month" type="integer" mandatory="true" binding="creditCardExpirationMonth"
