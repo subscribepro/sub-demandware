@@ -22,8 +22,6 @@ function Handle(args) {
     var cardType = creditCardForm.get('type').value();
     var expirationMonth = creditCardForm.get('expiration.month').value();
     var expirationYear = creditCardForm.get('expiration.year').value();
-    var customerPaymentInstrumentID = creditCardForm.get('customerPaymentInstrumentID').value();
-
     var paymentCard = PaymentMgr.getPaymentCard(cardType);
 
     var creditCardStatus = paymentCard.verify(expirationMonth, expirationYear, cardNumber, cardSecurityCode);
@@ -45,7 +43,6 @@ function Handle(args) {
         paymentInstrument.creditCardType = cardType;
         paymentInstrument.creditCardExpirationMonth = expirationMonth;
         paymentInstrument.creditCardExpirationYear = expirationYear;
-        paymentInstrument.custom.subproCustomerPaymentInstrumentID = customerPaymentInstrumentID;
     });
 
     return {success: true};
