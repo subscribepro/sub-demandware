@@ -78,7 +78,10 @@ let subscriptionOptions = {
             type: 'POST',
             cache: false,
             contentType: 'application/json',
-            url: util.appendParamToURL(Urls.subproSubscriptionOptions, 'options', JSON.stringify(data))
+            url: util.appendParamToURL(Urls.subproSubscriptionOptions, 'options', JSON.stringify(data)),
+            complete: () => {
+                document.location.reload();
+            }
         });
     },
     

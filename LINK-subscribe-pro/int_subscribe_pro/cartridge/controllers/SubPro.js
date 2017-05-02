@@ -153,7 +153,7 @@ function updateSubscriptionOptions() {
         pli.custom.subproSubscriptionInterval = options.deliveryInteval;
 
         let discountValue = parseFloat(options.discount),
-            discountToApply = options.isDiscountPercentage
+            discountToApply = (options.isDiscountPercentage === 'true' || options.isDiscountPercentage === true)
                 ? new dw.campaign.PercentageDiscount(discountValue * 100)
                 : new dw.campaign.AmountDiscount(discountValue);
 
