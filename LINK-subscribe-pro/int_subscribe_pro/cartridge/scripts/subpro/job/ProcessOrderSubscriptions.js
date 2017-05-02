@@ -219,7 +219,7 @@ function start() {
                 for (let j = 0, pl = plis.length; j < pl; j++) {
                     let pli = plis[j];
 
-                    if (pli.custom.subproSubscriptionOptionMode) {
+                    if (pli.custom.subproSubscriptionOptionMode && !pli.custom.subproSubscriptionCreated ) {
                         /**
                          * Validate / Create shipping addresses using the customers saved address and
                          * the Find / Create Subscribe Pro API
