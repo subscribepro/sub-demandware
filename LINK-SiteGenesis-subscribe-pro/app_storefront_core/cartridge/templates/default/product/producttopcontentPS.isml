@@ -181,7 +181,6 @@
 				</iscomment>
 
 				<isif condition="${pdict.Product.custom.subproSubscriptionEnabled}">
-					<h1>SUBPRO</h1>
 					<div class="subscription">
 						<div class="sp-add-to-order"></div>
 						<isinclude url="${URLUtils.url('SubPro-PDP', 'sku', pdict.Product.ID)}" />
