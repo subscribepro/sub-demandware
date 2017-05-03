@@ -52,7 +52,7 @@ let WidgetsHelper = {
 
         let widgetConfig = {
             widgetElementId: widgetID,
-            apiBaseUrl: require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproApiBaseUrl'),
+            apiBaseUrl: 'https://' + require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproApiBaseUrl'),
             apiAccessToken: session.custom.widgetAccessToken,
             environmentKey: session.custom.widgetEnvironmentKey,
             customerId: session.custom.widgetCustomerId

@@ -401,7 +401,7 @@ ServiceRegistry.configure("subpro.http.get.token", {
         svc.setRequestMethod("GET");
         SubscribeProLib.setURL(svc, "token", "customer_id=" + Encoding.toURI(args.customer_id) +
             "&grant_type=" + args.grant_type +
-            "&scope=" + args.scope);
+            "&scope=" + args.scope, 'subpro.http.cred.oauth.');
     },
 
     /**

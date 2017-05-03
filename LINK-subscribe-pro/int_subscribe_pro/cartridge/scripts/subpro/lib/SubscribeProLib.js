@@ -361,6 +361,7 @@ let SubscribeProLib = {
 
         return !!isSubpro;
     },
+
     /**
      * Update the URL Parameter of the Service to include the
      * specified endpoint and any supplied parameters
@@ -369,25 +370,29 @@ let SubscribeProLib = {
      * @param endpoint : String API Endpoint to call on the service
      * @param parameters : String GET URL parameters to append to the URL
      */
-    setURL: function (svc, endpoint, parameters) {
-	/**
-	 * Current Site, used to reference site preferences
-	 */
-	let CurrentSite = require('dw/system/Site').getCurrent();
+    setURL: function (svc, endpoint, parameters, credPrefix) {
+        if (!credPrefix) {
+            credPrefix = 'subpro.http.cred.';
+        }
 
-	svc.setCredentialID('subpro.http.cred.' + CurrentSite.getCustomPreferenceValue('subproAPICredSuffix'));
-
-	/**
-	 * Replace the URL parameters with the relevant values
-	 */
-	let url = svc.getURL();
-	url = url.replace('{ENDPOINT}', endpoint);
-	url = url.replace('{PARAMS}', parameters);
-
-	/**
-	 * Save the newly constructed url
-	 */
-	svc.setURL(url);
+        /**
+    	 * Current Site, used to reference site preferences
+    	 */
+    	var CurrentSite = require('dw/system/Site').getCurrent();
+    
+    	svc.setCredentialID(credPrefix + CurrentSite.getCustomPreferenceValue('subproAPICredSuffix'));
+    
+    	/**
+    	 * Replace the URL parameters with the relevant values
+    	 */
+    	var url = svc.getURL();
+    	url = url.replace('{ENDPOINT}', endpoint);
+    	url = url.replace('{PARAMS}', parameters);
+    	
+    	/**
+    	 * Save the newly constructed url
+    	 */
+    	svc.setURL(url);
     }
 };
 
