@@ -58,15 +58,7 @@
 		<!-- Pass configuration and init the Subscribe Pro widget -->
 		<script>
 			// Setup config for Subscribe Pro
-			var widgetConfig = {
-				widgetElementId: '${widgetConfig.widgetElementId}',
-				apiBaseUrl: '${widgetConfig.apiAccessToken}',
-				apiAccessToken: '${widgetConfig.apiAccessToken}',
-				environmentKey: '${widgetConfig.environmentKey}',
-				customerId: '${widgetConfig.customerId}',
-				addToOrderElementClass: '${widgetConfig.addToOrderElementClass}'
-			};
-			// Call init
+			var widgetConfig = <isprint value="${JSON.stringify(widgetConfig)}" encoding="off" />;
 			subscribepro.widgets.init('add-to-order', widgetConfig);
 		</script>
 	</isif>
