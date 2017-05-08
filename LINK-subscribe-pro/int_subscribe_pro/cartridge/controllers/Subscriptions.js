@@ -20,7 +20,7 @@ function list() {
         response.redirect(request.httpHeaders.referer);
     }
 
-    app.getView({}).render('account/subscriptions/mysubscriptions');
+    app.getView({}).render('subpro/account/mysubscriptions');
 }
 
 /*
