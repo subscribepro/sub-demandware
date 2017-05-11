@@ -145,8 +145,13 @@ function productSubscriptionsOrderConfirmation() {
  */
 function updateSubscriptionOptions() {
 	let options = JSON.parse(params.options),
-		cart = app.getModel('Cart').get(),
-		pli = cart.getProductLineItemByUUID(options.pliUUID);
+		cart = app.getModel('Cart').get();
+	
+	if (!cart) {
+		return;
+	}
+	
+	let pli = cart.getProductLineItemByUUID(options.pliUUID);
 
 	if (!pli) {
 		return;
