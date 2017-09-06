@@ -294,7 +294,7 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>https://widgets.subscribepro.com/subscribepro-widgets.min.js</default-value>
+                <default-value>https://hosted.subscribepro.com/subscribepro-widgets.min.js</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="subproApiBaseUrl">
                 <display-name xml:lang="x-default">Subscribe Pro API Base Url</display-name>
