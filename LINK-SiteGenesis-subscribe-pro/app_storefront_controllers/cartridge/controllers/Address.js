@@ -10,6 +10,7 @@
 var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
 var URLUtils = require('dw/web/URLUtils');
+var Logger = require('dw/system/Logger');
 
 /* Script Modules */
 var app = require('~/cartridge/scripts/app');
