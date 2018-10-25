@@ -50,8 +50,9 @@ let WidgetsHelper = {
             this.getAccessToken(customerID, grantType, scope);
         }
 
+
         let widgetConfig = {
-            widgetElementId: widgetID,
+            element: widgetID,
             apiBaseUrl: require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproApiBaseUrl'),
             apiAccessToken: session.custom.widgetAccessToken,
             environmentKey: session.custom.widgetEnvironmentKey,

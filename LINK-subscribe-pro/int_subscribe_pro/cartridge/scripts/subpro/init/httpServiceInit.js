@@ -399,15 +399,17 @@ ServiceRegistry.configure("subpro.http.get.token", {
      */
     createRequest: function (svc: HTTPFormService, args) {
         svc.setRequestMethod("GET");
-        SubscribeProLib.setURL(svc, "token", "customer_id=" + Encoding.toURI(args.customer_id) +
-            "&grant_type=" + args.grant_type +
-            "&scope=" + args.scope, 'subpro.http.cred.oauth.');
+        SubscribeProLib.setURL(svc, "token",  "grant_type=" + args.grant_type +
+            "&scope=" + args.scope + "&customer_id=" + Encoding.toURI(args.customer_id), 'subpro.http.cred.oauth.');
     },
 
     /**
      * JSON parse the response text and return it
      */
     parseResponse: function (svc: HTTPService, client: HTTPClient) {
+    	var logger = require('dw/system/Logger').getLogger('root');
+    	logger.info('client.text');
+    	logger.info(client.text);
         return JSON.parse(client.text);
     },
 

@@ -56,16 +56,30 @@
 		Configure the Subscribe Pro Address Book Assist Widget
 	</iscomment>
 
-	<!-- Load the Subscribe Pro widget script -->
-	<script src="${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproWidgetScriptUrl')}"></script>
-
-	<isset name="widgetConfig" scope="page"
-		value="${require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/WidgetsHelper').getWidgetConfig(customer.profile.custom.subproCustomerID, 'client_credentials', 'widget', 'sp-address-book-widget')}"/>
-
-	<!-- Pass configuration and init the Subscribe Pro widget -->
-	<script>
-		// Setup config for Subscribe Pro
-		var widgetConfig = <isprint value="${JSON.stringify(widgetConfig)}" encoding="off" />;
-		subscribepro.widgets.init('address-book-assist', widgetConfig);
-	</script>
+	<isif condition="${pdict.newAddress != 'null' || pdict.updatedAddress != 'null' || pdict.deletedAddress != 'null'}">
+		<!-- Load the Subscribe Pro widget script -->
+		<script src="${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproAddressWidgetScriptUrl')}"></script>
+	
+		<isset name="widgetConfig" scope="page"
+			value="${require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/WidgetsHelper').getWidgetConfig(customer.profile.custom.subproCustomerID, 'client_credentials', 'widget', 'sp-address-book-widget')}"/>
+	
+		<!-- Pass configuration and init the Subscribe Pro widget -->
+		<script>
+			// Setup config for Subscribe Pro
+			var widgetConfig = <isprint value="${JSON.stringify(widgetConfig)}" encoding="off" />;
+			AddressBookAssist.init(widgetConfig);
+			<isif condition="${pdict.newAddress != 'null'}">
+				var newAddress = <isprint value="${pdict.newAddress}" encoding="off" />;
+				AddressBookAssist.onAddressCreated(newAddress);
+			</isif>
+			<isif condition="${pdict.updatedAddress != 'null'}">
+				var updatedAddress = <isprint value="${pdict.updatedAddress}" encoding="off" />;
+				AddressBookAssist.onAddressUpdated(updatedAddress);
+			</isif>
+			<isif condition="${pdict.deletedAddress != 'null'}">
+				var deletedAddress = <isprint value="${pdict.deletedAddress}" encoding="off" />;
+				AddressBookAssist.onAddressDeleted(deletedAddress);
+			</isif>
+		</script>
+	</isif>
 </isif>
