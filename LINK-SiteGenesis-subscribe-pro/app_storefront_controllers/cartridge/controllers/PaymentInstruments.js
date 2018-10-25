@@ -13,7 +13,7 @@ var PaymentStatusCodes = require('dw/order/PaymentStatusCodes');
 var Status = require('dw/system/Status');
 var Transaction = require('dw/system/Transaction');
 var URLUtils = require('dw/web/URLUtils');
-const Logger = require('dw/system/Logger');
+var Logger = require('dw/system/Logger');
 
 /* Script Modules */
 var app = require('~/cartridge/scripts/app');
