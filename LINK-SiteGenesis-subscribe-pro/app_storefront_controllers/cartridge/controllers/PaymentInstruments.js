@@ -33,26 +33,30 @@ function list() {
     var paymentInstruments = wallet.getPaymentInstruments(dw.order.PaymentInstrument.METHOD_CREDIT_CARD);
     var pageMeta = require('~/cartridge/scripts/meta');
     var paymentForm = app.getForm('paymentinstruments');
-    
-    var newCard = session.custom.newCard ? session.custom.newCard : null;
-    var updatedCard = session.custom.updatedCard ? session.custom.updatedCard : null;
-    var deletedCard = session.custom.deletedCard ? session.custom.deletedCard : null;
-
-	session.custom.newCard = null;
-	session.custom.updatedCard = null;
-	session.custom.deletedCard = null;
 
     paymentForm.clear();
     paymentForm.get('creditcards.storedcards').copyFrom(paymentInstruments);
 
     pageMeta.update(dw.content.ContentMgr.getContent('myaccount-paymentsettings'));
+    
+    var viewParams = {
+    		PaymentInstruments: paymentInstruments
+    };
+    
+    if (session.custom.newCard) {
+    	viewParams.newCard = session.custom.newCard;
+    	session.custom.newCard = null;
+    }
+    if (session.custom.updatedCard) {
+    	viewParams.updatedCard = session.custom.updatedCard;
+    	session.custom.updatedCard = null;
+    }
+    if (session.custom.deletedCard) {
+    	viewParams.deletedCard = session.custom.deletedCard;
+    	session.custom.deletedCard = null;
+    }
 
-    app.getView({
-        PaymentInstruments: paymentInstruments,
-        newCard: JSON.stringify(newCard),
-        updatedCard: JSON.stringify(updatedCard),
-        deletedCard: JSON.stringify(deletedCard)
-    }).render('account/payment/paymentinstrumentlist');
+    app.getView(viewParams).render('account/payment/paymentinstrumentlist');
 }
 
 
@@ -215,20 +219,16 @@ function Delete() {
         remove: function (formGroup, action) {
         	var paymentsHelper = require('int_subscribe_pro/cartridge/scripts/subpro/helpers/PaymentsHelper');
         	session.custom.deletedCard = paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, action.object, {});
-        	Logger.info(JSON.stringify(session.custom.deletedCard));
 
             Transaction.wrap(function () {
                 var wallet = customer.getProfile().getWallet();
                 wallet.removePaymentInstrument(action.object);
             });
-
         },
         error: function () {
             // @TODO When could this happen
         }
     });
-
-    response.redirect(URLUtils.https('PaymentInstruments-List'));
 }
 
 

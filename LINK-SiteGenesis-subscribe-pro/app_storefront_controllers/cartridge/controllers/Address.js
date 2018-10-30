@@ -30,20 +30,21 @@ function list() {
     
     Logger.info(JSON.stringify(session.custom.newAddress));
     
-    var newAddress = session.custom.newAddress ? session.custom.newAddress : null;
-    var updatedAddress = session.custom.updatedAddress ? session.custom.updatedAddress : null;
-    var deletedAddress = session.custom.deletedAddress ? session.custom.deletedAddress : null;
+    var viewParams = {};
+    if (session.custom.newAddress) {
+    	viewParams.newAddress = session.custom.newAddress;
+    	session.custom.newAddress = null;
+    }
+    if (session.custom.updatedAddress) {
+    	viewParams.updatedAddress = session.custom.updatedAddress;
+    	session.custom.updatedAddress = null;
+    }
+    if (session.custom.deletedAddress) {
+    	viewParams.deletedAddress = session.custom.deletedAddress;
+    	session.custom.deletedAddress = null;
+    }
 
-	session.custom.newAddress = null;
-	session.custom.updatedAddress = null;
-	session.custom.deletedAddress = null;
-
-
-    app.getView({
-    	newAddress: JSON.stringify(newAddress),
-    	updatedAddress: JSON.stringify(updatedAddress),
-    	deletedAddress: JSON.stringify(deletedAddress)
-    }).render('account/addressbook/addresslist');
+    app.getView(viewParams).render('account/addressbook/addresslist');
 }
 
 /**
@@ -193,11 +194,10 @@ function getAddressDetails() {
  */
 function Delete() {
     var CustomerStatusCodes = require('dw/customer/CustomerStatusCodes');
+    session.custom.deletedAddress = app.getModel('Address').get(decodeURIComponent(request.httpParameterMap.AddressID.value));
     var deleteAddressResult = app.getModel('Address').remove(decodeURIComponent(request.httpParameterMap.AddressID.value));
 
     if (request.httpParameterMap.format.stringValue !== 'ajax') {
-    	session.custom.deletedAddress = app.getModel('Address').get(session.forms.profile.address.addressid.value);
-        response.redirect(URLUtils.https('Address-List'));
         return;
     }
 

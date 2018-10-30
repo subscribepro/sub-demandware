@@ -26,43 +26,46 @@
 				</isloop>
 			</ul>
 		</isif>
+		
+		<isset name="hasNewCard" value="${ pdict.newCard != null }" scope="page" />
+		<isset name="hasUpdatedCard" value="${ pdict.updatedCard != null }" scope="page" />
+		<isset name="hasDeletedCard" value="${ pdict.deletedCard != null }" scope="page" />
+		<isset name="loadWidget" value="${ hasNewCard || hasUpdatedCard || hasDeletedCard }" scope="page" />
 
-		<isif condition="${isSubproCustomer}">
+		<isif condition="${isSubproCustomer && loadWidget}">
 			<!-- Subscribe Pro Wallet Assist Widget -->
 			<div id="sp-wallet-assist-widget"></div>
 		</isif>
 	</div>
 
-	<isif condition="${isSubproCustomer}">
+	<isif condition="${isSubproCustomer && loadWidget}">
 		<iscomment>
 			Configure the Subscribe Pro Wallet Assist Widget
 		</iscomment>
 
-		<isif condition="${pdict.newCard != 'null' || pdict.updatedCard != 'null' || pdict.deletedCard != 'null' }">
-			<!-- Load the Subscribe Pro widget script -->
-			<script src="${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproWalletWidgetScriptUrl')}"></script>
-	
-			<isset name="widgetConfig" scope="page"
-				value="${require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/WidgetsHelper').getWidgetConfig(customer.profile.custom.subproCustomerID, 'client_credentials', 'widget', 'sp-wallet-assist-widget')}"/>
+		<!-- Load the Subscribe Pro widget script -->
+		<script src="${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproWalletWidgetScriptUrl')}"></script>
 
-			<!-- Pass configuration and init the Subscribe Pro widget -->
-			<script>
-				// Setup config for Subscribe Pro
-				var widgetConfig = <isprint value="${JSON.stringify(widgetConfig)}" encoding="off" />;
-				WalletAssist.init(widgetConfig);
-				<isif condition="${pdict.newCard != 'null'}">
-					var newCard = <isprint value="${pdict.newCard}" encoding="off" />;
-					WalletAssist.onPaymentProfileCreated(newCard);
-				</isif>
-				<isif condition="${pdict.updatedCard != 'null'}">
-					var updatedCard = <isprint value="${pdict.updatedCard}" encoding="off" />;
-					WalletAssist.onPaymentProfileUpdated(updatedCard);
-				</isif>
-				<isif condition="${pdict.deletedCard != 'null'}">
-					var deletedCard = <isprint value="${pdict.deletedCard}" encoding="off" />;
-					WalletAssist.onPaymentProfileDeleted(deletedCard);
-				</isif>
-			</script>
-		</isif>
+		<isset name="widgetConfig" scope="page"
+			value="${require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/WidgetsHelper').getWidgetConfig(customer.profile.custom.subproCustomerID, 'client_credentials', 'widget', 'sp-wallet-assist-widget')}"/>
+
+		<!-- Pass configuration and init the Subscribe Pro widget -->
+		<script>
+			// Setup config for Subscribe Pro
+			var widgetConfig = <isprint value="${JSON.stringify(widgetConfig)}" encoding="off" />;
+			WalletAssist.init(widgetConfig);
+			<isif condition="${ hasNewCard }">
+				var newCard = <isprint value="${JSON.stringify(pdict.newCard)}" encoding="off" />;
+				WalletAssist.onPaymentProfileCreated(newCard);
+			</isif>
+			<isif condition="${ hasUpdatedCard }">
+				var updatedCard = <isprint value="${JSON.stringify(pdict.updatedCard)}" encoding="off" />;
+				WalletAssist.onPaymentProfileUpdated(updatedCard);
+			</isif>
+			<isif condition="${ hasDeletedCard }">
+				var deletedCard = <isprint value="${JSON.stringify(pdict.deletedCard)}" encoding="off" />;
+				WalletAssist.onPaymentProfileDeleted(deletedCard);
+			</isif>
+		</script>
 	</isif>
 </isdecorate>
