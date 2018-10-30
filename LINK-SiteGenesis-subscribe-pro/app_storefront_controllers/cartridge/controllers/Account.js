@@ -40,6 +40,28 @@ function show() {
 }
 
 /**
+ * Allows a logged in user to download the data from their profile in a csv file.
+ */
+function datadownload() {
+    var profile = customer.profile;
+    var profileDataHelper = require('~/cartridge/scripts/profileDataHelper');
+    let response = require('~/cartridge/scripts/util/Response');
+    var site = require('dw/system/Site');
+    var fileName = site.current.name + '_' + profile.firstName + '_' + profile.lastName + '.json';
+    response.renderData(profileDataHelper.getProfileData(profile), fileName);
+    return;
+}
+
+/**
+ * Set the consent tracking settings for the session
+ */
+function consentTracking() {
+    var consent = request.httpParameterMap.consentTracking.value == 'true';
+    session.custom.consentTracking = consent;
+    session.setTrackingAllowed(consent);
+}
+
+/**
  * Clears the profile form and copies customer profile information from the customer global variable
  * to the form. Gets a ContentModel object that wraps the myaccount-personaldata content asset, and updates the page
  * meta data. Renders the account/user/registration template using an anonymous view.
