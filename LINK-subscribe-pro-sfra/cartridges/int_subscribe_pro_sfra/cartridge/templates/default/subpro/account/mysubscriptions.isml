@@ -1,0 +1,35 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="common/layout/page">
+
+    <div class="hero slant-down account-image">
+        <h1 class="page-title">${Resource.msg('account.subpro.mysubscriptions', 'account', null)}</h1>
+    </div>
+
+    <div class="container">
+        <isscript>
+            var assets = require('*/cartridge/scripts/assets.js');
+            assets.addCss('/css/style.css');
+        </isscript>
+        <!---Breadcrumbs--->
+        <isinclude template="components/breadcrumbs/pageBreadcrumbs"/>
+        <!-- Subscribe Pro My Subscriptions Widget -->
+        <div id="sp-my-subscriptions"></div>
+
+        <iscomment>
+            Configure the Subscribe Pro My Subscriptions Widget
+        </iscomment>
+
+        <!-- Load the Subscribe Pro widget script -->
+        <script src="${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproWidgetScriptUrl')}"></script>
+
+        <isset name="widgetConfig" scope="page"
+            value="${require('*/cartridge/scripts/subpro/helpers/WidgetsHelper').getWidgetConfig(customer.profile.custom.subproCustomerID, 'client_credentials', 'widget', 'sp-my-subscriptions')}"/>
+
+        <!-- Pass configuration and init the Subscribe Pro widget -->
+        <script>
+            // Setup config for Subscribe Pro
+            var widgetConfig = <isprint value="${JSON.stringify(widgetConfig)}" encoding="off" />;
+            MySubscriptions.init(widgetConfig);
+        </script>
+    </div>
+</isdecorate>
