@@ -26,6 +26,8 @@
                         </isloop>
 
                         <isinclude template="cart/productCard/cartProductCardAvailability" />
+                        <!-- Subscription Widget -->
+                        <isinclude url="${URLUtils.url('SubPro-Cart', 'sku', lineItem.id)}" />
                         <isinclude template="cart/productCard/cartProductCardEdit" />
                     </div>
                 </div>
