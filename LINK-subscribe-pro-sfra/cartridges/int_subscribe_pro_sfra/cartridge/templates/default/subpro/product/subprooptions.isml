@@ -7,12 +7,16 @@
     <isset name="currencySymbol" value="${dw.util.Currency.getCurrency(session.currency).getSymbol()}" scope="page" />
     <isset name="discount" value="${product.is_discount_percentage ? product.discount * 100 + '%' : currencySymbol + product.discount}" scope="page" />
     <div class="col-md-12 col-12 subscription">
+        <isscript>
+            var assets = require('*/cartridge/scripts/assets.js');
+            assets.addJs('/js/subscriptionOptions.js');
+        </isscript>
         <div class="sp-add-to-order"></div>
 
         <div class="subpro-options ${pdict.page}">
             <hr />
             <strong><isprint value="${Resource.msg('product.subscription.options', 'product', null)}" /></strong>
-
+            <br />
             <iscomment> Display 'One-time delivery' option if available </iscomment>
             <isif condition="${product.subscription_option_mode === 'subscription_and_onetime_purchase'}">
                 <label for="onetime-delivery">
@@ -22,7 +26,7 @@
                     <isprint value="${Resource.msg('product.subscription.delivery.onetime', 'product', null)}" />
                 </label>
             </isif>
-
+            <br />
             <iscomment> Display 'Regular delivery' option with frequency dropdown </iscomment>
             <label for="regular-delivery">
                 <input type="radio" name="subproSubscriptionOptionMode${product.ID || ''}" id="regular-delivery" value="regular"
@@ -49,6 +53,7 @@
         <input type="hidden" name="subproSubscriptionAvailableIntervals" value="${product.intervals.toString()}">
         <input type="hidden" name="subproSubscriptionDiscount" value="${product.discount}">
         <input type="hidden" name="subproSubscriptionIsDiscountPercentage" value="${product.is_discount_percentage}">
+        <input type="hidden" name="subproSubscriptionOptionsUrl" value="${pdict.subprooptionsurl}" />
     </div>
     </div>
 </isif>

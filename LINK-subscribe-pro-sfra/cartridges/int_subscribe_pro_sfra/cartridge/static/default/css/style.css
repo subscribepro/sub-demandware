@@ -1,12 +1,6 @@
 .account-image {
-    background-image: url(../../images/account.jpg);
-    background-position-y:40%;
-}
+  background-image: url(../../images/account.jpg);
+  background-position-y: 40%; }
 
 #sp-my-subscriptions {
-    min-height:350px;
-}
-
-#sp-mysubscriptions .sp-quantity .sp-field.custom-select select {
-    border:none;
-}
+  min-height: 350px; }

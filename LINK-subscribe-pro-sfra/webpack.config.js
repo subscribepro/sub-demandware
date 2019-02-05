@@ -6,7 +6,7 @@ var ExtractTextPlugin = require('sgmf-scripts')['extract-text-webpack-plugin'];
         name: 'js',
         entry: sgmfScripts.createJsPath(),
         output: {
-            path: path.resolve('./cartridges/int_subscribe_pro_sfra/cartridge/static/default/js/'),
+            path: path.resolve('./cartridges/int_subscribe_pro_sfra/cartridge/static'),
             filename: '[name].js'
         }
     }, {

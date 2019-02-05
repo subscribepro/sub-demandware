@@ -19,5 +19,7 @@
         </isif>
         <!---Payment--->
         <isinclude template="account/paymentCard"/>
+        <!--Subscriptions-->
+        <isinclude template="subpro/account/mysubscriptionsCard"/>
     </div>
 </div>

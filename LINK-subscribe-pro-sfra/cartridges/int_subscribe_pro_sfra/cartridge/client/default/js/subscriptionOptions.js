@@ -1,9 +1,8 @@
 'use strict';
 
-let util = require('*/cartridge/client/default/js/util');
-
-let subscriptionOptions = {
-    cartInit: () => {
+module.exports = {
+    cartInit: function () {
+        console.log('cartInit');
         $('.subpro-options.cart input[name^=subproSubscriptionOptionMode]')
             .off('change')
             .on('change', (event) => {
@@ -26,7 +25,8 @@ let subscriptionOptions = {
             });
     },
 
-    variantInit: () => {
+    variantInit: function () {
+        console.log('variantInit');
         let options = $('.subpro-options.pdp input[name^=subproSubscriptionOptionMode]:checked');
 
         for (let i = 0; i < options.length; i++) {
@@ -51,7 +51,8 @@ let subscriptionOptions = {
             .on('change', (event) => subscriptionOptions.ajaxUpdateOptions(subscriptionOptions.getOptionsState($(event.currentTarget), 'pdp')));
     },
 
-    getOptionsState: (target, page) => {
+    getOptionsState: function (target, page) {
+        console.log('getOptionsState');
         let parent, pliUUID;
 
         if (page === 'pdp') {
@@ -73,16 +74,21 @@ let subscriptionOptions = {
         }
     },
 
-    ajaxUpdateOptions: (data) => {
+    ajaxUpdateOptions: function (data) {
+        console.log('ajaxUpdateOptions');
         $.ajax({
             type: 'POST',
             cache: false,
             contentType: 'application/json',
-            url: util.appendParamToURL(Urls.subproSubscriptionOptions, 'options', JSON.stringify(data))
+            url: $('input[name=subproSubscriptionOptionsUrl]').val() + '?options=' + JSON.stringify(data)
         });
     },
 
-    rebuildURL: (key, value, url) => {
+    rebuildURL: function (key, value, url) {
+        console.log('rebuildURL');
+        if (!url) {
+            return;
+        }
         let urlParts = url.split('?');
         let queryParams = urlParts[1].split('&');
 
@@ -99,11 +105,10 @@ let subscriptionOptions = {
         return urlParts.join('?');
     },
 
-    toggleDeliveryIntervalDropdown: (event, $deliveryInterval) => {
+    toggleDeliveryIntervalDropdown: function (event, $deliveryInterval) {
+        console.log('toggleDeliveryIntervalDropdown');
         $(event.currentTarget).val() === 'regular'
             ? $deliveryInterval.attr('hidden', false)
             : $deliveryInterval.attr('hidden', true);
     }
 };
-
-module.exports = subscriptionOptions;

@@ -10,6 +10,8 @@ var SubscribeProLib = require('*/cartridge/scripts/subpro/lib/SubscribeProLib');
 var Logger = require('dw/system/Logger');
 var ProductMgr = require('dw/catalog/ProductMgr');
 
+var URLUtils = require('dw/web/URLUtils');
+
 const params = request.httpParameterMap;
 
 server.get('PDP', function (req, res, next) {
@@ -39,6 +41,7 @@ server.get('PDP', function (req, res, next) {
     res.render('subpro/product/subprooptions', {
         subproduct: spproduct,
         sfccproduct: product,
+        subprooptionsurl: URLUtils.url('SubPro-UpdateOptions').toString(),
         page: 'pdp'
     });
     next();
@@ -76,6 +79,7 @@ server.get('Cart', function(req, res, next) {
     res.render('subpro/product/subprooptions', {
         product: product,
         sfccproduct: sfccProduct,
+        subprooptionsurl: URLUtils.url('SubPro-UpdateOptions').toString(),
         page: 'cart'
     });
     next();
