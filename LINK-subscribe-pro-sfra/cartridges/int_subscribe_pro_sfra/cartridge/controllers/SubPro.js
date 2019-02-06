@@ -12,6 +12,8 @@ var ProductMgr = require('dw/catalog/ProductMgr');
 
 var URLUtils = require('dw/web/URLUtils');
 
+let BasketMgr = require('dw/order/BasketMgr');
+
 const params = request.httpParameterMap;
 
 server.get('PDP', function (req, res, next) {
@@ -48,9 +50,9 @@ server.get('PDP', function (req, res, next) {
 });
 
 server.get('Cart', function(req, res, next) {
-    let basketMgr = require('dw/order/BasketMgr');
-    let basket = basketMgr.getCurrentBasket();
-    let pli = basket.getProductLineItems(params.sku.stringValue).pop();
+    let basket = BasketMgr.getCurrentOrNewBasket();
+    let pli = basket.getAllProductLineItems(params.sku.stringValue).pop();
+let logger = Logger.getLogger('cart');
 
     if (!pli) {
         return;
@@ -64,20 +66,19 @@ server.get('Cart', function(req, res, next) {
     let spproduct = response.result.products.pop();
     let sfccProduct = ProductMgr.getProduct(params.sku.stringValue);
 
-    let product = {
+    let productData = {
         "ID": pli.getProductID(),
-        "subscription_option_mode": sfccProduct.custom.subproSubscriptionOptionMode,
-        "selected_option_mode": sfccProduct.custom.subproSubscriptionSelectedOptionMode,
-        "selected_interval": sfccProduct.custom.subproSubscriptionInterval,
-        "intervals": null !== sfccProduct.custom.subproSubscriptionAvailableIntervals ? pli.custom.subproSubscriptionAvailableIntervals.split(',') : [],
-        "is_discount_percentage": sfccProduct.custom.subproSubscriptionIsDiscountPercentage,
-        "discount": sfccProduct.custom.subproSubscriptionDiscount
-    }
-
+        "subscription_option_mode": spproduct.subscription_option_mode,
+        "selected_option_mode": pli.custom.subproSubscriptionSelectedOptionMode,
+        "selected_interval": pli.custom.subproSubscriptionInterval,
+        "intervals": null !== pli.custom.subproSubscriptionAvailableIntervals ? pli.custom.subproSubscriptionAvailableIntervals.split(',') : [],
+        "is_discount_percentage": pli.custom.subproSubscriptionIsDiscountPercentage,
+        "discount": pli.custom.subproSubscriptionDiscount
+    };
 
 
     res.render('subpro/product/subprooptions', {
-        product: product,
+        subproduct: productData,
         sfccproduct: sfccProduct,
         subprooptionsurl: URLUtils.url('SubPro-UpdateOptions').toString(),
         page: 'cart'
@@ -135,20 +136,21 @@ server.get('OrderConfirmation', function (req, res, next) {
 });
 
 server.post('UpdateOptions', function (res, req, next) {
-    let options = JSON.parse(params.options),
-        cart = app.getModel('Cart').get(),
-        pli = cart.getProductLineItemByUUID(options.pliUUID);
+    let basket = BasketMgr.getCurrentOrNewBasket();
 
+    let pli = basket.getAllProductLineItems(params.pliUUID.stringValue).pop();
+    let logger = Logger.getLogger('updateoptions');
+logger.info(pli);
     if (!pli) {
         return;
     }
 
     require('dw/system/Transaction').wrap(function () {
-        pli.custom.subproSubscriptionSelectedOptionMode = options.subscriptionMode;
-        pli.custom.subproSubscriptionInterval = options.deliveryInteval;
+        pli.custom.subproSubscriptionSelectedOptionMode = params.subscriptionMode;
+        pli.custom.subproSubscriptionInterval = params.deliveryInteval;
 
-        let discountValue = parseFloat(options.discount),
-            discountToApply = (options.isDiscountPercentage === 'true' || options.isDiscountPercentage === true)
+        let discountValue = parseFloat(params.discount),
+            discountToApply = (params.isDiscountPercentage === 'true' || params.isDiscountPercentage === true)
                 ? new dw.campaign.PercentageDiscount(discountValue * 100)
                 : new dw.campaign.AmountDiscount(discountValue);
 
@@ -158,7 +160,7 @@ server.post('UpdateOptions', function (res, req, next) {
         let priceAdjustment = pli.getPriceAdjustmentByPromotionID('SubscribeProDiscount');
         pli.removePriceAdjustment(priceAdjustment);
 
-        if (options.subscriptionMode === 'regular') {
+        if (params.subscriptionMode === 'regular') {
             pli.createPriceAdjustment('SubscribeProDiscount', discountToApply);
         }
     });

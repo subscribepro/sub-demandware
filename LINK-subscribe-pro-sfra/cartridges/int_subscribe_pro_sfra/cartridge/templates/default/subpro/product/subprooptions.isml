@@ -7,10 +7,7 @@
     <isset name="currencySymbol" value="${dw.util.Currency.getCurrency(session.currency).getSymbol()}" scope="page" />
     <isset name="discount" value="${product.is_discount_percentage ? product.discount * 100 + '%' : currencySymbol + product.discount}" scope="page" />
     <div class="col-md-12 col-12 subscription">
-        <isscript>
-            var assets = require('*/cartridge/scripts/assets.js');
-            assets.addJs('/js/subscriptionOptions.js');
-        </isscript>
+
         <div class="sp-add-to-order"></div>
 
         <div class="subpro-options ${pdict.page}">
@@ -45,12 +42,11 @@
             </select>
         </div>
 
-        <hr />
         <br />
 
         <iscomment> Hidden fields to pass subscription info to Product Line Item </iscomment>
-        <input type="hidden" name="subproSubscriptionAvailableOptionMode" value="${product.subscription_option_mode.toString()}">
-        <input type="hidden" name="subproSubscriptionAvailableIntervals" value="${product.intervals.toString()}">
+        <input type="hidden" name="subproSubscriptionAvailableOptionMode" value="${product.subscription_option_mode}">
+        <input type="hidden" name="subproSubscriptionAvailableIntervals" value="${JSON.stringify(product.intervals)}">
         <input type="hidden" name="subproSubscriptionDiscount" value="${product.discount}">
         <input type="hidden" name="subproSubscriptionIsDiscountPercentage" value="${product.is_discount_percentage}">
         <input type="hidden" name="subproSubscriptionOptionsUrl" value="${pdict.subprooptionsurl}" />
