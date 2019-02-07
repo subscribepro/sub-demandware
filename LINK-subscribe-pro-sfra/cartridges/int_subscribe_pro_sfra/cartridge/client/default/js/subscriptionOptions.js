@@ -1,7 +1,6 @@
 'use strict';
 
 function rebuildURL(key, value, url) {
-    console.log('rebuildURL');
     if (!url) {
         return;
     }
@@ -22,7 +21,6 @@ function rebuildURL(key, value, url) {
 }
 
 function toggleDeliveryIntervalDropdown(event, $deliveryInterval) {
-    console.log('toggleDeliveryIntervalDropdown');
     let hideDropdown = $(event.currentTarget).val() !== 'regular';
     $deliveryInterval.attr('hidden', hideDropdown);
 }
@@ -46,7 +44,6 @@ let subscriptionOptions = {
         if (!$('body').find('.subpro-options.cart').length) {
             return;
         }
-        console.log('cartInit');
         $('.subpro-options.cart input[name^=subproSubscriptionOptionMode]')
             .off('change')
             .on('change', (event) => {

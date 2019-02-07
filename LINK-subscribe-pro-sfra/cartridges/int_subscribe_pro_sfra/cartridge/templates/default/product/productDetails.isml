@@ -1,11 +1,4 @@
 <isdecorate template="common/layout/page">
-
-    <isscript>
-        var assets = require('*/cartridge/scripts/assets');
-        assets.addJs('/js/productDetail.js');
-        assets.addCss('/css/product/detail.css');
-    </isscript>
-
     <isset name="product" value="${pdict.product}" scope="page" />
     <isset name="isQuickView" value="${false}" scope="page" />
     <isset name="isProductSet" value="${pdict.product.productType === 'set'}" scope="page" />

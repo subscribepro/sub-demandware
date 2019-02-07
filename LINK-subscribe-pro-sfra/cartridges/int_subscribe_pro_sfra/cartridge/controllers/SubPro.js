@@ -164,7 +164,6 @@ logger.info(pli);
             pli.createPriceAdjustment('SubscribeProDiscount', discountToApply);
         }
     });
-    next();
 });
 
 
