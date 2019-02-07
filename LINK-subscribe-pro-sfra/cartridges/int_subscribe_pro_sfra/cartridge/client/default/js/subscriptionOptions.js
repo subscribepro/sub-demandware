@@ -39,6 +39,18 @@ function serializeURLParams (obj, prefix) {
     return str.join("&");
 }
 
+
+function ajaxUpdateOptions (target, page) {
+    let data = subscriptionOptions.getOptionsState(target, page);
+    let queryString = serializeURLParams(data);
+    $.ajax({
+        type: 'POST',
+        cache: false,
+        contentType: 'application/json',
+        url: $('input[name=subproSubscriptionOptionsUrl]').val() + '?' + queryString
+    });
+}
+
 let subscriptionOptions = {
     cartInit: () => {
         if (!$('body').find('.subpro-options.cart').length) {
@@ -70,7 +82,6 @@ let subscriptionOptions = {
         if (!$('body').find('.subpro-options.pdp').length) {
             return;
         }
-        console.log('variantInit');
         let options = $('.subpro-options.pdp input[name^=subproSubscriptionOptionMode]:checked');
         for (let i = 0; i < options.length; i++) {
             let option = $(options[i]);
@@ -110,7 +121,7 @@ let subscriptionOptions = {
             'deliveryInteval': parent.find('#delivery-interval').val(),
             'discount': parent.find('input[name=subproSubscriptionDiscount]').val(),
             'isDiscountPercentage': parent.find('input[name=subproSubscriptionIsDiscountPercentage]').val()
-        }
+        };
     },
 
     handleAddToCartSubOptions: () => {
@@ -126,15 +137,11 @@ let subscriptionOptions = {
 
     ajaxUpdateOptions: () => {
         $(document).on('pdpOptionsUpdate cartOptionsUpdate', function (e,p) {
-            let data = subscriptionOptions.getOptionsState($(p.event.currentTarget), p.page);
-            let queryString = serializeURLParams(data);
-            console.log(queryString);
-            $.ajax({
-                type: 'POST',
-                cache: false,
-                contentType: 'application/json',
-                url: $('input[name=subproSubscriptionOptionsUrl]').val() + '?' + queryString
-            });
+            ajaxUpdateOptions($(p.event.currentTarget), p.page);
+        });
+
+        $(document).on('product:afterAddToCart', function (e, data) {
+            ajaxUpdateOptions($(document).find('div.subpro-options.pdp'), 'pdp');
         });
     }
 };

@@ -52,7 +52,6 @@ server.get('PDP', function (req, res, next) {
 server.get('Cart', function(req, res, next) {
     let basket = BasketMgr.getCurrentOrNewBasket();
     let pli = basket.getAllProductLineItems(params.sku.stringValue).pop();
-let logger = Logger.getLogger('cart');
 
     if (!pli) {
         return;
@@ -71,7 +70,7 @@ let logger = Logger.getLogger('cart');
         "subscription_option_mode": spproduct.subscription_option_mode,
         "selected_option_mode": pli.custom.subproSubscriptionSelectedOptionMode,
         "selected_interval": pli.custom.subproSubscriptionInterval,
-        "intervals": null !== spproduct.intervals ? spproduct.intervals.toString().split(',') : [],
+        "intervals": spproduct.intervals.toString().split(','),
         "is_discount_percentage": pli.custom.subproSubscriptionIsDiscountPercentage,
         "discount": pli.custom.subproSubscriptionDiscount
     };
@@ -135,9 +134,7 @@ server.get('OrderConfirmation', function (req, res, next) {
 
 server.post('UpdateOptions', function (res, req, next) {
     let basket = BasketMgr.getCurrentOrNewBasket();
-
     let pli = basket.getAllProductLineItems(params.pliUUID.stringValue).pop();
-    let logger = Logger.getLogger('updateoptions');
 
     if (!pli) {
         return;
