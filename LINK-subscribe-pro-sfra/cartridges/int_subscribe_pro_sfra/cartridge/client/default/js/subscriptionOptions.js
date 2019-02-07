@@ -101,6 +101,7 @@ let subscriptionOptions = {
             return;
         }
         parent = target.closest('.subpro-options.' + page);
+
         pliUUID = page === 'pdp' ?
             $('button.add-to-cart').data('pid') :
             parent.closest('.cart-row').data('uuid')
@@ -113,6 +114,13 @@ let subscriptionOptions = {
             'discount': parent.find('input[name=subproSubscriptionDiscount]').val(),
             'isDiscountPercentage': parent.find('input[name=subproSubscriptionIsDiscountPercentage]').val()
         }
+    },
+
+    handleAddToCartSubOptions: () => {
+        $(document).on('updateAddToCartFormData', function (e,data) {
+            let subOptions = subscriptionOptions.getOptionsState($(document).find('div.subpro-options.pdp'), 'pdp');
+            data = {...data,...subOptions};
+        });
     },
 
     ajaxUpdateOptions: () => {
