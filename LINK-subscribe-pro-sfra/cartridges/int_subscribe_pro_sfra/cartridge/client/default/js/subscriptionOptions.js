@@ -116,7 +116,11 @@ let subscriptionOptions = {
     handleAddToCartSubOptions: () => {
         $(document).on('updateAddToCartFormData', function (e,data) {
             let subOptions = subscriptionOptions.getOptionsState($(document).find('div.subpro-options.pdp'), 'pdp');
-            data = {...data,...subOptions};
+            data.pliUUID = subOptions.pliUUID;
+            data.subscriptionMode = subOptions.subscriptionMode;
+            data.deliveryInteval = subOptions.deliveryInteval;
+            data.discount = subOptions.discount;
+            data.isDiscountPercentage = subOptions.isDiscountPercentage;
         });
     },
 
