@@ -1,18 +1,10 @@
 'use strict';
 
-var server = require('server');
-
-var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
-var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
-
-var SubscribeProLib = require('*/cartridge/scripts/subpro/lib/SubscribeProLib');
-
-var Logger = require('dw/system/Logger');
-var ProductMgr = require('dw/catalog/ProductMgr');
-
-var URLUtils = require('dw/web/URLUtils');
-
-let BasketMgr = require('dw/order/BasketMgr');
+var server = require('server'),
+    SubscribeProLib = require('*/cartridge/scripts/subpro/lib/SubscribeProLib'),
+    ProductMgr = require('dw/catalog/ProductMgr'),
+    URLUtils = require('dw/web/URLUtils'),
+    BasketMgr = require('dw/order/BasketMgr');
 
 const params = request.httpParameterMap;
 
@@ -135,7 +127,6 @@ server.get('OrderConfirmation', function (req, res, next) {
 server.post('UpdateOptions', function (res, req, next) {
     let basket = BasketMgr.getCurrentOrNewBasket();
     let pli = basket.getAllProductLineItems(params.pliUUID.stringValue).pop();
-
     if (!pli) {
         return;
     }
@@ -143,11 +134,14 @@ server.post('UpdateOptions', function (res, req, next) {
     require('dw/system/Transaction').wrap(function () {
         pli.custom.subproSubscriptionSelectedOptionMode = params.subscriptionMode;
         pli.custom.subproSubscriptionInterval = params.deliveryInteval;
-
+        
         let discountValue = parseFloat(params.discount),
-            discountToApply = (params.isDiscountPercentage === 'true' || params.isDiscountPercentage === true)
+            discountToApply = params.isDiscountPercentage.getBooleanValue() === true
                 ? new dw.campaign.PercentageDiscount(discountValue * 100)
                 : new dw.campaign.AmountDiscount(discountValue);
+
+        pli.custom.subproSubscriptionIsDiscountPercentage = params.isDiscountPercentage.getBooleanValue();
+        pli.custom.subproSubscriptionDiscount = discountValue;
 
         /**
          * Remove previous 'SubscribeProDiscount' adjustments if any

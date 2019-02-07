@@ -1,25 +1,4 @@
 'use strict';
-
-function rebuildURL(key, value, url) {
-    if (!url) {
-        return;
-    }
-    let urlParts = url.split('?');
-    let queryParams = urlParts[1].split('&');
-
-    for (let i = 0; i < queryParams.length; i++) {
-        let queryParam = queryParams[i];
-
-        if (queryParam.indexOf(key) > -1) {
-            queryParam = key + '=' + value;
-            queryParams[i] = queryParam;
-        }
-    }
-    urlParts[1] = queryParams.join('&');
-
-    return urlParts.join('?');
-}
-
 function toggleDeliveryIntervalDropdown(event, $deliveryInterval) {
     let hideDropdown = $(event.currentTarget).val() !== 'regular';
     $deliveryInterval.attr('hidden', hideDropdown);
@@ -59,22 +38,18 @@ let subscriptionOptions = {
         $('.subpro-options.cart input[name^=subproSubscriptionOptionMode]')
             .off('change')
             .on('change', (event) => {
+                $(event.currentTarget).parents('.card').spinner().start();
                 toggleDeliveryIntervalDropdown(event, $('.subpro-options.cart .delivery-interval-group'));
-                subscriptionOptions.ajaxUpdateOptions(subscriptionOptions.getOptionsState($(event.currentTarget), 'cart'));
-
-                let parents = $(event.currentTarget).parentsUntil(".item-details");
-                let editLink = $(parents[parents.length - 1]).parent().find(".item-edit-details a");
-                editLink.attr('href', rebuildURL('selectedOptionMode', $(event.currentTarget).val(), editLink.attr("href")));
+                $('body').trigger('cartOptionsUpdate', {event: event, page: 'cart'});
+                $(event.currentTarget).parents('.card').spinner().stop();
             });
 
         $('.subpro-options.cart #delivery-interval')
             .off('change')
             .on('change', (event) => {
-                subscriptionOptions.ajaxUpdateOptions(subscriptionOptions.getOptionsState($(event.currentTarget), 'cart'));
-
-                let parents = $(event.currentTarget).parentsUntil(".item-details");
-                let editLink = $(parents[parents.length - 1]).parent().find(".item-edit-details a");
-                editLink.attr('href', rebuildURL('selectedInterval', $(event.currentTarget).val(), editLink.attr("href")));
+                $(event.currentTarget).parents('.card').spinner().start();
+                $('body').trigger('cartOptionsUpdate', {event: event, page: 'cart'});
+                $(event.currentTarget).parents('.card').spinner().stop();
             });
     },
 
@@ -112,7 +87,7 @@ let subscriptionOptions = {
 
         pliUUID = page === 'pdp' ?
             $('button.add-to-cart').data('pid') :
-            parent.closest('.cart-row').data('uuid')
+            parent.closest('.product-info').find('.remove-btn').data('pid')
         ;
 
         return {
