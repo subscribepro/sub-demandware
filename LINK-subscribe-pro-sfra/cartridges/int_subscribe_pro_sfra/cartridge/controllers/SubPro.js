@@ -149,7 +149,7 @@ server.post('UpdateOptions', function (res, req, next) {
         let priceAdjustment = pli.getPriceAdjustmentByPromotionID('SubscribeProDiscount');
         pli.removePriceAdjustment(priceAdjustment);
 
-        if (params.subscriptionMode === 'regular') {
+        if (params.subscriptionMode.toString() === 'regular') {
             pli.createPriceAdjustment('SubscribeProDiscount', discountToApply);
         }
     });
