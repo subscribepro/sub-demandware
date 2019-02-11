@@ -28,7 +28,9 @@ function ajaxUpdateOptions (target, page) {
         contentType: 'application/json',
         url: $('input[name=subproSubscriptionOptionsUrl]').val() + '?' + queryString,
         success: function (res) {
-            window.location.reload(true);
+            if (page == 'cart') {
+                window.location.reload(true);
+            }
         }
     });
 }
@@ -52,6 +54,7 @@ let subscriptionOptions = {
             .on('change', (event) => {
                 $(event.currentTarget).parents('.card').spinner().start();
                 $('body').trigger('cartOptionsUpdate', {event: event, page: 'cart'});
+                // page is reloaded upon success in AJAX ajaxUpdateOptions
             });
     },
 
