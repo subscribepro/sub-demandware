@@ -124,8 +124,9 @@ server.get('OrderConfirmation', function (req, res, next) {
     next();
 });
 
-server.post('UpdateOptions', function (res, req, next) {
-    let basket = BasketMgr.getCurrentOrNewBasket();
+server.post('UpdateOptions', function (req, res, next) {
+    let basket = BasketMgr.getCurrentOrNewBasket(),
+        CartModel = require('*/cartridge/models/cart');
     let pli = basket.getAllProductLineItems(params.pliUUID.stringValue).pop();
     if (!pli) {
         return;
@@ -152,7 +153,10 @@ server.post('UpdateOptions', function (res, req, next) {
         if (params.subscriptionMode.toString() === 'regular') {
             pli.createPriceAdjustment('SubscribeProDiscount', discountToApply);
         }
+
+        res.json(new CartModel(basket));
     });
+    return next();
 });
 
 

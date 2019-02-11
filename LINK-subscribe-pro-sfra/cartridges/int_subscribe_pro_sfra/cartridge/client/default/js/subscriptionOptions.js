@@ -26,7 +26,10 @@ function ajaxUpdateOptions (target, page) {
         type: 'POST',
         cache: false,
         contentType: 'application/json',
-        url: $('input[name=subproSubscriptionOptionsUrl]').val() + '?' + queryString
+        url: $('input[name=subproSubscriptionOptionsUrl]').val() + '?' + queryString,
+        success: function (res) {
+            window.location.reload(true);
+        }
     });
 }
 
@@ -41,7 +44,7 @@ let subscriptionOptions = {
                 $(event.currentTarget).parents('.card').spinner().start();
                 toggleDeliveryIntervalDropdown(event, $('.subpro-options.cart .delivery-interval-group'));
                 $('body').trigger('cartOptionsUpdate', {event: event, page: 'cart'});
-                $(event.currentTarget).parents('.card').spinner().stop();
+                // page is reloaded upon success in AJAX ajaxUpdateOptions
             });
 
         $('.subpro-options.cart #delivery-interval')
@@ -49,7 +52,6 @@ let subscriptionOptions = {
             .on('change', (event) => {
                 $(event.currentTarget).parents('.card').spinner().start();
                 $('body').trigger('cartOptionsUpdate', {event: event, page: 'cart'});
-                $(event.currentTarget).parents('.card').spinner().stop();
             });
     },
 
