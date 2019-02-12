@@ -76,8 +76,8 @@ server.get('Cart', function(req, res, next) {
 });
 
 server.get('OrderSummary', function (req, res, next) {
-    let cart = app.getModel('Cart').get(),
-        pli = cart.getProductLineItemByUUID(params.pliUUID.stringValue);
+    let basket = BasketMgr.getCurrentOrNewBasket();
+    let pli = basket.getAllProductLineItems(params.sku.stringValue).pop();
 
     if (!pli) {
         return;
@@ -88,7 +88,7 @@ server.get('OrderSummary', function (req, res, next) {
         "selected_interval": pli.custom.subproSubscriptionInterval
     };
 
-    res.render('subpro/order/subprooptions', {
+    res.render('subpro/cart/subprooptions', {
         product: product,
         page: 'order-summary'
     });
@@ -153,6 +153,21 @@ server.post('UpdateOptions', function (req, res, next) {
         if (params.subscriptionMode.toString() === 'regular') {
             pli.createPriceAdjustment('SubscribeProDiscount', discountToApply);
         }
+
+        /**
+         * Set parameter on whole basket showing whether sub item is in cart
+         */
+        let Logger = require('dw/system/Logger');
+        let plis = basket.getAllProductLineItems();
+        let isSubpro = false;
+        for (let i in plis) {
+            isSubpro = plis[i].custom.subproSubscriptionSelectedOptionMode === 'regular' ;
+            if (isSubpro) {
+                break;
+            }
+        }
+
+        basket.custom.subproSubscriptionsToBeProcessed = isSubpro;
 
         res.json(new CartModel(basket));
     });

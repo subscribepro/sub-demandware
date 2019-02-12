@@ -23,14 +23,9 @@ const Logger = require('dw/system/Logger');
 const Resource = require('dw/web/Resource');
 
 /**
- * Site Genesis App Module, used to reference various Commerce Cloud objects like Profile Model
+ * SFRA Email Helper
  */
-const app = require('/app_storefront_controllers/cartridge/scripts/app');
-
-/**
- * Site Genesis Email Module, used to email the error logs
- */
-const Email = require('/app_storefront_controllers/cartridge/scripts/models/EmailModel');
+const Email = require('/app_storefront_base/cartridge/scripts/helpers/emailHelpers');
 
 /**
  * Main Subscribe Pro Library,
@@ -41,9 +36,9 @@ const SubscribeProLib = require('~/cartridge/scripts/subpro/lib/SubscribeProLib'
 /**
  * Subscribe Pro Object Helpers, used to help map Commerce Cloud Modules to Subscribe Pro Modules
  */
-const AddressHelper = require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/AddressHelper');
-const CustomerHelper = require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/CustomerHelper');
-const PaymentsHelper = require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/PaymentsHelper');
+const AddressHelper = require('~/cartridge/scripts/subpro/helpers/AddressHelper');
+const CustomerHelper = require('~/cartridge/scripts/subpro/helpers/CustomerHelper');
+const PaymentsHelper = require('~/cartridge/scripts/subpro/helpers/PaymentsHelper');
 
 /**
  * Current Site, used to reference site preferences
@@ -110,7 +105,7 @@ function start() {
              * Set this for the error log function to reference
              */
             currentOrderNo = order.orderNo;
-            
+
             /**
              * Validate / Create the customer
              * If the customer already has a reference to a Subscribe Pro customer
@@ -148,6 +143,7 @@ function start() {
                 continue;
             }
 
+            logInfo('Saving Payment');
             /**
              * Validate / Create the payment profile
              * If the payment instrument already has a reference to a Subscribe Pro payment profile
@@ -182,7 +178,6 @@ function start() {
                 if (paymentProfileID) {
 
                     let response = SubscribeProLib.getPaymentProfile(paymentProfileID);
-
                     /**
                      * Payment Profile not found, create new Payment Profile record
                      * Otherwise create the payment profile
@@ -219,7 +214,7 @@ function start() {
                 for (let j = 0, pl = plis.length; j < pl; j++) {
                     let pli = plis[j];
 
-                    if (pli.custom.subproSubscriptionOptionMode && !pli.custom.subproSubscriptionCreated ) {
+                    if (pli.custom.subproSubscriptionSelectedOptionMode && !pli.custom.subproSubscriptionCreated ) {
                         /**
                          * Validate / Create shipping addresses using the customers saved address and
                          * the Find / Create Subscribe Pro API
@@ -227,7 +222,19 @@ function start() {
                         let shippingAddress = AddressHelper.getCustomerAddress(customer.addressBook, shipment.shippingAddress);
 
                         if (!shippingAddress) {
-                            shippingAddress = app.getModel('Profile').get(order.customer.profile).addAddressToAddressBook(shipment.shippingAddress);
+                            let profile = CustomerMgr.getProfile(order.customer.getCustomerNo());
+                            let addressBook = profile.getAddressBook();
+
+                            shippingAddress = addressBook.createShippingAddress(shipment.shippingAddress.getID());
+                            shippingAddress.setAddress1(shipment.shippingAddress.getAddress1());
+                            shippingAddress.setAddress2(shipment.shippingAddress.getAddress2());
+                            shippingAddress.setCity(shipment.shippingAddress.getCity());
+                            shippingAddress.setCountryCode(shipment.shippingAddress.getCountryCode());
+                            shippingAddress.setFirstName(shipment.shippingAddress.getFirstName());
+                            shippingAddress.setLastName(shipment.shippingAddress.getLastName());
+                            shippingAddress.setPhone(shipment.shippingAddress.getPhone());
+                            shippingAddress.setPostalCode(shipment.shippingAddress.getPostalCode());
+                            shippingAddress.setStateCode(shipment.shippingAddress.getStateCode());
                         }
 
                         let subproAddress = AddressHelper.getSubproAddress(shippingAddress, customerProfile),
@@ -235,7 +242,7 @@ function start() {
                             subproShippingAddressID;
 
                         /**
-                         * If there was any error, save the Subscribe Pro Address ID
+                         * If there wasn't an error, save the Subscribe Pro Address ID
                          * Otherwise, error out
                          */
                         if (!shippingResponse.error) {
@@ -324,13 +331,12 @@ function start() {
      * If there were any errors, send an email to the preference email
      */
     if (errors.length) {
-        Email.sendMail({
-            template: 'subpro/mail/orderprocessingerror',
-            recipient: CurrentSite.getCustomPreferenceValue('subproOrderProcessingErrorMail'),
-            subject: Resource.msg('order.processing.failureemail.subject', 'order', null),
-            context: {
-                Errors: errors
-            }
+        Email.sendEmail({
+            to: CurrentSite.getCustomPreferenceValue('subproOrderProcessingErrorMail'),
+            from: CurrentSite.getCustomPreferenceValue('subproOrderProcessingErrorMail'),
+            subject: Resource.msg('order.processing.failureemail.subject', 'order', null)
+        }, 'subpro/mail/orderprocessingerror', {
+            Errors: errors
         });
     }
 }
@@ -347,7 +353,8 @@ function logError(response, serviceName) {
         'Error while calling service ' + serviceName + ".\nResponse: " + JSON.stringify(response) :
         response;
 
-    Logger.error(msg);
+    let logger = Logger.getLogger('processordersubscriptions');
+    logger.error(msg);
 
     errors.push({
         'orderNo': currentOrderNo,
