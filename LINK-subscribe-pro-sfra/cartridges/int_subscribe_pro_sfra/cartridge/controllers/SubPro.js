@@ -114,7 +114,7 @@ server.get('OrderConfirmation', function (req, res, next) {
                     "selected_interval": pli.custom.subproSubscriptionInterval
                 };
 
-                res.render('subpro/order/subprooptions', {
+                res.render('subpro/cart/subprooptions', {
                     product: product,
                     page: 'order-confirmation'
                 });

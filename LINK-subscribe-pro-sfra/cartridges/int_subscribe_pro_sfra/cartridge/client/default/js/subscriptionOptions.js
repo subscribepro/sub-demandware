@@ -40,6 +40,10 @@ let subscriptionOptions = {
         if (!$('body').find('.subpro-options.cart').length) {
             return;
         }
+        // remove on click handler for delete. it gets added back again when cart/cart.js is
+        // added in the base cart.js client script.
+        $('body').off('click', '.cart-delete-confirmation-btn');
+
         $('.subpro-options.cart input[name^=subproSubscriptionOptionMode]')
             .off('change')
             .on('change', (event) => {
