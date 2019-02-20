@@ -5,5 +5,5 @@
 #sp-my-subscriptions {
   min-height: 350px; }
 
-.subscription .delivery-interval-group select#delivery-interval {
-  border-color: #ced4da; }
+#sp-my-subscriptions .sp-field.custom-select select {
+  border: none; }
