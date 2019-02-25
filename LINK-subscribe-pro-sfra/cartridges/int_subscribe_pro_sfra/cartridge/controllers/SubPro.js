@@ -96,8 +96,8 @@ server.get('OrderSummary', function (req, res, next) {
 });
 
 server.get('OrderConfirmation', function (req, res, next) {
-    let order = require('dw/order/OrderMgr').getOrder(params.orderNo.stringValue),
-        productID = params.productID.stringValue;
+    let order = require('dw/order/OrderMgr').getOrder(params.orderNumber.stringValue),
+        productID = params.sku.stringValue;
 
     if (!order) {
         return;

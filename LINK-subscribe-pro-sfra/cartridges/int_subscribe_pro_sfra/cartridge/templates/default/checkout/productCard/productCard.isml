@@ -34,8 +34,11 @@
                     <isinclude template="cart/productCard/cartProductCardAvailability" />
                 </isif>
 
-                <!-- Subscribe Pro Subscription Details -->
+                <!-- Subscribe Pro - Subscription Details for Mini Cart, Order Summary, and Order Confirmation -->
                 <isinclude url="${URLUtils.url('SubPro-OrderSummary', 'sku', lineItem.id)}" />
+                <isif condition="${pdict.order.orderNumber}">
+                    <isinclude url="${URLUtils.url('SubPro-OrderConfirmation', 'sku', lineItem.id, 'orderNumber', pdict.order.orderNumber)}" />
+                </isif>
             </div>
         </div>
     </isif>

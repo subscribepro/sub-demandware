@@ -31,14 +31,14 @@ const Email = require('/app_storefront_base/cartridge/scripts/helpers/emailHelpe
  * Main Subscribe Pro Library,
  * This library has various methods to help facilitate API requests
  */
-const SubscribeProLib = require('~/cartridge/scripts/subpro/lib/SubscribeProLib');
+const SubscribeProLib = require('/int_subscribe_pro_base/cartridge/scripts/subpro/lib/SubscribeProLib');
 
 /**
  * Subscribe Pro Object Helpers, used to help map Commerce Cloud Modules to Subscribe Pro Modules
  */
-const AddressHelper = require('~/cartridge/scripts/subpro/helpers/AddressHelper');
-const CustomerHelper = require('~/cartridge/scripts/subpro/helpers/CustomerHelper');
-const PaymentsHelper = require('~/cartridge/scripts/subpro/helpers/PaymentsHelper');
+const AddressHelper = require('/int_subscribe_pro_base/cartridge/scripts/subpro/helpers/AddressHelper');
+const CustomerHelper = require('/int_subscribe_pro_base/cartridge/scripts/subpro/helpers/CustomerHelper');
+const PaymentsHelper = require('/int_subscribe_pro_base/cartridge/scripts/subpro/helpers/PaymentsHelper');
 
 /**
  * Current Site, used to reference site preferences
@@ -143,7 +143,6 @@ function start() {
                 continue;
             }
 
-            logInfo('Saving Payment');
             /**
              * Validate / Create the payment profile
              * If the payment instrument already has a reference to a Subscribe Pro payment profile
