@@ -221,10 +221,10 @@ function start() {
                         let shippingAddress = AddressHelper.getCustomerAddress(customer.addressBook, shipment.shippingAddress);
 
                         if (!shippingAddress) {
-                            let profile = CustomerMgr.getProfile(order.customer.getCustomerNo());
+                            let profile = order.customer.getProfile();
                             let addressBook = profile.getAddressBook();
 
-                            shippingAddress = addressBook.createShippingAddress(shipment.shippingAddress.getID());
+                            shippingAddress = addressBook.createAddress(shipment.shippingAddress.getAddress1());
                             shippingAddress.setAddress1(shipment.shippingAddress.getAddress1());
                             shippingAddress.setAddress2(shipment.shippingAddress.getAddress2());
                             shippingAddress.setCity(shipment.shippingAddress.getCity());

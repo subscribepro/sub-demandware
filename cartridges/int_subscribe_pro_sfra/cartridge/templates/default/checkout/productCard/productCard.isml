@@ -35,7 +35,9 @@
                 </isif>
 
                 <!-- Subscribe Pro - Subscription Details for Mini Cart, Order Summary, and Order Confirmation -->
-                <isinclude url="${URLUtils.url('SubPro-OrderSummary', 'sku', lineItem.id)}" />
+                <isif condition="${miniCart || pdict.order.orderNumber == null}">
+                    <isinclude url="${URLUtils.url('SubPro-OrderSummary', 'sku', lineItem.id)}" />
+                </isif>
                 <isif condition="${pdict.order.orderNumber}">
                     <isinclude url="${URLUtils.url('SubPro-OrderConfirmation', 'sku', lineItem.id, 'orderNumber', pdict.order.orderNumber)}" />
                 </isif>
