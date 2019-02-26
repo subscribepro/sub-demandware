@@ -1,29 +1,6 @@
 node_modules
-LINK-SiteGenesis-subscribe-pro/demo_data_no_hires_images/
 
-cartridges/app_storefront_base/cartridge/static/default/css/
-cartridges/app_storefront_base/cartridge/static/default/js/
-cartridges/app_storefront_base/cartridge/static/default/fonts/
-
-cartridges/app_storefront_base/cartridge/static/fr_FR/css/
-cartridges/app_storefront_base/cartridge/static/fr_FR/js/
-cartridges/app_storefront_base/cartridge/static/fr_FR/fonts/
-
-cartridges/app_storefront_base/cartridge/static/it_IT/css/
-cartridges/app_storefront_base/cartridge/static/it_IT/js/
-cartridges/app_storefront_base/cartridge/static/it_IT/fonts/
-
-cartridges/app_storefront_base/cartridge/static/ja_JP/css/
-cartridges/app_storefront_base/cartridge/static/ja_JP/js/
-cartridges/app_storefront_base/cartridge/static/ja_JP/fonts/
-
-cartridges/app_storefront_base/cartridge/static/zh_CN/css/
-cartridges/app_storefront_base/cartridge/static/zh_CN/js/
-cartridges/app_storefront_base/cartridge/static/zh_CN/fonts/
-
-cartridges/app_storefront_base/cartridge/static/en_GB/css/
-cartridges/app_storefront_base/cartridge/static/en_GB/js/
-cartridges/app_storefront_base/cartridge/static/en_GB/fonts/
+cartridges/app_storefront_base/
 
 bin/
 test/
