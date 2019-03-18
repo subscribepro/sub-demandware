@@ -38,7 +38,7 @@
                 <isif condition="${miniCart || pdict.order.orderNumber == null}">
                     <isinclude url="${URLUtils.url('SubPro-OrderSummary', 'sku', lineItem.id)}" />
                 </isif>
-                <isif condition="${pdict.order.orderNumber}">
+                <isif condition="${pdict.order && pdict.order.orderNumber !== null}">
                     <isinclude url="${URLUtils.url('SubPro-OrderConfirmation', 'sku', lineItem.id, 'orderNumber', pdict.order.orderNumber)}" />
                 </isif>
             </div>
