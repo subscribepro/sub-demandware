@@ -280,7 +280,7 @@ let SubscribeProLib = {
 
         let service = SubscribeProLib.getService("subpro.http.get.paymentprofile");
         let params = {};
-        
+
         if (paymentProfileID) {
             params = {paymentprofile_id: paymentProfileID};
         } else if (transactionID) {
@@ -302,7 +302,7 @@ let SubscribeProLib = {
         var requestData = service.getRequestData();
 
         var returnObj = SubscribeProLib.handleResponse(service.call({paymentProfile: paymentProfile}));
-        
+
         return returnObj;
     },
 
@@ -346,10 +346,14 @@ let SubscribeProLib = {
      * @return boolean if cart has items SubPro subscription
      */
     isSubPro: function() {
-        const app = require('/app_storefront_controllers/cartridge/scripts/app');
-        let cart = app.getModel('Cart').get(),
-            plis = cart.getProductLineItems(),
+        let BasketMgr = require('dw/order/BasketMgr'),
+            basket = BasketMgr.getCurrentOrNewBasket(),
+            plis = basket.getAllProductLineItems(),
             isSubpro = false;
+
+        if (!plis) {
+            return false;
+        }
 
         for (let i = 0, il = plis.length; i < il; i++) {
             try {
@@ -376,23 +380,23 @@ let SubscribeProLib = {
         }
 
         /**
-    	 * Current Site, used to reference site preferences
-    	 */
-    	var CurrentSite = require('dw/system/Site').getCurrent();
-    
-    	svc.setCredentialID(credPrefix + CurrentSite.getCustomPreferenceValue('subproAPICredSuffix'));
-    
-    	/**
-    	 * Replace the URL parameters with the relevant values
-    	 */
-    	var url = svc.getURL();
-    	url = url.replace('{ENDPOINT}', endpoint);
-    	url = url.replace('{PARAMS}', parameters);
-    	
-    	/**
-    	 * Save the newly constructed url
-    	 */
-    	svc.setURL(url);
+         * Current Site, used to reference site preferences
+         */
+        var CurrentSite = require('dw/system/Site').getCurrent();
+
+        svc.setCredentialID(credPrefix + CurrentSite.getCustomPreferenceValue('subproAPICredSuffix'));
+
+        /**
+         * Replace the URL parameters with the relevant values
+         */
+        var url = svc.getURL();
+        url = url.replace('{ENDPOINT}', endpoint);
+        url = url.replace('{PARAMS}', parameters);
+
+        /**
+         * Save the newly constructed url
+         */
+        svc.setURL(url);
     }
 };
 

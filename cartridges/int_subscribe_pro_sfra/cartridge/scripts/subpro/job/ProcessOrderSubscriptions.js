@@ -31,7 +31,7 @@ const Email = require('/app_storefront_base/cartridge/scripts/helpers/emailHelpe
  * Main Subscribe Pro Library,
  * This library has various methods to help facilitate API requests
  */
-const SubscribeProLib = require('/int_subscribe_pro_base/cartridge/scripts/subpro/lib/SubscribeProLib');
+const SubscribeProLib = require('/int_subscribe_pro_sfra/cartridge/scripts/subpro/lib/SubscribeProLib');
 
 /**
  * Subscribe Pro Object Helpers, used to help map Commerce Cloud Modules to Subscribe Pro Modules
