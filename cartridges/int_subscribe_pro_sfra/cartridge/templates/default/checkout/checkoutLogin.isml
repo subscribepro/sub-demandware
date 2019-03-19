@@ -39,6 +39,8 @@
                             </a>
                         </div>
                     </div>
+                    <iselse>
+                        ${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproCheckoutLoginMsg')}
                 </isif>
                 <div class="card">
                     <div class="card-header">
