@@ -19,7 +19,7 @@ let AddressesMockData = require("../mock_data/AddressesMockData");
 let ProductMockData = require("../mock_data/ProductMockData");
 let CustomerMockData = require("../mock_data/CustomerMockData");
 let PaymentProfileMockData = require("../mock_data/PaymentProfileMockData");
-let SubscribeProLib = require("../lib/SubscribeProLib");
+let SubscribeProLib = require("*/cartridge/scripts/subpro/lib/SubscribeProLib");
 
 /**
  * Wrap the Mock JSON data with request information so

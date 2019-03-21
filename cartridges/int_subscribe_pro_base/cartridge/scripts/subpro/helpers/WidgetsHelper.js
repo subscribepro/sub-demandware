@@ -1,7 +1,7 @@
 'use strict';
 
 /* API includes */
-const SubscribeProLib = require('~/cartridge/scripts/subpro/lib/SubscribeProLib');
+const SubscribeProLib = require('*/cartridge/scripts/subpro/lib/SubscribeProLib');
 
 /**
  * Provides an interface for configuring Subscribe Pro widgets.
