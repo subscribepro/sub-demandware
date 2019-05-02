@@ -10,6 +10,7 @@
 var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
 var URLUtils = require('dw/web/URLUtils');
+var Logger = require('dw/system/Logger');
 
 /* Script Modules */
 var app = require('~/cartridge/scripts/app');
@@ -26,8 +27,24 @@ function list() {
     if (content) {
         pageMeta.update(content.object);
     }
+    
+    Logger.info(JSON.stringify(session.custom.newAddress));
+    
+    var viewParams = {};
+    if (session.custom.newAddress) {
+    	viewParams.newAddress = session.custom.newAddress;
+    	session.custom.newAddress = null;
+    }
+    if (session.custom.updatedAddress) {
+    	viewParams.updatedAddress = session.custom.updatedAddress;
+    	session.custom.updatedAddress = null;
+    }
+    if (session.custom.deletedAddress) {
+    	viewParams.deletedAddress = session.custom.deletedAddress;
+    	session.custom.deletedAddress = null;
+    }
 
-    app.getView().render('account/addressbook/addresslist');
+    app.getView(viewParams).render('account/addressbook/addresslist');
 }
 
 /**
@@ -59,17 +76,19 @@ function handleForm() {
     Address = app.getModel('Address');
 
     var addressForm = app.getForm('customeraddress');
-
+    var addressHelper = require('int_subscribe_pro/cartridge/scripts/subpro/helpers/AddressHelper');
     addressForm.handleAction({
         cancel: function () {
             success = false;
         },
         create: function () {
-            if (!session.forms.profile.address.valid || !Address.create(session.forms.profile.address)) {
+        	var newAddress;
+            if (!session.forms.profile.address.valid || !(newAddress = Address.create(session.forms.profile.address))) {
                 response.redirect(URLUtils.https('Address-Add'));
                 success = false;
             }
-
+        	
+        	session.custom.newAddress = addressHelper.getSubproAddress(newAddress, session.customer.profile);
             success = true;
         },
         edit: function () {
@@ -78,7 +97,8 @@ function handleForm() {
                 message = 'Form is invalid';
             }
             try {
-                Address.update(request.httpParameterMap.addressid.value, session.forms.profile.address);
+                var updatedAddress = Address.update(request.httpParameterMap.addressid.value, session.forms.profile.address);
+                session.custom.updatedAddress = addressHelper.getSubproAddress(updatedAddress, session.customer.profile);
                 success = true;
             } catch (e) {
                 success = false;
@@ -89,8 +109,13 @@ function handleForm() {
             success = false;
         },
         remove: function () {
+        	var deletedAddress = Address.get(session.forms.profile.address.addressid.value);
             if (Address.remove(session.forms.profile.address.addressid.value)) {
+            	deletedAddress = null;
                 success = false;
+            }
+            else {
+            	session.custom.deletedAddress = addressHelper.getSubproAddress(deletedAddress, session.customer.profile);
             }
         }
     });
@@ -169,10 +194,10 @@ function getAddressDetails() {
  */
 function Delete() {
     var CustomerStatusCodes = require('dw/customer/CustomerStatusCodes');
+    session.custom.deletedAddress = app.getModel('Address').get(decodeURIComponent(request.httpParameterMap.AddressID.value));
     var deleteAddressResult = app.getModel('Address').remove(decodeURIComponent(request.httpParameterMap.AddressID.value));
 
     if (request.httpParameterMap.format.stringValue !== 'ajax') {
-        response.redirect(URLUtils.https('Address-List'));
         return;
     }
 

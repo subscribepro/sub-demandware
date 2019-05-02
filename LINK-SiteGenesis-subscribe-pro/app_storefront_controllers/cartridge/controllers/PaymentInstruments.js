@@ -13,6 +13,7 @@ var PaymentStatusCodes = require('dw/order/PaymentStatusCodes');
 var Status = require('dw/system/Status');
 var Transaction = require('dw/system/Transaction');
 var URLUtils = require('dw/web/URLUtils');
+var Logger = require('dw/system/Logger');
 
 /* Script Modules */
 var app = require('~/cartridge/scripts/app');
@@ -37,10 +38,25 @@ function list() {
     paymentForm.get('creditcards.storedcards').copyFrom(paymentInstruments);
 
     pageMeta.update(dw.content.ContentMgr.getContent('myaccount-paymentsettings'));
+    
+    var viewParams = {
+    		PaymentInstruments: paymentInstruments
+    };
+    
+    if (session.custom.newCard) {
+    	viewParams.newCard = session.custom.newCard;
+    	session.custom.newCard = null;
+    }
+    if (session.custom.updatedCard) {
+    	viewParams.updatedCard = session.custom.updatedCard;
+    	session.custom.updatedCard = null;
+    }
+    if (session.custom.deletedCard) {
+    	viewParams.deletedCard = session.custom.deletedCard;
+    	session.custom.deletedCard = null;
+    }
 
-    app.getView({
-        PaymentInstruments: paymentInstruments
-    }).render('account/payment/paymentinstrumentlist');
+    app.getView(viewParams).render('account/payment/paymentinstrumentlist');
 }
 
 
@@ -149,12 +165,36 @@ function create() {
         Transaction.rollback();
         return false;
     }
-
+    
     if (isDuplicateCard) {
         wallet.removePaymentInstrument(oldCard);
     }
 
     Transaction.commit();
+    
+    // Save data to session for hosted wallet widget integration
+    var paymentInstruments = wallet.getPaymentInstruments(dw.order.PaymentInstrument.METHOD_CREDIT_CARD);
+    var saveCard;
+    for (var i = 0; i < paymentInstruments.length; i++) {
+        var card = paymentInstruments[i];
+        if (card.creditCardNumber === ccNumber) {
+            saveCard = card; 
+            break;
+        }
+    }
+    var paymentsHelper = require('int_subscribe_pro/cartridge/scripts/subpro/helpers/PaymentsHelper');
+    if (!isDuplicateCard) {
+    	session.custom.newCard = paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, saveCard, {});
+        if (null === session.custom.newCard) {
+        	Logger.info('New card could not be mapped to a payment profile.');
+        }
+    }
+    else {
+    	session.custom.updatedCard = paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, saveCard, {});
+        if (null === session.custom.updatedCard) {
+        	Logger.info('New card could not be mapped to a payment profile.');
+        }
+    }
 
     paymentForm.clear();
 
@@ -177,18 +217,18 @@ function Delete() {
     var paymentForm = app.getForm('paymentinstruments');
     paymentForm.handleAction({
         remove: function (formGroup, action) {
+        	var paymentsHelper = require('int_subscribe_pro/cartridge/scripts/subpro/helpers/PaymentsHelper');
+        	session.custom.deletedCard = paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, action.object, {});
+
             Transaction.wrap(function () {
                 var wallet = customer.getProfile().getWallet();
                 wallet.removePaymentInstrument(action.object);
             });
-
         },
         error: function () {
             // @TODO When could this happen
         }
     });
-
-    response.redirect(URLUtils.https('PaymentInstruments-List'));
 }
 
 

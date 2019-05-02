@@ -48,7 +48,11 @@
 	
 </isif>
 
-<isif condition="${customer.profile.custom.subproCustomerID}">
+<isset name="hasNewAddress" value="${ pdict.newAddress != null }" scope="page" />
+<isset name="hasUpdatedAddress" value="${ pdict.updatedAddress != null }" scope="page" />
+<isset name="hasDeletedAddress" value="${ pdict.deletedAddress != null }" scope="page" />
+<isset name="loadWidget" value="${ hasNewAddress || hasUpdatedAddress || hasDeletedAddress }" scope="page" />
+<isif condition="${customer.profile.custom.subproCustomerID && loadWidget}">
 	<!-- Subscribe Pro Address Book Assist Widget -->
 	<div id="sp-address-book-widget"></div>
 
@@ -57,7 +61,7 @@
 	</iscomment>
 
 	<!-- Load the Subscribe Pro widget script -->
-	<script src="${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproWidgetScriptUrl')}"></script>
+	<script src="${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproAddressWidgetScriptUrl')}"></script>
 
 	<isset name="widgetConfig" scope="page"
 		value="${require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/WidgetsHelper').getWidgetConfig(customer.profile.custom.subproCustomerID, 'client_credentials', 'widget', 'sp-address-book-widget')}"/>
@@ -66,6 +70,18 @@
 	<script>
 		// Setup config for Subscribe Pro
 		var widgetConfig = <isprint value="${JSON.stringify(widgetConfig)}" encoding="off" />;
-		subscribepro.widgets.init('address-book-assist', widgetConfig);
+		AddressBookAssist.init(widgetConfig);
+		<isif condition="${ hasNewAddress }">
+			var newAddress = <isprint value="${JSON.stringify(pdict.newAddress)}" encoding="off" />;
+			AddressBookAssist.onAddressCreated(newAddress);
+		</isif>
+		<isif condition="${ hasUpdatedAddress }">
+			var updatedAddress = <isprint value="${JSON.stringify(pdict.updatedAddress)}" encoding="off" />;
+			AddressBookAssist.onAddressUpdated(updatedAddress);
+		</isif>
+		<isif condition="${ hasDeletedAddress }">
+			var deletedAddress = <isprint value="${JSON.stringify(pdict.deletedAddress)}" encoding="off" />;
+			AddressBookAssist.onAddressDeleted(deletedAddress);
+		</isif>
 	</script>
 </isif>

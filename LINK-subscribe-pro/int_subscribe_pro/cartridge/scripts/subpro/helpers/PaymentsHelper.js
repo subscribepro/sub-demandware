@@ -53,8 +53,11 @@ let PaymentsHelper = {
                 "sfcc": {
                     "payment_instrument_id": card.UUID
                 }
-            },
-            "billing_address": {
+            }
+        };
+        
+        if (typeof billingAddress.getCountryCode === 'function') {
+        	returnObject.billing_address = {
                 "first_name": billingAddress.firstName,
                 "middle_name": "",
                 "last_name": billingAddress.lastName,
@@ -66,8 +69,17 @@ let PaymentsHelper = {
                 "postcode": billingAddress.postalCode,
                 "country": (billingAddress.getCountryCode() ? billingAddress.getCountryCode().toString().toUpperCase() : ""),
                 "phone": billingAddress.phone || ""
-            }
-        };
+            };
+        } else {
+        	
+        	var nameParts = card.getCreditCardHolder().split(' ');
+        	var lastName = nameParts.pop();
+        	var firstName = nameParts.join(' ');
+        	returnObject.billing_address = {
+        			"first_name": firstName,
+        			"last_name": lastName
+        	}
+        }
         
         return returnObject;
     },

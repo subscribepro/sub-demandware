@@ -319,7 +319,7 @@
 			if (typeof subscribepro !== 'undefined') {
 				subscribepro.widgets.init('add-to-order', widgetConfig);
 			} else {
-				$.getScript( '${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproWidgetScriptUrl')}', function( data, textStatus, jqxhr ) {
+				jQuery.getScript( '${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproWidgetScriptUrl')}', function( data, textStatus, jqxhr ) {
 					subscribepro.widgets.init('add-to-order', widgetConfig);
 				});
 			}
