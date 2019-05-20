@@ -16,6 +16,7 @@ storefrontdata/
 test/appium/webdriver/config.json
 .vscode
 .history
+CONTRIBUTING.md
 
 .editorconfig
 .eslintignore

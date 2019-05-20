@@ -1,7 +1,7 @@
 'use strict';
 
 var server = require('server'),
-    SubscribeProLib = require('*/cartridge/scripts/subpro/lib/SubscribeProLib'),
+    SubscribeProLib = require('/int_subscribe_pro_sfra/cartridge/scripts/subpro/lib/SubscribeProLib'),
     ProductMgr = require('dw/catalog/ProductMgr'),
     URLUtils = require('dw/web/URLUtils'),
     BasketMgr = require('dw/order/BasketMgr');
@@ -135,7 +135,7 @@ server.post('UpdateOptions', function (req, res, next) {
     require('dw/system/Transaction').wrap(function () {
         pli.custom.subproSubscriptionSelectedOptionMode = params.subscriptionMode;
         pli.custom.subproSubscriptionInterval = params.deliveryInteval;
-        
+
         let discountValue = parseFloat(params.discount),
             discountToApply = params.isDiscountPercentage.getBooleanValue() === true
                 ? new dw.campaign.PercentageDiscount(discountValue * 100)
@@ -157,7 +157,6 @@ server.post('UpdateOptions', function (req, res, next) {
         /**
          * Set parameter on whole basket showing whether sub item is in cart
          */
-        let Logger = require('dw/system/Logger');
         let plis = basket.getAllProductLineItems();
         let isSubpro = false;
         for (let i in plis) {

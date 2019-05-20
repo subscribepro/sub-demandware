@@ -11,13 +11,13 @@ var Status = require('dw/system/Status');
 /**
  * Create Order Hook
  * "Called after handling the given ApplePayPaymentAuthorizedEvent for the given basket."
- * We use this hook to update the Order with the necessary details of the subscription. 
+ * We use this hook to update the Order with the necessary details of the subscription.
  */
 exports.createOrder = function (basket, event) {
-    let isSubPro = require('/int_subscribe_pro/cartridge/scripts/subpro/lib/SubscribeProLib.js').isSubPro();
-    
+    let isSubPro = require('~/cartridge/scripts/subpro/lib/SubscribeProLib.js').isSubPro();
+
     /**
-     * If this basket has a subscription, 
+     * If this basket has a subscription,
      * update details on the basket that will carry over to the order
      */
     if (isSubPro) {
@@ -41,10 +41,10 @@ exports.prepareBasket = function (basket, parameters) {
     const app = require('/app_storefront_controllers/cartridge/scripts/app');
     let cart = app.getModel('Cart').get();
     cart.calculate();
-    
+
     var returnStatus = new Status(Status.OK);
     var applePayHookResult = new ApplePayHookResult(returnStatus, null);
     applePayHookResult.setEvent("foobar");
-    
+
     return applePayHookResult;
 };

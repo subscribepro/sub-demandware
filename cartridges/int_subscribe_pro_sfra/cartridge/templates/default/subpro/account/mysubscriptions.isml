@@ -28,7 +28,7 @@
         <!-- Pass configuration and init the Subscribe Pro widget -->
         <script>
             // Setup config for Subscribe Pro
-            var widgetConfig = <isprint value="${JSON.stringify(widgetConfig)}" encoding="jsonvalue" />;
+            var widgetConfig = <isprint value="${JSON.stringify(widgetConfig)}" encoding="off" />;
             MySubscriptions.init(widgetConfig);
         </script>
     </div>
