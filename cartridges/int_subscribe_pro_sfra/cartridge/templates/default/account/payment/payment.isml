@@ -52,6 +52,8 @@
             <!-- Load the Subscribe Pro widget script -->
             <script src="${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproWalletWidgetScriptUrl')}"></script>
 
+            <div id="sp-wallet-assist-widget"></div>
+
             <isset name="widgetConfig" scope="page"
                 value="${require('~/cartridge/scripts/subpro/helpers/WidgetsHelper').getWidgetConfig(customer.profile.custom.subproCustomerID, 'client_credentials', 'widget', 'sp-wallet-assist-widget')}"/>
                 <!-- Pass configuration and init the Subscribe Pro widget -->

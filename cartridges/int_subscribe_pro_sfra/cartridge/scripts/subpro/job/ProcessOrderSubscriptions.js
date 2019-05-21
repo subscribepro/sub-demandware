@@ -236,7 +236,7 @@ function start() {
                             shippingAddress.setStateCode(shipment.shippingAddress.getStateCode());
                         }
 
-                        let subproAddress = AddressHelper.getSubproAddress(shippingAddress, customerProfile),
+                        let subproAddress = AddressHelper.getSubproAddress(shippingAddress, customerProfile, false),
                             shippingResponse = SubscribeProLib.findCreateAddress(subproAddress),
                             subproShippingAddressID;
 

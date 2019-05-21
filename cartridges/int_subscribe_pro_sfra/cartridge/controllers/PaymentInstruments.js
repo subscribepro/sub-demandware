@@ -110,9 +110,13 @@ server.append('List', userLoggedIn.validateLoggedIn, consentTracking.consent, fu
     session.custom.updatedCard = null;
     session.custom.deletedCard = null;
 
-    viewData.newCard = JSON.stringify(newCard);
-    viewData.updatedCard = JSON.stringify(updatedCard);
-    viewData.deletedCard = JSON.stringify(deletedCard);
+    let newCardPayload = newCard ? {"payment_profile": newCard} : null;
+    let updatedCardPayload = updatedCard ? {"payment_profile": updatedCard} : null;
+    let deletedCardPayload = deletedCard ? {"payment_profile": deletedCard} : null;
+
+    viewData.newCard = JSON.stringify(newCardPayload);
+    viewData.updatedCard = JSON.stringify(updatedCardPayload);
+    viewData.deletedCard = JSON.stringify(deletedCardPayload);
 
     res.setViewData(viewData);
     next();

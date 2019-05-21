@@ -16,18 +16,34 @@ server.append('List', userLoggedIn.validateLoggedIn, consentTracking.consent, fu
     let viewData = res.getViewData();
 
     let newAddress = session.custom.newAddress ? session.custom.newAddress : null;
-    let updatedAddress = session.custom.updatedAddress ? session.custom.updatedAddress : null;
+    let updatedOldAddress = session.custom.updatedOldAddress ? session.custom.updatedOldAddress.sp : null;
+    let updatedNewAddress = session.custom.updatedNewAddress ? session.custom.updatedNewAddress.sp : null;
     let deletedAddress = session.custom.deletedAddress ? session.custom.deletedAddress : null;
 
     session.custom.newAddress = null;
-    session.custom.updatedAddress = null;
+    session.custom.updatedOldAddress = null;
+    session.custom.updatedNewAddress = null;
     session.custom.deletedAddress = null;
 
-    viewData.newAddress = JSON.stringify(newAddress);
-    viewData.updatedAddress = JSON.stringify(updatedAddress);
-    viewData.deletedAddress = JSON.stringify(deletedAddress);
+    let newAddressPayload = newAddress ? {"address": newAddress.sp} : null;
+    let newAddressSfccId = newAddress ? newAddress.sfcc.getID() : null;
+    let updatedAddressPayload = updatedOldAddress && updatedNewAddress ? {"prev_address": updatedOldAddress, "address": updatedNewAddress} : null;
+    let deletedAddressPayload = deletedAddress ? {"address": deletedAddress.sp} : null;
+
+    viewData.newAddress = JSON.stringify(newAddressPayload);
+    viewData.newAddressSfccId = newAddressSfccId;
+    viewData.updatedAddress = JSON.stringify(updatedAddressPayload);
+    viewData.deletedAddress = JSON.stringify(deletedAddressPayload);
 
     res.setViewData(viewData);
+    next();
+});
+
+server.get('SetSPAddressID', function (req, res, next) {
+    var addressBook = customer.getProfile().getAddressBook();
+    var address = addressBook.getAddress(req.querystring.addressId);
+    addressHelper.setSubproAddressID(address, req.querystring.spAddressId);
+    res.json({success: true});
     next();
 });
 
@@ -54,6 +70,13 @@ server.replace('SaveAddress', csrfProtection.validateAjaxRequest, function (req,
                     ? addressBook.getAddress(req.querystring.addressId)
                     : addressBook.createAddress(formInfo.addressId);
                 if (address) {
+                    if (!isNewAddress) {
+                        session.custom.updatedOldAddress = {
+                            "sp": addressHelper.getSubproAddress(address, session.customer.profile, true),
+                            "sfcc": address
+                        };
+                    }
+
                     if (req.querystring.addressId) {
                         address.setID(formInfo.addressId);
                     }
@@ -86,11 +109,17 @@ server.replace('SaveAddress', csrfProtection.validateAjaxRequest, function (req,
                     // Send account edited email
                     accountHelpers.sendAccountEditedEmail(customer.profile);
 
-                    let spAddress = addressHelper.getSubproAddress(address, session.customer.profile);
+                    let spAddress = addressHelper.getSubproAddress(address, session.customer.profile, false);
                     if (isNewAddress) {
-                        session.custom.newAddress = spAddress;
+                        session.custom.newAddress = {
+                            "sp": spAddress,
+                            "sfcc": address
+                        };
                     } else {
-                        session.custom.updatedAddress = spAddress;
+                        session.custom.updatedNewAddress = {
+                            "sp": spAddress,
+                            "sfcc": address
+                        };
                     }
 
                     res.json({
@@ -140,8 +169,12 @@ server.replace('DeleteAddress', userLoggedIn.validateLoggedInAjax, function (req
     this.on('route:BeforeComplete', function () { // eslint-disable-line no-shadow
         var length;
         Transaction.wrap(function () {
+            session.custom.deletedAddress = {
+                "sp": addressHelper.getSubproAddress(address, session.customer.profile, true),
+                "sfcc": address
+            };
+
             addressBook.removeAddress(address);
-            session.custom.deletedAddress = addressHelper.getSubproAddress(address, session.customer.profile);
             length = addressBook.getAddresses().length;
             if (isDefault && length > 0) {
                 var newDefaultAddress = addressBook.getAddresses()[0];

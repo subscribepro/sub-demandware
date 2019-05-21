@@ -1,6 +1,8 @@
 node_modules
 
 cartridges/app_storefront_base/
+cartridges/int_subscribe_pro_sfra/cartridge/static/
+cartridges/int_subscribe_pro/cartridge/static/
 
 bin/
 test/

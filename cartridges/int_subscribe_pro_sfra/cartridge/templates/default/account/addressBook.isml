@@ -9,7 +9,7 @@
         <h1 class="page-title">${Resource.msg('label.addressbook','account',null)}</h1>
     </div>
     <div class="container">
-        <!---Breadcrumbs--->
+        <!-- Breadcrumbs -->
         <isinclude template="components/breadcrumbs/pageBreadcrumbs"/>
         <isif condition="${pdict.addressBook.length === 0}">
              <div class="row justify-content-center">
@@ -60,6 +60,7 @@
         <isif condition="${pdict.newAddress != 'null' || pdict.updatedAddress != 'null' || pdict.deletedAddress != 'null'}">
             <!-- Subscribe Pro Address Book Widget -->
             <script src="${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproAddressWidgetScriptUrl')}"></script>
+            <div id="sp-address-book-widget"></div>
             <isset name="widgetConfig" scope="page"
                 value="${require('~/cartridge/scripts/subpro/helpers/WidgetsHelper').getWidgetConfig(customer.profile.custom.subproCustomerID, 'client_credentials', 'widget', 'sp-address-book-widget')}"/>
             <!-- Pass configuration and init the Subscribe Pro widget -->
@@ -69,7 +70,10 @@
                 AddressBookAssist.init(widgetConfig);
                 <isif condition="${pdict.newAddress != 'null'}">
                     var newAddress = <isprint value="${pdict.newAddress}" encoding="off" />;
-                    AddressBookAssist.onAddressCreated(newAddress);
+                    var newAddressSfccId = '<isprint value="${pdict.newAddressSfccId}" encoding="off" />';
+                    AddressBookAssist.onAddressCreated(newAddress).then(function (result) {
+                        jQuery.get("${URLUtils.url('Address-SetSPAddressID')}", {"addressId": newAddressSfccId, "spAddressId": result.id});
+                    });
                 </isif>
                 <isif condition="${pdict.updatedAddress != 'null'}">
                     var updatedAddress = <isprint value="${pdict.updatedAddress}" encoding="off" />;
