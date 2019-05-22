@@ -9,7 +9,7 @@
         <h1 class="page-title">${Resource.msg('page.heading.payments','payment',null)}</h1>
     </div>
     <div class="container">
-        <!---Breadcrumbs--->
+        <!-- Breadcrumbs -->
         <isinclude template="components/breadcrumbs/pageBreadcrumbs"/>
         <isif condition="${!pdict.paymentInstruments}">
             <div class="row justify-content-center">
@@ -48,7 +48,7 @@
                 </div>
             </div>
         </isloop>
-        <isif condition="${pdict.newCard != 'null' || pdict.updatedCard != 'null' || pdict.deletedCard != 'null' }">
+        <isif condition="${pdict.newCard != 'null' || pdict.deletedCard != 'null' }">
             <!-- Load the Subscribe Pro widget script -->
             <script src="${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproWalletWidgetScriptUrl')}"></script>
 
@@ -64,10 +64,6 @@
                 <isif condition="${pdict.newCard != 'null'}">
                     var newCard = <isprint value="${pdict.newCard}" encoding="off" />;
                     WalletAssist.onPaymentProfileCreated(newCard);
-                </isif>
-                <isif condition="${pdict.updatedCard != 'null'}">
-                    var updatedCard = <isprint value="${pdict.updatedCard}" encoding="off" />;
-                    WalletAssist.onPaymentProfileUpdated(updatedCard);
                 </isif>
                 <isif condition="${pdict.deletedCard != 'null'}">
                     var deletedCard = <isprint value="${pdict.deletedCard}" encoding="off" />;

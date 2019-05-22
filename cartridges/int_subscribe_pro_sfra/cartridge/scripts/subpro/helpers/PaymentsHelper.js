@@ -17,7 +17,7 @@ let PaymentsHelper = {
      *
      * @returns Object|undefined SubPro payment profile object with relevant fields or undefined
      */
-    getSubscriptionPaymentProfile: function (profile, card, billingAddress) {
+    getSubscriptionPaymentProfile: function (profile, card, billingAddress, includeSpId) {
         let customerID, subProCardType;
 
         /**
@@ -55,6 +55,10 @@ let PaymentsHelper = {
                 }
             }
         };
+
+        if (includeSpId) {
+            returnObject.payment_profile_id = card.custom.subproPaymentProfileID;
+        }
         
         if (typeof billingAddress.getCountryCode === 'function') {
         	returnObject.billing_address = {

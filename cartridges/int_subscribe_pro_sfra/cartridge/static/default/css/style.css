@@ -1,9 +1,1 @@
-.account-image {
-  background-image: url(../../images/account.jpg);
-  background-position-y: 40%; }
-
-#sp-my-subscriptions {
-  min-height: 350px; }
-
-#sp-my-subscriptions .sp-field.custom-select select {
-  border: none; }
+.account-image{background-image:url(../../images/account.jpg);background-position-y:40%}#sp-my-subscriptions{min-height:350px}#sp-my-subscriptions .sp-field.custom-select select{border:none}

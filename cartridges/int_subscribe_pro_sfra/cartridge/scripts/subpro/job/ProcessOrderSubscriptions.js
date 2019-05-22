@@ -236,7 +236,7 @@ function start() {
                             shippingAddress.setStateCode(shipment.shippingAddress.getStateCode());
                         }
 
-                        let subproAddress = AddressHelper.getSubproAddress(shippingAddress, customerProfile, false),
+                        let subproAddress = AddressHelper.getSubproAddress(shippingAddress, customerProfile, false, false),
                             shippingResponse = SubscribeProLib.findCreateAddress(subproAddress),
                             subproShippingAddressID;
 
@@ -402,7 +402,7 @@ function createSubproCustomer(customer) {
  * @returns {number|undefined} id unique identifier of created payment profile or undefined
  */
 function createSubproPaymentProfile(customerProfile, paymentInstrument, billingAddress) {
-    let response = SubscribeProLib.createPaymentProfile(PaymentsHelper.getSubscriptionPaymentProfile(customerProfile, paymentInstrument, billingAddress));
+    let response = SubscribeProLib.createPaymentProfile(PaymentsHelper.getSubscriptionPaymentProfile(customerProfile, paymentInstrument, billingAddress, false));
 
     if (!response.error) {
         // Payment profile creates successfully. Save Subscribe Pro Payment Profile ID to the Commerce Cloud Order Payment Instrument

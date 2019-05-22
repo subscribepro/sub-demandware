@@ -103,19 +103,15 @@ server.append('List', userLoggedIn.validateLoggedIn, consentTracking.consent, fu
     var viewData = res.getViewData();
 
     var newCard = session.custom.newCard ? session.custom.newCard : null;
-    var updatedCard = session.custom.updatedCard ? session.custom.updatedCard : null;
     var deletedCard = session.custom.deletedCard ? session.custom.deletedCard : null;
 
     session.custom.newCard = null;
-    session.custom.updatedCard = null;
     session.custom.deletedCard = null;
 
     let newCardPayload = newCard ? {"payment_profile": newCard} : null;
-    let updatedCardPayload = updatedCard ? {"payment_profile": updatedCard} : null;
     let deletedCardPayload = deletedCard ? {"payment_profile": deletedCard} : null;
 
     viewData.newCard = JSON.stringify(newCardPayload);
-    viewData.updatedCard = JSON.stringify(updatedCardPayload);
     viewData.deletedCard = JSON.stringify(deletedCardPayload);
 
     res.setViewData(viewData);
@@ -161,7 +157,7 @@ server.replace('SavePayment', csrfProtection.validateAjaxRequest, function (req,
 
                 paymentInstrument.setCreditCardToken(token);
 
-                session.custom.newCard = paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, paymentInstrument, {});
+                session.custom.newCard = paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, paymentInstrument, {}, false);
             });
 
             // Send account edited email
@@ -208,7 +204,7 @@ server.replace('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req
         );
         var wallet = customer.getProfile().getWallet();
         Transaction.wrap(function () {
-            session.custom.newCard = paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, payment.raw, {});
+            session.custom.newCard = paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, payment.raw, {}, true);
             wallet.removePaymentInstrument(payment.raw);
         });
 

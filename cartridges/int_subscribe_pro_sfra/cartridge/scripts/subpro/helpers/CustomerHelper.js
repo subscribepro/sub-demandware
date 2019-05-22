@@ -21,7 +21,8 @@ let CustomerHelper = {
         return {
             "email": profile.getEmail(),
             "first_name": profile.getFirstName(),
-            "last_name": profile.getLastName()
+            "last_name": profile.getLastName(),
+            "platform_specific_customer_id": profile.getCustomerNo()
         }
     },
 

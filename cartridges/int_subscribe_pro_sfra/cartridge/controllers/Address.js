@@ -72,7 +72,7 @@ server.replace('SaveAddress', csrfProtection.validateAjaxRequest, function (req,
                 if (address) {
                     if (!isNewAddress) {
                         session.custom.updatedOldAddress = {
-                            "sp": addressHelper.getSubproAddress(address, session.customer.profile, true),
+                            "sp": addressHelper.getSubproAddress(address, session.customer.profile, true, true),
                             "sfcc": address
                         };
                     }
@@ -109,7 +109,7 @@ server.replace('SaveAddress', csrfProtection.validateAjaxRequest, function (req,
                     // Send account edited email
                     accountHelpers.sendAccountEditedEmail(customer.profile);
 
-                    let spAddress = addressHelper.getSubproAddress(address, session.customer.profile, false);
+                    let spAddress = addressHelper.getSubproAddress(address, session.customer.profile, false, true);
                     if (isNewAddress) {
                         session.custom.newAddress = {
                             "sp": spAddress,
@@ -170,7 +170,7 @@ server.replace('DeleteAddress', userLoggedIn.validateLoggedInAjax, function (req
         var length;
         Transaction.wrap(function () {
             session.custom.deletedAddress = {
-                "sp": addressHelper.getSubproAddress(address, session.customer.profile, true),
+                "sp": addressHelper.getSubproAddress(address, session.customer.profile, true, true),
                 "sfcc": address
             };
 

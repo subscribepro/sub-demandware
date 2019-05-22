@@ -15,7 +15,7 @@ let AddressHelper = {
      *
      * @return Object|undefined an object containing relevant address fields
      */
-    getSubproAddress: function (address, profile, includeSPAddressId) {
+    getSubproAddress: function (address, profile, includeSPAddressId, includeDefaults) {
         if (!address || !profile) {
             return;
         }
@@ -51,9 +51,12 @@ let AddressHelper = {
             "postcode": address.getPostalCode() || "",
             "country": (address.getCountryCode() ? address.getCountryCode().toString().toUpperCase() : ""),
             "phone": address.getPhone() || "",
-            "is_default_billing": false,
-            "is_default_shipping": false
         };
+
+        if (includeDefaults) {
+            payload.is_default_billing = false;
+            payload.is_default_shipping = false;
+        }
 
         if (includeSPAddressId) {
             try {
