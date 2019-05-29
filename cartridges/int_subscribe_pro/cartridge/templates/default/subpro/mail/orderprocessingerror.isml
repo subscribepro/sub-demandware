@@ -1,0 +1,21 @@
+<isset name="errors" value="${pdict.Errors}" scope="page"/>
+
+${Resource.msg('order.processing.failureemail.body', 'order', null)}
+<br/>
+
+<table>
+    <thead>
+    <tr>
+        <td>${Resource.msg('order.processing.failureemail.header.orderNo', 'order', null)}</td>
+        <td>${Resource.msg('order.processing.failureemail.header.details', 'order', null)}</td>
+    </tr>
+    </thead>
+    <tbody>
+    <isloop items="${errors}" var="error">
+        <tr>
+            <td>${error.orderNo}</td>
+            <td>${error.description}</td>
+        </tr>
+    </isloop>
+    </tbody>
+</table>

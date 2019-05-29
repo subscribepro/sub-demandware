@@ -1,0 +1,15 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" />
+
+<iscache type="relative" hour="24" />
+
+<isset name="product" value="${pdict.product}" scope="page" />
+
+<div class="subpro-options ${pdict.page}">
+	<div class="info-title">${Resource.msg('order.subscription.info', 'order', null)}</div>
+	
+	<div class="mode-title">${Resource.msg('order.subscription.delivery.mode', 'order', null)}</div>
+	<div class="mode">${product.selected_option_mode}</div>
+	
+	<div class="interval-title">${Resource.msg('order.subscription.delivery.interval', 'order', null)}</div>
+	<div class="interval">${product.selected_interval}</div>
+</div>

@@ -1,0 +1,6 @@
+{
+	"init": [
+		"./cartridge/scripts/subpro/init/httpServiceInit.js"
+	],
+	"hooks": "./cartridge/scripts/hooks.json"
+}
