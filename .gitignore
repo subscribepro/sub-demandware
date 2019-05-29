@@ -20,6 +20,7 @@ test/appium/webdriver/config.json
 .history
 CONTRIBUTING.md
 
+package.json
 .editorconfig
 .eslintignore
 .eslintrc.json
