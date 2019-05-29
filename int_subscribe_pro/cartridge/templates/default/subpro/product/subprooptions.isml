@@ -12,21 +12,26 @@
 
     <iscomment> Display 'One-time delivery' option if available </iscomment>
     <isif condition="${product.subscription_option_mode === 'subscription_and_onetime_purchase'}">
-        <label for="onetime-delivery">
-            <input type="radio" name="subproSubscriptionOptionMode${product.ID || ''}" id="onetime-delivery" value="onetime" <isif condition="${product.selected_option_mode === 'onetime'}">checked</isif>>
-            <isprint value="${Resource.msg('product.subscription.delivery.onetime', 'product', null)}" />
-        </label>
+    <label for="onetime-delivery">
+        <input type="radio" name="subproSubscriptionOptionMode${product.ID || ''}" id="onetime-delivery" value="onetime"
+        <isif condition="${product.selected_option_mode === 'onetime'}">checked</isif>>
+
+        <isprint value="${Resource.msg('product.subscription.delivery.onetime', 'product', null)}" />
+    </label>
     </isif>
 
     <iscomment> Display 'Regular delivery' option with frequency dropdown </iscomment>
     <label for="regular-delivery">
-        <input type="radio" name="subproSubscriptionOptionMode${product.ID || ''}" id="regular-delivery" value="regular" <isif condition="${product.selected_option_mode === 'regular'}">checked</isif> <isif condition="${product.subscription_option_mode === 'subscription_only'}">hidden</isif>>
-        <isprint value="${Resource.msg('product.subscription.delivery.regular', 'product', null)}" />
-        <isif condition="${product.discount}"> - <isprint value="${Resource.msgf('product.subscription.delivery.discount', 'product', null, discount)}" /></isif>
+    <input type="radio" name="subproSubscriptionOptionMode${product.ID || ''}" id="regular-delivery" value="regular"
+        <isif condition="${product.selected_option_mode === 'regular'}">checked</isif>
+        <isif condition="${product.subscription_option_mode === 'subscription_only'}">hidden</isif>>
+
+    <isprint value="${Resource.msg('product.subscription.delivery.regular', 'product', null)}" />
+    <isif condition="${product.discount}"> - <isprint value="${Resource.msgf('product.subscription.delivery.discount', 'product', null, discount)}" /></isif>
     </label>
     <div class="delivery-interval-group" <isif condition="${product.subscription_option_mode !== 'subscription_only' && product.selected_option_mode !== 'regular'}">hidden</isif>>
-        <label for="delivery-interval"><isprint value="${Resource.msg('product.subscription.delivery.every', 'product', null)}" /></label>
-        <select id="delivery-interval" name="subproSubscriptionInterval">
+    <label for="delivery-interval"><isprint value="${Resource.msg('product.subscription.delivery.every', 'product', null)}" /></label>
+    <select id="delivery-interval" name="subproSubscriptionInterval">
             <isloop items="${product.intervals}" var="interval">
                 <option value="${interval}" <isif condition="${interval === product.selected_interval}">selected</isif>>${interval}</option>
             </isloop>

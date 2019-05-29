@@ -7,7 +7,7 @@
     <div id="sp-my-subscriptions"></div>
 
     <iscomment>
-	Configure the Subscribe Pro My Subscriptions Widget
+        Configure the Subscribe Pro My Subscriptions Widget
     </iscomment>
 
     <!-- Load the Subscribe Pro widget script -->
@@ -20,7 +20,7 @@
     <script>
         // Setup config for Subscribe Pro
         var widgetConfig = <isprint value="${JSON.stringify(widgetConfig)}" encoding="off" />;
-        subscribepro.widgets.init('my-subscriptions', widgetConfig);
+        MySubscriptions.init(widgetConfig);
     </script>
 
 </isdecorate>

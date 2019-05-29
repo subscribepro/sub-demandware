@@ -399,17 +399,17 @@ exports.GetPaymentProfile = function() {
 		return;
 	}
 
-	let paymentProfileID = null,
+	let paymentProfileID = null, 
 		transactionID = null;
-
+	
 	if (httpParameters.containsKey("paymentprofile_id")) {
 		paymentProfileID = httpParameters.get("paymentprofile_id").pop()
 	}
-
+	
 	if (httpParameters.containsKey("transaction_id")) {
 		transactionID = httpParameters.get("transaction_id").pop()
-	}
-
+	}	
+	
 	let result = SubscribeProLib.getPaymentProfile(paymentProfileID, transactionID);
 
 	r.renderJSON(result);

@@ -1,0 +1,8 @@
+{
+    "hooks": [
+        {
+            "name": "dw.extensions.applepay.paymentAuthorized.createOrder",
+            "script": "./subpro/hooks/applepay.js"
+        }
+    ]
+}
