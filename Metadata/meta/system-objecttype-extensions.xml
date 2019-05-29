@@ -339,6 +339,7 @@
          <group-definitions>
             <attribute-group group-id="subscribe-pro">
                 <display-name xml:lang="x-default">Subscribe Pro</display-name>
+                <attribute attribute-id="subproEnabled"/>
                 <attribute attribute-id="subproCreditCardRequirementMsg"/>
                 <attribute attribute-id="subproCheckoutLoginMsg"/>
                 <attribute attribute-id="subproApplePayLoginMsg"/>
