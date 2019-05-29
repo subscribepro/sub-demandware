@@ -27,10 +27,11 @@
 
                         <isinclude template="cart/productCard/cartProductCardAvailability" />
                         <isinclude template="cart/productCard/cartProductCardEdit" />
-
-                        <!-- Subscribe Pro - Subscription Details for Mini Cart, Order Summary, and Order Confirmation -->
-                        <isinclude url="${URLUtils.url('SubPro-Cart', 'sku', lineItem.id)}" />
                     </div>
+                </div>
+                <!-- Subscribe Pro - Subscription Details for Mini Cart, Order Summary, and Order Confirmation -->
+                <div class="col-md-12">
+                    <isinclude url="${URLUtils.url('SubPro-Cart', 'sku', lineItem.id)}" />
                 </div>
             </div>
         </div>
