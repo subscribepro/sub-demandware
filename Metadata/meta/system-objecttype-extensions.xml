@@ -244,6 +244,13 @@
 
     <type-extension type-id="SitePreferences">
         <custom-attribute-definitions>
+            <attribute-definition attribute-id="subproEnabled">
+                <display-name xml:lang="x-default">Subpro Enabled</display-name>
+                <description xml:lang="x-default">Turn on to enable Subscribe Pro functionality.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
             <attribute-definition attribute-id="subproCheckoutLoginMsg">
                 <display-name xml:lang="x-default">Subpro Checkout Login Message</display-name>
                 <description xml:lang="x-default">Message informing customer that he/she needs to be logged in as a registered customer to proceed checkout with SubPro Subscription products</description>
@@ -289,12 +296,28 @@
                 <min-length>0</min-length>
             </attribute-definition>
             <attribute-definition attribute-id="subproWidgetScriptUrl">
-                <display-name xml:lang="x-default">Subscribe Pro Widget Script Url</display-name>
+                <display-name xml:lang="x-default">Subscribe Pro "My Subscriptions" Widget Script Url</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>https://hosted.subscribepro.com/subscribepro-widgets-0.9.1.min.js</default-value>
+                <default-value>https://hosted.subscribepro.com/subscribepro-widgets-0.9.9.min.js</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="subproAddressWidgetScriptUrl">
+                <display-name xml:lang="x-default">Subscribe Pro Address Book Widget Script Url</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>https://static.subscribepro.com/address-book/widget-address-book-1.0.1.js</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="subproWalletWidgetScriptUrl">
+                <display-name xml:lang="x-default">Subscribe Pro Wallet Widget Script Url</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>https://static.subscribepro.com/wallet/widget-wallet-1.0.1.js</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="subproApiBaseUrl">
                 <display-name xml:lang="x-default">Subscribe Pro API Base Url</display-name>
@@ -321,6 +344,8 @@
                 <attribute attribute-id="subproApplePayLoginMsg"/>
                 <attribute attribute-id="subproOrderProcessingErrorMail"/>
                 <attribute attribute-id="subproWidgetScriptUrl"/>
+                <attribute attribute-id="subproAddressWidgetScriptUrl"/>
+                <attribute attribute-id="subproWalletWidgetScriptUrl"/>
                 <attribute attribute-id="subproApiBaseUrl"/>
                 <attribute attribute-id="subproAPICredSuffix"/>
             </attribute-group>

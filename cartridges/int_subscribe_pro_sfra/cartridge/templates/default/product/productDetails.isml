@@ -81,12 +81,14 @@
                     <!-- Product Availability -->
                     <isinclude template="product/components/productAvailability" />
 
-                    <!-- Subscription Widget -->
-                    <isinclude url="${URLUtils.url('SubPro-PDP', 'sku', product.id)}" />
-
                     <!-- Applicable Promotions -->
                     <div class="col-md-10 col-12 promotions">
                         <isinclude template="product/components/promotions" />
+                    </div>
+
+                    <!-- Subscription Widget -->
+                    <div class="col-md-10 col-12">
+                        <isinclude url="${URLUtils.url('SubPro-PDP', 'sku', product.id)}" />
                     </div>
 
                     <div class="col-md-10 col-12">

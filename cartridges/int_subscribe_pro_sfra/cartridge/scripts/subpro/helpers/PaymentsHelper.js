@@ -29,12 +29,16 @@ let PaymentsHelper = {
             Logger.error('Error getting subproCustomerID', e);
             return;
         }
-        
-        /** 
+
+        /**
          * Try to get the Subscribe Pro Card Type
          */
         try {
+            Logger.info('SFCC card type');
+            Logger.info(card.creditCardType);
             let paymentCard = dw.order.PaymentMgr.getPaymentCard(card.creditCardType);
+            Logger.info(paymentCard);
+            Logger.info(paymentCard.custom.subproCardType);
             subProCardType = paymentCard.custom.subproCardType;
         } catch (e) {
             Logger.error('Unable to retreieve the Subscribe Pro Card type from: ' + card.creditCardType, e);
@@ -59,7 +63,7 @@ let PaymentsHelper = {
         if (includeSpId) {
             returnObject.payment_profile_id = card.custom.subproPaymentProfileID;
         }
-        
+
         if (typeof billingAddress.getCountryCode === 'function') {
         	returnObject.billing_address = {
                 "first_name": billingAddress.firstName,
@@ -75,7 +79,7 @@ let PaymentsHelper = {
                 "phone": billingAddress.phone || ""
             };
         } else {
-        	
+
         	var nameParts = card.getCreditCardHolder().split(' ');
         	var lastName = nameParts.pop();
         	var firstName = nameParts.join(' ');
@@ -84,7 +88,7 @@ let PaymentsHelper = {
         			"last_name": lastName
         	}
         }
-        
+
         return returnObject;
     },
 

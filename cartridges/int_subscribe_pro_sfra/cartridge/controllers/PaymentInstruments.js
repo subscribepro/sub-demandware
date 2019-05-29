@@ -6,6 +6,7 @@ var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 var paymentsHelper = require('~/cartridge/scripts/subpro/helpers/PaymentsHelper');
+var subproEnabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproEnabled');
 
 var page = module.superModule;
 server.extend(page);
@@ -118,6 +119,14 @@ server.append('List', userLoggedIn.validateLoggedIn, consentTracking.consent, fu
     next();
 });
 
+server.get('SetSPPaymentProfileID', function (req, res, next) {
+    var wallet = customer.getProfile().getWallet();
+    var paymentInstrument = wallet.getPaymentInstruments(req.querystring.paymentInstrumentId);
+    paymentsHelper.setSubproPaymentProfileID(paymentInstrument, req.querystring.spPaymentProfileId);
+    res.json({success: true});
+    next();
+});
+
 server.replace('SavePayment', csrfProtection.validateAjaxRequest, function (req, res, next) {
     var formErrors = require('*/cartridge/scripts/formErrors');
     var HookMgr = require('dw/system/HookMgr');
@@ -204,7 +213,7 @@ server.replace('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req
         );
         var wallet = customer.getProfile().getWallet();
         Transaction.wrap(function () {
-            session.custom.newCard = paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, payment.raw, {}, true);
+            session.custom.deltedCard = paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, payment.raw, {}, true);
             wallet.removePaymentInstrument(payment.raw);
         });
 

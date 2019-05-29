@@ -94,10 +94,15 @@ let subscriptionOptions = {
         }
         parent = target.closest('.subpro-options.' + page);
 
-        pliUUID = page === 'pdp' ?
-            $('button.add-to-cart').data('pid') :
-            parent.closest('.product-info').find('.remove-btn').data('pid')
-        ;
+        if (page === 'pdp') {
+            if($('button.add-to-cart').data('pid')) {
+                pliUUID = $('button.add-to-cart').data('pid');
+            } else {
+                pliUUID = $('button.add-to-cart-global').data('pid')
+            }
+        } else {
+            pliUUID = parent.closest('.product-info').find('.remove-btn').data('pid')
+        }
 
         return {
             'pliUUID': pliUUID,
