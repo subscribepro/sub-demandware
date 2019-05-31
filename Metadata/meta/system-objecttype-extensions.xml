@@ -301,7 +301,7 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>https://hosted.subscribepro.com/subscribepro-widgets-0.9.10.min.js</default-value>
+                <default-value>https://static.subscribepro.com/my-subscriptions/widget-my-subscriptions-0.9.10.js</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="subproAddressWidgetScriptUrl">
                 <display-name xml:lang="x-default">Subscribe Pro Address Book Widget Script Url</display-name>
