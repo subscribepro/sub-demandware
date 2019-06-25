@@ -2,6 +2,7 @@
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
         assets.addJs('/js/paymentInstruments.js');
+        assets.addJs('/js/spPaymentInstruments.js');
         assets.addCss('/css/account/payment.css');
     </isscript>
     <isinclude template="account/payment/deletePaymentModal"/>
@@ -48,12 +49,12 @@
                 </div>
             </div>
         </isloop>
+        <!-- Load the Subscribe Pro widget script -->
+        <script src="${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproWalletWidgetScriptUrl')}"></script>
+
+        <div id="sp-wallet-assist-widget"></div>
+
         <isif condition="${pdict.newCard != 'null' || pdict.deletedCard != 'null' }">
-            <!-- Load the Subscribe Pro widget script -->
-            <script src="${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproWalletWidgetScriptUrl')}"></script>
-
-            <div id="sp-wallet-assist-widget"></div>
-
             <isset name="widgetConfig" scope="page"
                 value="${require('~/cartridge/scripts/subpro/helpers/WidgetsHelper').getWidgetConfig(customer.profile.custom.subproCustomerID, 'client_credentials', 'widget', 'sp-wallet-assist-widget')}"/>
                 <!-- Pass configuration and init the Subscribe Pro widget -->
@@ -63,7 +64,10 @@
                 WalletAssist.init(widgetConfig);
                 <isif condition="${pdict.newCard != 'null'}">
                     var newCard = <isprint value="${pdict.newCard}" encoding="off" />;
-                    WalletAssist.onPaymentProfileCreated(newCard);
+                    WalletAssist.onPaymentProfileCreated(newCard, function (result) {
+                        var newCardSfccId = '<isprint value="${pdict.newCardSfccId}" encoding="off" />';
+                        jQuery.get("${URLUtils.url('PaymentInstruments-SetSPPaymentProfileID')}", {"paymentInstrumentId": newCardSfccId, "spPaymentProfileId": result.id});
+                    });
                 </isif>
                 <isif condition="${pdict.deletedCard != 'null'}">
                     var deletedCard = <isprint value="${pdict.deletedCard}" encoding="off" />;

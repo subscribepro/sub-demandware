@@ -7,6 +7,7 @@ var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 var paymentsHelper = require('~/cartridge/scripts/subpro/helpers/PaymentsHelper');
 var subproEnabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproEnabled');
+var Logger = require('dw/system/Logger');
 
 var page = module.superModule;
 server.extend(page);
@@ -101,17 +102,23 @@ function getExpirationYears() {
 }
 
 server.append('List', userLoggedIn.validateLoggedIn, consentTracking.consent, function (req, res, next) {
+    let logger = Logger.getLogger('payment list');
     var viewData = res.getViewData();
 
     var newCard = session.custom.newCard ? session.custom.newCard : null;
     var deletedCard = session.custom.deletedCard ? session.custom.deletedCard : null;
 
+    logger.info('deletedCard:');
+    logger.info(JSON.stringify(deletedCard));
+
     session.custom.newCard = null;
     session.custom.deletedCard = null;
 
-    let newCardPayload = newCard ? {"payment_profile": newCard} : null;
-    let deletedCardPayload = deletedCard ? {"payment_profile": deletedCard} : null;
+    let newCardSfccId = newCard ? newCard.sfcc.getUUID() : null;
+    let newCardPayload = newCard ? {"payment_profile": newCard.sp} : null;
+    let deletedCardPayload = deletedCard ? {"payment_profile": deletedCard.sp} : null;
 
+    viewData.newCardSfccId = newCardSfccId;
     viewData.newCard = JSON.stringify(newCardPayload);
     viewData.deletedCard = JSON.stringify(deletedCardPayload);
 
@@ -121,9 +128,22 @@ server.append('List', userLoggedIn.validateLoggedIn, consentTracking.consent, fu
 
 server.get('SetSPPaymentProfileID', function (req, res, next) {
     var wallet = customer.getProfile().getWallet();
-    var paymentInstrument = wallet.getPaymentInstruments(req.querystring.paymentInstrumentId);
-    paymentsHelper.setSubproPaymentProfileID(paymentInstrument, req.querystring.spPaymentProfileId);
-    res.json({success: true});
+    var paymentInstruments = wallet.getPaymentInstruments('CREDIT_CARD');
+    let paymentInstrumentId = req.querystring.paymentInstrumentId;
+
+    let paymentInstrument = null;
+    for (let i in paymentInstruments) {
+        if (paymentInstrumentId == paymentInstruments[i].getUUID()) {
+            paymentInstrument = paymentInstruments[i];
+        }
+    }
+
+    let success = paymentInstrument != null;
+
+    if (success) {
+        paymentsHelper.setSubproPaymentProfileID(paymentInstrument, req.querystring.spPaymentProfileId);
+    }
+    res.json({success: success});
     next();
 });
 
@@ -166,7 +186,10 @@ server.replace('SavePayment', csrfProtection.validateAjaxRequest, function (req,
 
                 paymentInstrument.setCreditCardToken(token);
 
-                session.custom.newCard = paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, paymentInstrument, {}, false);
+                session.custom.newCard = {
+                    "sp": paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, paymentInstrument, {}, false),
+                    "sfcc": paymentInstrument
+                };
             });
 
             // Send account edited email
@@ -212,8 +235,12 @@ server.replace('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req
             req.currentCustomer.profile.customerNo
         );
         var wallet = customer.getProfile().getWallet();
+
         Transaction.wrap(function () {
-            session.custom.deltedCard = paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, payment.raw, {}, true);
+            session.custom.deletedCard = {
+                "sp": paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, payment.raw, {}, true),
+                "sfcc": payment
+            };
             wallet.removePaymentInstrument(payment.raw);
         });
 
