@@ -4,7 +4,7 @@
         <description>Process orders that have Subscribe Pro subscription</description>
         <parameters/>
         <flow>
-            <context site-id="SiteGenesis"/>
+            <context site-id="RefArch"/>
             <step step-id="ProcessSubproSubscriptions-Process" type="ExecuteScriptModule" enforce-restart="false">
                 <description/>
                 <parameters>
