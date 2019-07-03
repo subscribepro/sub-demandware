@@ -317,7 +317,16 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>https://static.subscribepro.com/wallet/widget-wallet-1.0.1.js</default-value>
+                <default-value>https://static.subscribepro.com/wallet/widget-wallet-1.0.3.js</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="subproSubscriptionsWidgetConfig">
+                <display-name xml:lang="x-default">Subscribe Pro Subscriptions Widget Custom Config</display-name>
+                <description xml:lang="x-default">JSON object string containing configuration for widget theme and display customization.</description>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>{}</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="subproApiBaseUrl">
                 <display-name xml:lang="x-default">Subscribe Pro API Base Url</display-name>
@@ -349,6 +358,7 @@
                 <attribute attribute-id="subproWalletWidgetScriptUrl"/>
                 <attribute attribute-id="subproApiBaseUrl"/>
                 <attribute attribute-id="subproAPICredSuffix"/>
+                <attribute attribute-id="subproSubscriptionsWidgetConfig"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
