@@ -17,7 +17,7 @@ let PaymentsHelper = {
      *
      * @returns Object|undefined SubPro payment profile object with relevant fields or undefined
      */
-    getSubscriptionPaymentProfile: function (profile, card, billingAddress) {
+    getSubscriptionPaymentProfile: function (profile, card, billingAddress, includeSpId) {
         let customerID, subProCardType;
 
         /**
@@ -29,8 +29,8 @@ let PaymentsHelper = {
             Logger.error('Error getting subproCustomerID', e);
             return;
         }
-        
-        /** 
+
+        /**
          * Try to get the Subscribe Pro Card Type
          */
         try {
@@ -55,7 +55,13 @@ let PaymentsHelper = {
                 }
             }
         };
-        
+
+        if (includeSpId) {
+            Logger.info(card);
+            Logger.info(card.custom.subproPaymentProfileID);
+            returnObject.payment_profile_id = card.custom.subproPaymentProfileID;
+        }
+
         if (typeof billingAddress.getCountryCode === 'function') {
         	returnObject.billing_address = {
                 "first_name": billingAddress.firstName,
@@ -71,7 +77,7 @@ let PaymentsHelper = {
                 "phone": billingAddress.phone || ""
             };
         } else {
-        	
+
         	var nameParts = card.getCreditCardHolder().split(' ');
         	var lastName = nameParts.pop();
         	var firstName = nameParts.join(' ');
@@ -80,7 +86,7 @@ let PaymentsHelper = {
         			"last_name": lastName
         	}
         }
-        
+
         return returnObject;
     },
 

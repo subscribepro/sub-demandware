@@ -15,7 +15,7 @@ let AddressHelper = {
      *
      * @return Object|undefined an object containing relevant address fields
      */
-    getSubproAddress: function (address, profile) {
+    getSubproAddress: function (address, profile, includeSPAddressId, includeDefaults) {
         if (!address || !profile) {
             return;
         }
@@ -38,7 +38,7 @@ let AddressHelper = {
             return;
         }
 
-        return {
+        let payload = {
             "customer_id": subproCustomerID,
             "first_name": firstName,
             "middle_name": "",
@@ -50,8 +50,24 @@ let AddressHelper = {
             "region": address.getStateCode() || "",
             "postcode": address.getPostalCode() || "",
             "country": (address.getCountryCode() ? address.getCountryCode().toString().toUpperCase() : ""),
-            "phone": address.getPhone() || ""
+            "phone": address.getPhone() || "",
+        };
+
+        if (includeDefaults) {
+            payload.is_default_billing = false;
+            payload.is_default_shipping = false;
         }
+
+        if (includeSPAddressId) {
+            try {
+                payload.address_id = address.custom.subproAddressID;
+            } catch (e) {
+                require('dw/system/Logger').error('No Subscribe Pro address ID found', e);
+            }
+        }
+
+
+        return payload;
     },
 
     /**
