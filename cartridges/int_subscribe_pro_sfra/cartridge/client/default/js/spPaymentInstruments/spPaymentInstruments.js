@@ -3,8 +3,8 @@
 var url;
 
 module.exports = {
-    afterRmovePayment: function () {
-        $('.remove-payment').on('click', function (e) {
+    afterRemovePayment: function () {
+        $(document).on('payment:remove', function (e) {
             e.preventDefault();
             window.location.reload();
         });

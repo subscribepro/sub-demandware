@@ -50,6 +50,7 @@
         <input type="hidden" name="subproSubscriptionDiscount" value="${product.discount}">
         <input type="hidden" name="subproSubscriptionIsDiscountPercentage" value="${product.is_discount_percentage}">
         <input type="hidden" name="subproSubscriptionOptionsUrl" value="${pdict.subprooptionsurl}" />
+        <input type="hidden" name="subproSubscriptionProductId" value="${product.sku}" />
     </div>
     </div>
 </isif>

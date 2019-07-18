@@ -95,11 +95,7 @@ let subscriptionOptions = {
         parent = target.closest('.subpro-options.' + page);
 
         if (page === 'pdp') {
-            if($('button.add-to-cart').data('pid')) {
-                pliUUID = $('button.add-to-cart').data('pid');
-            } else {
-                pliUUID = $('button.add-to-cart-global').data('pid')
-            }
+            pliUUID = parent.find('input[name=subproSubscriptionProductId]').val();
         } else {
             pliUUID = parent.closest('.product-info').find('.remove-btn').data('pid')
         }
@@ -125,6 +121,10 @@ let subscriptionOptions = {
     },
 
     ajaxUpdateOptions: () => {
+        $('body').on('product:afterAttributeSelect', function (e, response) {
+            $('input[name=subproSubscriptionProductId]').val(response.data.product.id);
+        });
+
         $(document).on('pdpOptionsUpdate cartOptionsUpdate', function (e,p) {
             ajaxUpdateOptions($(p.event.currentTarget), p.page);
         });
