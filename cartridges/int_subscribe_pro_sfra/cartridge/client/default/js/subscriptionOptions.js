@@ -97,7 +97,7 @@ let subscriptionOptions = {
         if (page === 'pdp') {
             pliUUID = parent.find('input[name=subproSubscriptionProductId]').val();
         } else {
-            pliUUID = parent.closest('.product-info').find('.remove-btn').data('pid')
+            pliUUID = parent.closest('.product-info').find('button.remove-product').data('pid')
         }
 
         return {
