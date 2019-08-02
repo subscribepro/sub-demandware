@@ -26,6 +26,11 @@ let CustomerHelper = {
         }
     },
 
+    updateCustomerInPlatform: function(spCustomerId, customerData) {
+        let SubscribeProLib = require('~/cartridge/scripts/subpro/lib/SubscribeProLib');
+        SubscribeProLib.updateCustomer(spCustomerId, customerData);
+    },
+
     /**
      * Save Subscribe Pro id to Customer Profile
      *
