@@ -7,7 +7,6 @@ var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 var paymentsHelper = require('~/cartridge/scripts/subpro/helpers/PaymentsHelper');
 var subproEnabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproEnabled');
-var Logger = require('dw/system/Logger');
 
 var page = module.superModule;
 server.extend(page);
@@ -102,14 +101,10 @@ function getExpirationYears() {
 }
 
 server.append('List', userLoggedIn.validateLoggedIn, consentTracking.consent, function (req, res, next) {
-    let logger = Logger.getLogger('payment list');
     var viewData = res.getViewData();
 
     var newCard = session.custom.newCard ? session.custom.newCard : null;
     var deletedCard = session.custom.deletedCard ? session.custom.deletedCard : null;
-
-    logger.info('deletedCard:');
-    logger.info(JSON.stringify(deletedCard));
 
     session.custom.newCard = null;
     session.custom.deletedCard = null;
