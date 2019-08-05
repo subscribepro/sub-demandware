@@ -15,7 +15,7 @@
  */
 
 /**
- * Demandware Modules
+ * Required Modules
  */
 const OrderMgr = require('dw/order/OrderMgr');
 const CustomerMgr = require('dw/customer/CustomerMgr');

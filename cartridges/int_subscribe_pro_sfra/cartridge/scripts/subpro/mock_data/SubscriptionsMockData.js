@@ -17,7 +17,7 @@ let SubscriptionsMockData = {
                 "id":1041328,
                 "customer_id":"761431",
                 "magento_customer_id":"1",
-                "customer_email":"david.king@subscribepro.com",
+                "customer_email":"test@mail.com",
                 "customer_facing_name":"Visa ending in 1111",
                 "merchant_facing_name":"Visa ending in 1111",
                 "profile_type":"spreedly_vault",

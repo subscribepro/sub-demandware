@@ -2,7 +2,6 @@
  * Subscribe Pro - Apple Pay Hooks
  * https://documentation.demandware.com/DOC1/topic/com.demandware.dochelp/DWAPI/scriptapi/html/api/class_dw_extensions_applepay_ApplePayHooks.html
  */
-var Logger = require('dw/system/Logger');
 var Transaction = require('dw/system/Transaction');
 var OrderMgr = require('dw/order/OrderMgr');
 var ApplePayHookResult = require('dw/extensions/applepay/ApplePayHookResult');

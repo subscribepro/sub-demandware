@@ -407,9 +407,6 @@ ServiceRegistry.configure("subpro.http.get.token", {
      * JSON parse the response text and return it
      */
     parseResponse: function (svc: HTTPService, client: HTTPClient) {
-    	var logger = require('dw/system/Logger').getLogger('root');
-    	logger.info('client.text');
-    	logger.info(client.text);
         return JSON.parse(client.text);
     },
 

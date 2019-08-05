@@ -14,10 +14,10 @@ let PaymentProfileMockData = {
             }
         },
         "billing_address": {
-            "first_name": "Bob",
+            "first_name": "Test",
             "middle_name": "A",
-            "last_name": "Jones",
-            "company": "Bobs Emporium",
+            "last_name": "Useer",
+            "company": "Subscribe Pro",
             "street1": "123 Here St",
             "street2": "Apt B",
             "city": "Baltimore",

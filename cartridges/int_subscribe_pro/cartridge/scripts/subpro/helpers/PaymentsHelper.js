@@ -37,7 +37,7 @@ let PaymentsHelper = {
             let paymentCard = dw.order.PaymentMgr.getPaymentCard(card.creditCardType);
             subProCardType = paymentCard.custom.subproCardType;
         } catch (e) {
-            Logger.error('Unable to retreieve the Subscribe Pro Card type from: ' + card.creditCardType, e);
+            Logger.error('Unable to retreieve the Subscribe Pro Card type', e);
             return;
         }
 
@@ -57,8 +57,6 @@ let PaymentsHelper = {
         };
 
         if (includeSpId) {
-            Logger.info(card);
-            Logger.info(card.custom.subproPaymentProfileID);
             returnObject.payment_profile_id = card.custom.subproPaymentProfileID;
         }
 

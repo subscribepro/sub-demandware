@@ -1,8 +1,8 @@
 let CustomerMockData = {
    "customer":{
       "id":761431,
-      "email":"david.king@subscribepro.com",
-      "magento_customer_id":1,
+      "email":"test@mail.com",
+      "platform_specific_customer_id":1,
       "first_name":"TestName",
       "last_name":"UserLastName",
       "full_name":"Test User",

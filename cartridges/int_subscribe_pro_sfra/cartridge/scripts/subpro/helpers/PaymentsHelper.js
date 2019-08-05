@@ -34,14 +34,10 @@ let PaymentsHelper = {
          * Try to get the Subscribe Pro Card Type
          */
         try {
-            Logger.info('SFCC card type');
-            Logger.info(card.creditCardType);
             let paymentCard = dw.order.PaymentMgr.getPaymentCard(card.creditCardType);
-            Logger.info(paymentCard);
-            Logger.info(paymentCard.custom.subproCardType);
             subProCardType = paymentCard.custom.subproCardType;
         } catch (e) {
-            Logger.error('Unable to retreieve the Subscribe Pro Card type from: ' + card.creditCardType, e);
+            Logger.error('Unable to retreieve the Subscribe Pro Card type', e);
             return;
         }
 

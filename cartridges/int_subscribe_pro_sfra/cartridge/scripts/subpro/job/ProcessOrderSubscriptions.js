@@ -15,7 +15,7 @@
  */
 
 /**
- * Demandware Modules
+ * Required Modules
  */
 const OrderMgr = require('dw/order/OrderMgr');
 const CustomerMgr = require('dw/customer/CustomerMgr');
@@ -352,8 +352,7 @@ function logError(response, serviceName) {
         'Error while calling service ' + serviceName + ".\nResponse: " + JSON.stringify(response) :
         response;
 
-    let logger = Logger.getLogger('processordersubscriptions');
-    logger.error(msg);
+    Logger.error(msg);
 
     errors.push({
         'orderNo': currentOrderNo,
