@@ -1,13 +1,13 @@
-'use strict';
+"use strict";
 
-var server = require('server'),
-    BasketMgr = require('dw/order/BasketMgr'),
-    subproEnabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproEnabled'),
+var server = require("server"),
+    BasketMgr = require("dw/order/BasketMgr"),
+    subproEnabled = require("dw/system/Site").getCurrent().getCustomPreferenceValue("subproEnabled"),
     page = module.superModule;
 
 server.extend(page);
 
-server.append('Login', function (req, res, next) {
+server.append("Login", function (req, res, next) {
     let viewData = res.getViewData(),
         basket = BasketMgr.getCurrentOrNewBasket();
     if (subproEnabled) {
@@ -16,7 +16,7 @@ server.append('Login', function (req, res, next) {
         let subscriptionInCart = false;
         for (var i in lineItems) {
             let li = lineItems[i];
-            if (li.custom.subproSubscriptionSelectedOptionMode === 'regular') {
+            if (li.custom.subproSubscriptionSelectedOptionMode === "regular") {
                 subscriptionInCart = true;
                 break;
             }

@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-const Transaction = require('dw/system/Transaction');
-const Logger = require('dw/system/Logger');
+const Transaction = require("dw/system/Transaction");
+const Logger = require("dw/system/Logger");
 
 /**
  * Provides an interface to handle Subscribe Pro customer objects and map them to Sales Force Commerce Cloud Customer Object.
@@ -22,7 +22,7 @@ let CustomerHelper = {
             "email": profile.getEmail(),
             "first_name": profile.getFirstName(),
             "last_name": profile.getLastName()
-        }
+        };
     },
 
     /**

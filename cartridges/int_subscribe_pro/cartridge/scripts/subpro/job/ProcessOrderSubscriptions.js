@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /**
  * Process Order Subscriptions
@@ -17,38 +17,38 @@
 /**
  * Required Modules
  */
-const OrderMgr = require('dw/order/OrderMgr');
-const CustomerMgr = require('dw/customer/CustomerMgr');
-const Logger = require('dw/system/Logger');
-const Resource = require('dw/web/Resource');
+const OrderMgr = require("dw/order/OrderMgr");
+const CustomerMgr = require("dw/customer/CustomerMgr");
+const Logger = require("dw/system/Logger");
+const Resource = require("dw/web/Resource");
 
 /**
  * Site Genesis App Module, used to reference various Commerce Cloud objects like Profile Model
  */
-const app = require('/app_storefront_controllers/cartridge/scripts/app');
+const app = require("/app_storefront_controllers/cartridge/scripts/app");
 
 /**
  * Site Genesis Email Module, used to email the error logs
  */
-const Email = require('/app_storefront_controllers/cartridge/scripts/models/EmailModel');
+const Email = require("/app_storefront_controllers/cartridge/scripts/models/EmailModel");
 
 /**
  * Main Subscribe Pro Library,
  * This library has various methods to help facilitate API requests
  */
-const SubscribeProLib = require('~/cartridge/scripts/subpro/lib/SubscribeProLib');
+const SubscribeProLib = require("~/cartridge/scripts/subpro/lib/SubscribeProLib");
 
 /**
  * Subscribe Pro Object Helpers, used to help map Commerce Cloud Modules to Subscribe Pro Modules
  */
-const AddressHelper = require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/AddressHelper');
-const CustomerHelper = require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/CustomerHelper');
-const PaymentsHelper = require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/PaymentsHelper');
+const AddressHelper = require("/int_subscribe_pro/cartridge/scripts/subpro/helpers/AddressHelper");
+const CustomerHelper = require("/int_subscribe_pro/cartridge/scripts/subpro/helpers/CustomerHelper");
+const PaymentsHelper = require("/int_subscribe_pro/cartridge/scripts/subpro/helpers/PaymentsHelper");
 
 /**
  * Current Site, used to reference site preferences
  */
-const CurrentSite = require('dw/system/Site').getCurrent();
+const CurrentSite = require("dw/system/Site").getCurrent();
 
 /**
  * List of Errors
@@ -71,12 +71,12 @@ function start() {
      * Target Start Time - Use the interval preference, in hours,
      * to calculate what the start time for the search should be
      */
-    let targetStartDateTime = new Date(Date.now() - parseInt(arguments[0].get('ordersProcessInterval')) * 3.6e+6);
+    let targetStartDateTime = new Date(Date.now() - parseInt(arguments[0].get("ordersProcessInterval")) * 3.6e+6);
 
     /**
      * Retreive a list of orders to be processed
      */
-    let ordersToProcess = OrderMgr.searchOrders('status != {0} AND creationDate >= {1} AND custom.subproSubscriptionsToBeProcessed = true', 'creationDate desc',
+    let ordersToProcess = OrderMgr.searchOrders("status != {0} AND creationDate >= {1} AND custom.subproSubscriptionsToBeProcessed = true", "creationDate desc",
         dw.order.Order.ORDER_STATUS_FAILED, targetStartDateTime);
 
     /**
@@ -92,7 +92,7 @@ function start() {
              * This will check to ensure that's the case for this order
              */
             if (!order.customer.registered) {
-                logError("Order Customer is not registered, skipping this order", 'getCustomer');
+                logError("Order Customer is not registered, skipping this order", "getCustomer");
                 continue;
             }
 
@@ -132,7 +132,7 @@ function start() {
                     customerSubproID = createSubproCustomer(customer);
                 } else if (response.error) {
                     // Some other error occurred
-                    logError(response, 'getCustomer');
+                    logError(response, "getCustomer");
 
                     continue;
                 }
@@ -144,7 +144,7 @@ function start() {
              * If the above code block didn't return a Subscribe Pro Customer, error out
              */
             if (!customerSubproID) {
-                logError('Could not get customer Subscribe Pro ID. Skipping this order.');
+                logError("Could not get customer Subscribe Pro ID. Skipping this order.");
                 continue;
             }
 
@@ -167,13 +167,13 @@ function start() {
                  * If there was a problem creating the payment profile, error out
                  */
                 if (response.error) {
-                    logError(response, 'getPaymentProfile');
+                    logError(response, "getPaymentProfile");
                     continue;
                 } else {
                     paymentProfileID = response.result.payment_profiles.pop().id;
                 }
             } else {
-                paymentProfileID = (customerPaymentInstrument && ('subproPaymentProfileID' in customerPaymentInstrument.custom)) ? customerPaymentInstrument.custom.subproPaymentProfileID : false;
+                paymentProfileID = (customerPaymentInstrument && ("subproPaymentProfileID" in customerPaymentInstrument.custom)) ? customerPaymentInstrument.custom.subproPaymentProfileID : false;
 
                 /**
                  * If Payment Profile already exists,
@@ -193,7 +193,7 @@ function start() {
                      * Some other error occurred, error out
                      */
                     } else if (response.error) {
-                        logError(response, 'getPaymentProfile');
+                        logError(response, "getPaymentProfile");
                         continue;
                     }
                 } else {
@@ -205,7 +205,7 @@ function start() {
              * If the above code block didn't return a Subscribe Pro Payment Profile, error out
              */
             if (!paymentProfileID) {
-                logError('Could not get Subscribe Pro Payment profile ID. Skipping this order.');
+                logError("Could not get Subscribe Pro Payment profile ID. Skipping this order.");
                 continue;
             }
 
@@ -227,7 +227,7 @@ function start() {
                         let shippingAddress = AddressHelper.getCustomerAddress(customer.addressBook, shipment.shippingAddress);
 
                         if (!shippingAddress) {
-                            shippingAddress = app.getModel('Profile').get(order.customer.profile).addAddressToAddressBook(shipment.shippingAddress);
+                            shippingAddress = app.getModel("Profile").get(order.customer.profile).addAddressToAddressBook(shipment.shippingAddress);
                         }
 
                         let subproAddress = AddressHelper.getSubproAddress(shippingAddress, customerProfile),
@@ -242,7 +242,7 @@ function start() {
                             subproShippingAddressID = shippingResponse.result.address.id;
                             AddressHelper.setSubproAddressID(shippingAddress, subproShippingAddressID);
                         } else {
-                            logError(shippingResponse, 'findCreateAddress');
+                            logError(shippingResponse, "findCreateAddress");
                             continue;
                         }
 
@@ -256,21 +256,21 @@ function start() {
                         let orderCreationDate = order.getCreationDate();
 
                         let subscription = {
-                            'customer_id': customerSubproID,
-                            'payment_profile_id': paymentProfileID,
-                            'requires_shipping': true,
-                            'shipping_address_id': subproShippingAddressID,
-                            'shipping_method_code': shipment.shippingMethodID,
-                            'product_sku': pli.productID,
-                            'qty': pli.quantityValue,
-                            'use_fixed_price': false,
-                            'interval': pli.custom.subproSubscriptionInterval,
-                            'next_order_date': dw.util.StringUtils.formatCalendar(new dw.util.Calendar(orderCreationDate), 'yyy-MM-dd'),
-                            'first_order_already_created': true,
-                            'send_customer_notification_email': true,
-                            'platform_specific_fields': {
-                                'sfcc': {
-                                    'product_options': []
+                            "customer_id": customerSubproID,
+                            "payment_profile_id": paymentProfileID,
+                            "requires_shipping": true,
+                            "shipping_address_id": subproShippingAddressID,
+                            "shipping_method_code": shipment.shippingMethodID,
+                            "product_sku": pli.productID,
+                            "qty": pli.quantityValue,
+                            "use_fixed_price": false,
+                            "interval": pli.custom.subproSubscriptionInterval,
+                            "next_order_date": dw.util.StringUtils.formatCalendar(new dw.util.Calendar(orderCreationDate), "yyy-MM-dd"),
+                            "first_order_already_created": true,
+                            "send_customer_notification_email": true,
+                            "platform_specific_fields": {
+                                "sfcc": {
+                                    "product_options": []
                                 }
                             }
                         };
@@ -281,8 +281,8 @@ function start() {
                             for (let poInc in productOptions) {
                                 let productOption = productOptions[poInc];
                                 subscription.platform_specific_fields.sfcc.product_options.push({
-                                    'id': productOption.optionID,
-                                    'value': productOption.optionValueID
+                                    "id": productOption.optionID,
+                                    "value": productOption.optionValueID
                                 });
                             }
                         } else {
@@ -302,7 +302,7 @@ function start() {
                         } else {
                             allPLIsProcessed = false;
 
-                            logError(pliResponse, 'postSubscription');
+                            logError(pliResponse, "postSubscription");
                         }
                     }
                 }
@@ -315,7 +315,7 @@ function start() {
                 order.custom.subproSubscriptionsToBeProcessed = false;
             }
         } catch (e) {
-            logError('Error processing order: ' + e);
+            logError("Error processing order: " + e);
             continue;
         }
     }
@@ -325,9 +325,9 @@ function start() {
      */
     if (errors.length) {
         Email.sendMail({
-            template: 'subpro/mail/orderprocessingerror',
-            recipient: CurrentSite.getCustomPreferenceValue('subproOrderProcessingErrorMail'),
-            subject: Resource.msg('order.processing.failureemail.subject', 'order', null),
+            template: "subpro/mail/orderprocessingerror",
+            recipient: CurrentSite.getCustomPreferenceValue("subproOrderProcessingErrorMail"),
+            subject: Resource.msg("order.processing.failureemail.subject", "order", null),
             context: {
                 Errors: errors
             }
@@ -344,14 +344,14 @@ function start() {
  */
 function logError(response, serviceName) {
     let msg = serviceName ?
-        'Error while calling service ' + serviceName + ".\nResponse: " + JSON.stringify(response) :
+        "Error while calling service " + serviceName + ".\nResponse: " + JSON.stringify(response) :
         response;
 
     Logger.error(msg);
 
     errors.push({
-        'orderNo': currentOrderNo,
-        'description': msg
+        "orderNo": currentOrderNo,
+        "description": msg
     });
 }
 

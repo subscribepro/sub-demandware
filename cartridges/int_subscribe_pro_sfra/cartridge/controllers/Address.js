@@ -1,19 +1,19 @@
-'use strict';
+"use strict";
 
-var server = require('server');
+var server = require("server");
 
-var URLUtils = require('dw/web/URLUtils');
-var Resource = require('dw/web/Resource');
-var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
-var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
-var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
-var addressHelper = require('~/cartridge/scripts/subpro/helpers/AddressHelper');
-var subproEnabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproEnabled');
+var URLUtils = require("dw/web/URLUtils");
+var Resource = require("dw/web/Resource");
+var csrfProtection = require("*/cartridge/scripts/middleware/csrf");
+var userLoggedIn = require("*/cartridge/scripts/middleware/userLoggedIn");
+var consentTracking = require("*/cartridge/scripts/middleware/consentTracking");
+var addressHelper = require("~/cartridge/scripts/subpro/helpers/AddressHelper");
+var subproEnabled = require("dw/system/Site").getCurrent().getCustomPreferenceValue("subproEnabled");
 
 var page = module.superModule;
 server.extend(page);
 
-server.append('List', userLoggedIn.validateLoggedIn, consentTracking.consent, function (req, res, next) {
+server.append("List", userLoggedIn.validateLoggedIn, consentTracking.consent, function (req, res, next) {
     if (subproEnabled) {
         let viewData = res.getViewData();
 
@@ -42,7 +42,7 @@ server.append('List', userLoggedIn.validateLoggedIn, consentTracking.consent, fu
     next();
 });
 
-server.get('SetSPAddressID', function (req, res, next) {
+server.get("SetSPAddressID", function (req, res, next) {
     var addressBook = customer.getProfile().getAddressBook();
     var address = addressBook.getAddress(req.querystring.addressId);
     addressHelper.setSubproAddressID(address, req.querystring.spAddressId);
@@ -50,13 +50,13 @@ server.get('SetSPAddressID', function (req, res, next) {
     next();
 });
 
-server.replace('SaveAddress', csrfProtection.validateAjaxRequest, function (req, res, next) {
-    var CustomerMgr = require('dw/customer/CustomerMgr');
-    var Transaction = require('dw/system/Transaction');
-    var formErrors = require('*/cartridge/scripts/formErrors');
-    var accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
+server.replace("SaveAddress", csrfProtection.validateAjaxRequest, function (req, res, next) {
+    var CustomerMgr = require("dw/customer/CustomerMgr");
+    var Transaction = require("dw/system/Transaction");
+    var formErrors = require("*/cartridge/scripts/formErrors");
+    var accountHelpers = require("*/cartridge/scripts/helpers/accountHelpers");
 
-    var addressForm = server.forms.getForm('address');
+    var addressForm = server.forms.getForm("address");
     var addressFormObj = addressForm.toObject();
     addressFormObj.addressForm = addressForm;
     var customer = CustomerMgr.getCustomerByCustomerNumber(
@@ -65,7 +65,7 @@ server.replace('SaveAddress', csrfProtection.validateAjaxRequest, function (req,
     var addressBook = customer.getProfile().getAddressBook();
     if (addressForm.valid) {
         res.setViewData(addressFormObj);
-        this.on('route:BeforeComplete', function () { // eslint-disable-line no-shadow
+        this.on("route:BeforeComplete", function () { // eslint-disable-line no-shadow
             var formInfo = res.getViewData();
             Transaction.wrap(function () {
                 var isNewAddress = !req.querystring.addressId;
@@ -84,13 +84,13 @@ server.replace('SaveAddress', csrfProtection.validateAjaxRequest, function (req,
                         address.setID(formInfo.addressId);
                     }
 
-                    address.setAddress1(formInfo.address1 || '');
-                    address.setAddress2(formInfo.address2 || '');
-                    address.setCity(formInfo.city || '');
-                    address.setFirstName(formInfo.firstName || '');
-                    address.setLastName(formInfo.lastName || '');
-                    address.setPhone(formInfo.phone || '');
-                    address.setPostalCode(formInfo.postalCode || '');
+                    address.setAddress1(formInfo.address1 || "");
+                    address.setAddress2(formInfo.address2 || "");
+                    address.setCity(formInfo.city || "");
+                    address.setFirstName(formInfo.firstName || "");
+                    address.setLastName(formInfo.lastName || "");
+                    address.setPhone(formInfo.phone || "");
+                    address.setPostalCode(formInfo.postalCode || "");
 
                     if (formInfo.states && formInfo.states.stateCode) {
                         address.setStateCode(formInfo.states.stateCode);
@@ -100,14 +100,14 @@ server.replace('SaveAddress', csrfProtection.validateAjaxRequest, function (req,
                         address.setCountryCode(formInfo.country);
                     }
 
-                    address.setJobTitle(formInfo.jobTitle || '');
-                    address.setPostBox(formInfo.postBox || '');
-                    address.setSalutation(formInfo.salutation || '');
-                    address.setSecondName(formInfo.secondName || '');
-                    address.setCompanyName(formInfo.companyName || '');
-                    address.setSuffix(formInfo.suffix || '');
-                    address.setSuite(formInfo.suite || '');
-                    address.setJobTitle(formInfo.title || '');
+                    address.setJobTitle(formInfo.jobTitle || "");
+                    address.setPostBox(formInfo.postBox || "");
+                    address.setSalutation(formInfo.salutation || "");
+                    address.setSecondName(formInfo.secondName || "");
+                    address.setCompanyName(formInfo.companyName || "");
+                    address.setSuffix(formInfo.suffix || "");
+                    address.setSuite(formInfo.suite || "");
+                    address.setJobTitle(formInfo.title || "");
 
                     // Send account edited email
                     accountHelpers.sendAccountEditedEmail(customer.profile);
@@ -129,13 +129,13 @@ server.replace('SaveAddress', csrfProtection.validateAjaxRequest, function (req,
 
                     res.json({
                         success: true,
-                        redirectUrl: URLUtils.url('Address-List').toString()
+                        redirectUrl: URLUtils.url("Address-List").toString()
                     });
                 } else {
                     formInfo.addressForm.valid = false;
                     formInfo.addressForm.addressId.valid = false;
                     formInfo.addressForm.addressId.error =
-                        Resource.msg('error.message.idalreadyexists', 'forms', null);
+                        Resource.msg("error.message.idalreadyexists", "forms", null);
                     res.json({
                         success: false,
                         fields: formErrors.getFormErrors(addressForm)
@@ -152,10 +152,10 @@ server.replace('SaveAddress', csrfProtection.validateAjaxRequest, function (req,
     return next();
 });
 
-server.replace('DeleteAddress', userLoggedIn.validateLoggedInAjax, function (req, res, next) {
-    var CustomerMgr = require('dw/customer/CustomerMgr');
-    var Transaction = require('dw/system/Transaction');
-    var accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
+server.replace("DeleteAddress", userLoggedIn.validateLoggedInAjax, function (req, res, next) {
+    var CustomerMgr = require("dw/customer/CustomerMgr");
+    var Transaction = require("dw/system/Transaction");
+    var accountHelpers = require("*/cartridge/scripts/helpers/accountHelpers");
 
     var data = res.getViewData();
     if (data && !data.loggedin) {
@@ -171,7 +171,7 @@ server.replace('DeleteAddress', userLoggedIn.validateLoggedInAjax, function (req
     var addressBook = customer.getProfile().getAddressBook();
     var address = addressBook.getAddress(addressId);
     var UUID = address.getUUID();
-    this.on('route:BeforeComplete', function () { // eslint-disable-line no-shadow
+    this.on("route:BeforeComplete", function () { // eslint-disable-line no-shadow
         var length;
         Transaction.wrap(function () {
             if (subproEnabled) {
@@ -195,12 +195,12 @@ server.replace('DeleteAddress', userLoggedIn.validateLoggedInAjax, function (req
         if (length === 0) {
             res.json({
                 UUID: UUID,
-                defaultMsg: Resource.msg('label.addressbook.defaultaddress', 'account', null),
-                message: Resource.msg('msg.no.saved.addresses', 'address', null)
+                defaultMsg: Resource.msg("label.addressbook.defaultaddress", "account", null),
+                message: Resource.msg("msg.no.saved.addresses", "address", null)
             });
         } else {
             res.json({ UUID: UUID,
-                defaultMsg: Resource.msg('label.addressbook.defaultaddress', 'account', null)
+                defaultMsg: Resource.msg("label.addressbook.defaultaddress", "account", null)
             });
         }
     });

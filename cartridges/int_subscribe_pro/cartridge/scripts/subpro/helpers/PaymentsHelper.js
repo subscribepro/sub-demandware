@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-const Transaction = require('dw/system/Transaction');
-const Logger = require('dw/system/Logger');
+const Transaction = require("dw/system/Transaction");
+const Logger = require("dw/system/Logger");
 
 /**
  * Provides an interface to handle Subscribe Pro payment objects.
@@ -26,7 +26,7 @@ let PaymentsHelper = {
         try {
             customerID = profile.custom.subproCustomerID;
         } catch (e) {
-            Logger.error('Error getting subproCustomerID', e);
+            Logger.error("Error getting subproCustomerID", e);
             return;
         }
 
@@ -37,7 +37,7 @@ let PaymentsHelper = {
             let paymentCard = dw.order.PaymentMgr.getPaymentCard(card.creditCardType);
             subProCardType = paymentCard.custom.subproCardType;
         } catch (e) {
-            Logger.error('Unable to retreieve the Subscribe Pro Card type', e);
+            Logger.error("Unable to retreieve the Subscribe Pro Card type", e);
             return;
         }
 
@@ -60,7 +60,7 @@ let PaymentsHelper = {
             returnObject.payment_profile_id = card.custom.subproPaymentProfileID;
         }
 
-        if (typeof billingAddress.getCountryCode === 'function') {
+        if (typeof billingAddress.getCountryCode === "function") {
         	returnObject.billing_address = {
                 "first_name": billingAddress.firstName,
                 "middle_name": "",
@@ -76,13 +76,13 @@ let PaymentsHelper = {
             };
         } else {
 
-        	var nameParts = card.getCreditCardHolder().split(' ');
+        	var nameParts = card.getCreditCardHolder().split(" ");
         	var lastName = nameParts.pop();
-        	var firstName = nameParts.join(' ');
+        	var firstName = nameParts.join(" ");
         	returnObject.billing_address = {
         			"first_name": firstName,
         			"last_name": lastName
-        	}
+        	};
         }
 
         return returnObject;

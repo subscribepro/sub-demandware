@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-const Transaction = require('dw/system/Transaction');
+const Transaction = require("dw/system/Transaction");
 
 /**
  * Provides an interface to handle Subscribe Pro address objects and map them to Sales Force Commerce Cloud Customer Address Object.
@@ -27,13 +27,13 @@ let AddressHelper = {
         try {
             subproCustomerID = profile.custom.subproCustomerID;
         } catch (e) {
-            require('dw/system/Logger').error('Error getting subproCustomerID', e);
+            require("dw/system/Logger").error("Error getting subproCustomerID", e);
 
             return;
         }
 
         if (!subproCustomerID || !firstName || !lastName) {
-            require('dw/system/Logger').error('Object cannot be created because one of the required parameters is missing: subproCustomerID or firstName or lastName');
+            require("dw/system/Logger").error("Object cannot be created because one of the required parameters is missing: subproCustomerID or firstName or lastName");
 
             return;
         }
@@ -62,7 +62,7 @@ let AddressHelper = {
             try {
                 payload.address_id = address.custom.subproAddressID;
             } catch (e) {
-                require('dw/system/Logger').error('No Subscribe Pro address ID found', e);
+                require("dw/system/Logger").error("No Subscribe Pro address ID found", e);
             }
         }
 
@@ -96,7 +96,7 @@ let AddressHelper = {
             address1.firstName === address2.firstName &&
             address1.lastName === address2.lastName &&
             address1.phone === address2.phone &&
-            address1.postalCode === address2.postalCode
+            address1.postalCode === address2.postalCode;
     },
 
     /**

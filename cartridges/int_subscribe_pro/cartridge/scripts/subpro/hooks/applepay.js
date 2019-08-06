@@ -2,10 +2,10 @@
  * Subscribe Pro - Apple Pay Hooks
  * https://documentation.demandware.com/DOC1/topic/com.demandware.dochelp/DWAPI/scriptapi/html/api/class_dw_extensions_applepay_ApplePayHooks.html
  */
-var Transaction = require('dw/system/Transaction');
-var OrderMgr = require('dw/order/OrderMgr');
-var ApplePayHookResult = require('dw/extensions/applepay/ApplePayHookResult');
-var Status = require('dw/system/Status');
+var Transaction = require("dw/system/Transaction");
+var OrderMgr = require("dw/order/OrderMgr");
+var ApplePayHookResult = require("dw/extensions/applepay/ApplePayHookResult");
+var Status = require("dw/system/Status");
 
 /**
  * Create Order Hook
@@ -13,7 +13,7 @@ var Status = require('dw/system/Status');
  * We use this hook to update the Order with the necessary details of the subscription. 
  */
 exports.createOrder = function (basket, event) {
-    let isSubPro = require('/int_subscribe_pro/cartridge/scripts/subpro/lib/SubscribeProLib.js').isSubPro();
+    let isSubPro = require("/int_subscribe_pro/cartridge/scripts/subpro/lib/SubscribeProLib.js").isSubPro();
     
     /**
      * If this basket has a subscription, 
@@ -26,7 +26,7 @@ exports.createOrder = function (basket, event) {
         });
     }
 
-   /**
+    /**
     * Create the order, so we can return it
     */
     var order = Transaction.wrap(function () {
@@ -37,8 +37,8 @@ exports.createOrder = function (basket, event) {
 };
 
 exports.prepareBasket = function (basket, parameters) {
-    const app = require('/app_storefront_controllers/cartridge/scripts/app');
-    let cart = app.getModel('Cart').get();
+    const app = require("/app_storefront_controllers/cartridge/scripts/app");
+    let cart = app.getModel("Cart").get();
     cart.calculate();
     
     var returnStatus = new Status(Status.OK);

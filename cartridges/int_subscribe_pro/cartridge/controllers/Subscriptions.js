@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /**
  * Controller that displays information about customer's Subscribe Pro subscriptions.
@@ -7,8 +7,8 @@
  */
 
 /* Script Modules */
-const app = require('/app_storefront_controllers/cartridge/scripts/app');
-const guard = require('/app_storefront_controllers/cartridge/scripts/guard');
+const app = require("/app_storefront_controllers/cartridge/scripts/app");
+const guard = require("/app_storefront_controllers/cartridge/scripts/guard");
 
 /**
  * Displays a list of customer Subscribe Pro subscriptions.
@@ -20,7 +20,7 @@ function list() {
         response.redirect(request.httpHeaders.referer);
     }
 
-    app.getView({}).render('subpro/account/mysubscriptions');
+    app.getView({}).render("subpro/account/mysubscriptions");
 }
 
 /*
@@ -28,4 +28,4 @@ function list() {
  */
 /** Renders a list of the Subscribe Pro subscriptions of the current customer.
  * @see module:controllers/Subscriptions~list */
-exports.List = guard.ensure(['https', 'get', 'loggedIn'], list);
+exports.List = guard.ensure(["https", "get", "loggedIn"], list);

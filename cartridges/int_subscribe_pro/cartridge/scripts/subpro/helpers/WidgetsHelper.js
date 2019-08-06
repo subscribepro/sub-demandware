@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
 /* API includes */
-const SubscribeProLib = require('~/cartridge/scripts/subpro/lib/SubscribeProLib');
+const SubscribeProLib = require("~/cartridge/scripts/subpro/lib/SubscribeProLib");
 
 /**
  * Provides an interface for configuring Subscribe Pro widgets.
@@ -53,14 +53,14 @@ let WidgetsHelper = {
 
         let widgetConfig = {
             element: widgetID,
-            apiBaseUrl: require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproApiBaseUrl'),
+            apiBaseUrl: require("dw/system/Site").getCurrent().getCustomPreferenceValue("subproApiBaseUrl"),
             apiAccessToken: session.custom.widgetAccessToken,
             environmentKey: session.custom.widgetEnvironmentKey,
             customerId: session.custom.widgetCustomerId
         };
 
         if (widgetParent) {
-            widgetConfig['addToOrderElementClass'] = widgetParent;
+            widgetConfig["addToOrderElementClass"] = widgetParent;
         }
 
         return widgetConfig;

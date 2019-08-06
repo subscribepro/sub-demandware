@@ -1,15 +1,15 @@
-'use strict';
+"use strict";
 
-var server = require('server'),
-    SubscribeProLib = require('/int_subscribe_pro_sfra/cartridge/scripts/subpro/lib/SubscribeProLib'),
-    ProductMgr = require('dw/catalog/ProductMgr'),
-    URLUtils = require('dw/web/URLUtils'),
-    BasketMgr = require('dw/order/BasketMgr'),
-    subproEnabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproEnabled');
+var server = require("server"),
+    SubscribeProLib = require("/int_subscribe_pro_sfra/cartridge/scripts/subpro/lib/SubscribeProLib"),
+    ProductMgr = require("dw/catalog/ProductMgr"),
+    URLUtils = require("dw/web/URLUtils"),
+    BasketMgr = require("dw/order/BasketMgr"),
+    subproEnabled = require("dw/system/Site").getCurrent().getCustomPreferenceValue("subproEnabled");
 
 const params = request.httpParameterMap;
 
-server.get('PDP', function (req, res, next) {
+server.get("PDP", function (req, res, next) {
     if (subproEnabled) {
         let response = SubscribeProLib.getProduct(params.sku.stringValue);
 
@@ -23,28 +23,28 @@ server.get('PDP', function (req, res, next) {
         // loaded by the product factory doesn't have all of the custom properties we need
         let product = ProductMgr.getProduct(params.sku.stringValue);
         if (params.selectedOptionMode.stringValue) {
-            spproduct['selected_option_mode'] = params.selectedOptionMode.stringValue;
+            spproduct["selected_option_mode"] = params.selectedOptionMode.stringValue;
         } else {
-            spproduct['selected_option_mode'] = (spproduct.subscription_option_mode === 'subscription_only' || spproduct.default_subscription_option === 'subscription') ? 'regular' : 'onetime';
+            spproduct["selected_option_mode"] = (spproduct.subscription_option_mode === "subscription_only" || spproduct.default_subscription_option === "subscription") ? "regular" : "onetime";
         }
 
         if (params.selectedInterval.stringValue) {
-            spproduct['selected_interval'] = params.selectedInterval.stringValue;
+            spproduct["selected_interval"] = params.selectedInterval.stringValue;
         } else {
-            spproduct['selected_interval'] = spproduct.default_interval;
+            spproduct["selected_interval"] = spproduct.default_interval;
         }
 
-        res.render('subpro/product/subprooptions', {
+        res.render("subpro/product/subprooptions", {
             subproduct: spproduct,
             sfccproduct: product,
-            subprooptionsurl: URLUtils.url('SubPro-UpdateOptions').toString(),
-            page: 'pdp'
+            subprooptionsurl: URLUtils.url("SubPro-UpdateOptions").toString(),
+            page: "pdp"
         });
     }
     next();
 });
 
-server.get('Cart', function(req, res, next) {
+server.get("Cart", function(req, res, next) {
     if (subproEnabled) {
         let basket = BasketMgr.getCurrentOrNewBasket();
         let pli = basket.getAllProductLineItems(params.sku.stringValue).pop();
@@ -66,21 +66,21 @@ server.get('Cart', function(req, res, next) {
             "subscription_option_mode": spproduct.subscription_option_mode,
             "selected_option_mode": pli.custom.subproSubscriptionSelectedOptionMode,
             "selected_interval": pli.custom.subproSubscriptionInterval,
-            "intervals": spproduct.intervals.toString().split(','),
+            "intervals": spproduct.intervals.toString().split(","),
             "is_discount_percentage": pli.custom.subproSubscriptionIsDiscountPercentage,
             "discount": pli.custom.subproSubscriptionDiscount
         };
-        res.render('subpro/product/subprooptions', {
+        res.render("subpro/product/subprooptions", {
             subproduct: productData,
             sfccproduct: sfccProduct,
-            subprooptionsurl: URLUtils.url('SubPro-UpdateOptions').toString(),
-            page: 'cart'
+            subprooptionsurl: URLUtils.url("SubPro-UpdateOptions").toString(),
+            page: "cart"
         });
     }
     next();
 });
 
-server.get('OrderSummary', function (req, res, next) {
+server.get("OrderSummary", function (req, res, next) {
     if (subproEnabled) {
         let basket = BasketMgr.getCurrentOrNewBasket();
         let pli = basket.getAllProductLineItems(params.sku.stringValue).pop();
@@ -94,17 +94,17 @@ server.get('OrderSummary', function (req, res, next) {
             "selected_interval": pli.custom.subproSubscriptionInterval
         };
 
-        res.render('subpro/cart/subprooptions', {
+        res.render("subpro/cart/subprooptions", {
             product: product,
-            page: 'order-summary'
+            page: "order-summary"
         });
     }
     next();
 });
 
-server.get('OrderConfirmation', function (req, res, next) {
+server.get("OrderConfirmation", function (req, res, next) {
     if (subproEnabled) {
-        let order = require('dw/order/OrderMgr').getOrder(params.orderNumber.stringValue),
+        let order = require("dw/order/OrderMgr").getOrder(params.orderNumber.stringValue),
             productID = params.sku.stringValue;
 
         if (!order) {
@@ -122,9 +122,9 @@ server.get('OrderConfirmation', function (req, res, next) {
                         "selected_interval": pli.custom.subproSubscriptionInterval
                     };
 
-                    res.render('subpro/cart/subprooptions', {
+                    res.render("subpro/cart/subprooptions", {
                         product: product,
-                        page: 'order-confirmation'
+                        page: "order-confirmation"
                     });
                 }
             }
@@ -133,18 +133,18 @@ server.get('OrderConfirmation', function (req, res, next) {
     next();
 });
 
-server.post('UpdateOptions', function (req, res, next) {
+server.post("UpdateOptions", function (req, res, next) {
     if (subproEnabled) {
         let basket = BasketMgr.getCurrentOrNewBasket(),
-            CartModel = require('*/cartridge/models/cart');
+            CartModel = require("*/cartridge/models/cart");
         let pli = basket.getAllProductLineItems(req.querystring.pliUUID).pop();
 
-        if (!pli || pli == 'null' || pli == 'undefined') {
-            res.json({'success': 'false', 'errorMessage': 'pli is undefined'});
+        if (!pli || pli == "null" || pli == "undefined") {
+            res.json({"success": "false", "errorMessage": "pli is undefined"});
             return next();
         }
 
-        require('dw/system/Transaction').wrap(function () {
+        require("dw/system/Transaction").wrap(function () {
             pli.custom.subproSubscriptionSelectedOptionMode = params.subscriptionMode;
             pli.custom.subproSubscriptionInterval = params.deliveryInteval;
 
@@ -159,11 +159,11 @@ server.post('UpdateOptions', function (req, res, next) {
             /**
              * Remove previous 'SubscribeProDiscount' adjustments if any
              */
-            let priceAdjustment = pli.getPriceAdjustmentByPromotionID('SubscribeProDiscount');
+            let priceAdjustment = pli.getPriceAdjustmentByPromotionID("SubscribeProDiscount");
             pli.removePriceAdjustment(priceAdjustment);
 
-            if (params.subscriptionMode.toString() === 'regular') {
-                pli.createPriceAdjustment('SubscribeProDiscount', discountToApply);
+            if (params.subscriptionMode.toString() === "regular") {
+                pli.createPriceAdjustment("SubscribeProDiscount", discountToApply);
             }
 
             /**
@@ -172,7 +172,7 @@ server.post('UpdateOptions', function (req, res, next) {
             let plis = basket.getAllProductLineItems();
             let isSubpro = false;
             for (let i in plis) {
-                isSubpro = plis[i].custom.subproSubscriptionSelectedOptionMode === 'regular' ;
+                isSubpro = plis[i].custom.subproSubscriptionSelectedOptionMode === "regular" ;
                 if (isSubpro) {
                     break;
                 }

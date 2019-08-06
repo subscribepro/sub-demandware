@@ -56,7 +56,7 @@ let SubscribeProLib = {
      */
     getConfig: function() {
         let service = SubscribeProLib.getService("subpro.http.get.config");
-        return SubscribeProLib.handleResponse(service.call())
+        return SubscribeProLib.handleResponse(service.call());
     },
 
     /**
@@ -72,7 +72,7 @@ let SubscribeProLib = {
             return {
                 error: true,
                 result: "Customer ID is required for the getSubscription method"
-            }
+            };
         }
 
         let service = SubscribeProLib.getService("subpro.http.get.subscriptions");
@@ -118,7 +118,7 @@ let SubscribeProLib = {
             return {
                 error: true,
                 result: "Address ID is required for the postUpdateAddress method"
-            }
+            };
         }
 
         let service = SubscribeProLib.getService("subpro.http.post.addresses");
@@ -151,7 +151,7 @@ let SubscribeProLib = {
             return {
                 error: true,
                 result: "Customer ID is required for the getAddresses method"
-            }
+            };
         }
 
         let service = SubscribeProLib.getService("subpro.http.get.addresses");
@@ -171,7 +171,7 @@ let SubscribeProLib = {
             return {
                 error: true,
                 result: "sku is required for the getProduct method"
-            }
+            };
         }
 
         let service = SubscribeProLib.getService("subpro.http.get.products");
@@ -191,7 +191,7 @@ let SubscribeProLib = {
             return {
                 error: true,
                 result: "customerID or customerEmail is required for the getCustomer method"
-            }
+            };
         }
 
         let service = SubscribeProLib.getService("subpro.http.get.customers");
@@ -231,7 +231,7 @@ let SubscribeProLib = {
             return {
                 error: true,
                 result: "customerID is required for the updateCustomer method"
-            }
+            };
         }
 
         let service = SubscribeProLib.getService("subpro.http.post.customers");
@@ -251,7 +251,7 @@ let SubscribeProLib = {
             return {
                 error: true,
                 result: "customerID or grantType or scope parameter is missing"
-            }
+            };
         }
 
         let service = SubscribeProLib.getService("subpro.http.get.token");
@@ -275,7 +275,7 @@ let SubscribeProLib = {
             return {
                 error: true,
                 result: "paymentprofileID or transactionID is required for the getPaymentProfile method"
-            }
+            };
         }
 
         let service = SubscribeProLib.getService("subpro.http.get.paymentprofile");
@@ -331,7 +331,7 @@ let SubscribeProLib = {
             hasCreditCard = false;
 
         for (let i = 0, count = instruments.length; i < count; i++) {
-            if (instruments[i].paymentMethod === 'CREDIT_CARD') {
+            if (instruments[i].paymentMethod === "CREDIT_CARD") {
                 hasCreditCard = true;
                 break;
             }
@@ -346,14 +346,14 @@ let SubscribeProLib = {
      * @return boolean if cart has items SubPro subscription
      */
     isSubPro: function() {
-        const app = require('/app_storefront_controllers/cartridge/scripts/app');
-        let cart = app.getModel('Cart').get(),
+        const app = require("/app_storefront_controllers/cartridge/scripts/app");
+        let cart = app.getModel("Cart").get(),
             plis = cart.getProductLineItems(),
             isSubpro = false;
 
         for (let i = 0, il = plis.length; i < il; i++) {
             try {
-                isSubpro = plis[i].custom.subproSubscriptionSelectedOptionMode === 'regular';
+                isSubpro = plis[i].custom.subproSubscriptionSelectedOptionMode === "regular";
                 if (isSubpro)
                     break;
             } catch (e) {}
@@ -372,22 +372,22 @@ let SubscribeProLib = {
      */
     setURL: function (svc, endpoint, parameters, credPrefix) {
         if (!credPrefix) {
-            credPrefix = 'subpro.http.cred.';
+            credPrefix = "subpro.http.cred.";
         }
 
         /**
     	 * Current Site, used to reference site preferences
     	 */
-    	var CurrentSite = require('dw/system/Site').getCurrent();
+    	var CurrentSite = require("dw/system/Site").getCurrent();
     
-    	svc.setCredentialID(credPrefix + CurrentSite.getCustomPreferenceValue('subproAPICredSuffix'));
+    	svc.setCredentialID(credPrefix + CurrentSite.getCustomPreferenceValue("subproAPICredSuffix"));
     
     	/**
     	 * Replace the URL parameters with the relevant values
     	 */
     	var url = svc.getURL();
-    	url = url.replace('{ENDPOINT}', endpoint);
-    	url = url.replace('{PARAMS}', parameters);
+    	url = url.replace("{ENDPOINT}", endpoint);
+    	url = url.replace("{PARAMS}", parameters);
     	
     	/**
     	 * Save the newly constructed url
