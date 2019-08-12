@@ -10,15 +10,15 @@ let Encoding = require("dw/crypto/Encoding");
 /**
  * Mock Data
  */
-let AccessTokenMockData = require("../mock_data/AccessTokenMockData");
-let ConfigMockData = require("../mock_data/ConfigMockData");
-let SubscriptionMockData = require("../mock_data/SubscriptionMockData");
-let SubscriptionsMockData = require("../mock_data/SubscriptionsMockData");
-let AddressMockData = require("../mock_data/AddressMockData");
-let AddressesMockData = require("../mock_data/AddressesMockData");
-let ProductMockData = require("../mock_data/ProductMockData");
-let CustomerMockData = require("../mock_data/CustomerMockData");
-let PaymentProfileMockData = require("../mock_data/PaymentProfileMockData");
+let AccessTokenMockData = require("~/cartridge/scripts/subpro/mock_data/AccessTokenMockData");
+let ConfigMockData = require("~/cartridge/scripts/subpro/mock_data/ConfigMockData");
+let SubscriptionMockData = require("~/cartridge/scripts/subpro/mock_data/SubscriptionMockData");
+let SubscriptionsMockData = require("~/cartridge/scripts/subpro/mock_data/SubscriptionsMockData");
+let AddressMockData = require("~/cartridge/scripts/subpro/mock_data/AddressMockData");
+let AddressesMockData = require("~/cartridge/scripts/subpro/mock_data/AddressesMockData");
+let ProductMockData = require("~/cartridge/scripts/subpro/mock_data/ProductMockData");
+let CustomerMockData = require("~/cartridge/scripts/subpro/mock_data/CustomerMockData");
+let PaymentProfileMockData = require("~/cartridge/scripts/subpro/mock_data/PaymentProfileMockData");
 let SubscribeProLib = require("~/cartridge/scripts/subpro/lib/SubscribeProLib");
 
 /**
