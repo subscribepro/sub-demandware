@@ -1,8 +1,8 @@
 "use strict";
 
-var processInclude = require("../../../../../../../storefront-reference-architecture/cartridges/app_storefront_base/cartridge/client/default/js/util");
+var processInclude = require("base/util");
 
 $(document).ready(function () {
     processInclude(require("./subscriptionOptions"));
-    processInclude(require("../../../../../../../storefront-reference-architecture/cartridges/app_storefront_base/cartridge/client/default/js/cart/cart"));
+    processInclude(require("base/cart/cart"));
 });

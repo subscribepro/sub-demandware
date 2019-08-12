@@ -1,6 +1,6 @@
 "use strict";
 
-var formValidation = require("../../../../../../../../storefront-reference-architecture/cartridges/app_storefront_base/cartridge/client/default/js/components/formValidation");
+var formValidation = require("base/components/formValidation");
 
 var url;
 var isDefault;
