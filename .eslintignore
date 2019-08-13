@@ -1,0 +1,5 @@
+cartridges/int_subscribe_pro_sfra/cartridge/static/
+Documentation/
+Metadata/
+webpack.config.js
+package.json
