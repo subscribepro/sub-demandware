@@ -1,7 +1,9 @@
-"use strict";
+'use strict';
 
-var processInclude = require("base/util");
+/* eslint no-undef: 0 */
+
+var processInclude = require('base/util');
 
 $(document).ready(function () {
-    processInclude(require("./spPaymentInstruments/spPaymentInstruments"));
+    processInclude(require('./spPaymentInstruments/spPaymentInstruments'));
 });

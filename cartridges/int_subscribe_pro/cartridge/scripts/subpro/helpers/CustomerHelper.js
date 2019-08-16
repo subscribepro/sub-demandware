@@ -1,27 +1,26 @@
-"use strict";
+'use strict';
 
-const Transaction = require("dw/system/Transaction");
-const Logger = require("dw/system/Logger");
+var Transaction = require('dw/system/Transaction');
+var Logger = require('dw/system/Logger');
 
 /**
  * Provides an interface to handle Subscribe Pro customer objects and map them to Sales Force Commerce Cloud Customer Object.
  */
-let CustomerHelper = {
+var CustomerHelper = {
 
     /**
      * Take a Sales Force Commerce Cloud Customer Object as a parameter and map any relevant data to Subscribe Pro
      *
      * @param {dw.customer.Customer} customer Sales Force Commerce Cloud Customer Object.
-     *
-     * @return Object an object containing relevant customer fields
+     * @return {Object} an object containing relevant customer fields
      */
-    getSubproCustomer: function(customer) {
-        const profile = customer.getProfile();
+    getSubproCustomer: function (customer) {
+        var profile = customer.getProfile();
 
         return {
-            "email": profile.getEmail(),
-            "first_name": profile.getFirstName(),
-            "last_name": profile.getLastName()
+            email      : profile.getEmail(),
+            first_name : profile.getFirstName(),
+            last_name  : profile.getLastName()
         };
     },
 
@@ -29,11 +28,11 @@ let CustomerHelper = {
      * Save Subscribe Pro id to Customer Profile
      *
      * @param {dw.customer.Profile} profile Sales Force Commerce Cloud Customer Profile
-     * @param {String} subproCustomerID Subscribe Pro Customer ID
+     * @param {string} subproCustomerID Subscribe Pro Customer ID
      */
-    setSubproCustomerID: function(profile, subproCustomerID) {
+    setSubproCustomerID: function (profile, subproCustomerID) {
         try {
-            Transaction.wrap(function() {
+            Transaction.wrap(function () {
                 profile.custom.subproCustomerID = subproCustomerID;
             });
         } catch (e) {

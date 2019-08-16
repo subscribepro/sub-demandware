@@ -1,4 +1,4 @@
-importPackage(dw.svc);
+var ServiceRegistry = require('dw/svc/ServiceRegistry');
 
 /**
  * SubscribeProLib
@@ -8,11 +8,13 @@ importPackage(dw.svc);
  * should be a added as a method in this object. Methods should be prefixed with the
  * relevant HTTP method (get / post)
  */
-let SubscribeProLib = {
+var SubscribeProLib = {
     /**
      * Get a Web Service instance for the specified service name
+     * @param {string} serviceName Name of the service to get
+     * @returns {Object} Service
      */
-    getService: function(serviceName) {
+    getService: function (serviceName) {
         return ServiceRegistry.get(serviceName);
     },
 
@@ -21,12 +23,12 @@ let SubscribeProLib = {
      * This method can be used to handle any API responses in a similar fashion.
      * If there is not a result.object but an error message is present, we assume
      * this is an error state and return a relevant response object, noting as such
+     * @param {Object} result The result of a request
+     * @returns {Object} Handled response
      */
-    handleResponse: function(result) {
-        let returnObject, hasError;
-
+    handleResponse: function (result) {
         if (!result.object && result.errorMessage) {
-            let jsonObject;
+            var jsonObject;
 
             try {
                 jsonObject = JSON.parse(result.errorMessage);
@@ -35,27 +37,24 @@ let SubscribeProLib = {
             }
 
             return {
-                error: true,
-                result: jsonObject
-            };
-        } else {
-            return {
-                error: false,
-                result: result.object
+                error  : true,
+                result : jsonObject
             };
         }
-
-        return {};
+        return {
+            error  : false,
+            result : result.object
+        };
     },
 
     /**
      * Request the config object for this applications Subscribe Pro Account
      * API Endpoint: GET /services/v2/config
      *
-     * @return Object an object containing if this service returned an error and the results of the API request
+     * @returns {Object} an object containing if this service returned an error and the results of the API request
      */
-    getConfig: function() {
-        let service = SubscribeProLib.getService("subpro.http.get.config");
+    getConfig: function () {
+        var service = SubscribeProLib.getService('subpro.http.get.config');
         return SubscribeProLib.handleResponse(service.call());
     },
 
@@ -65,19 +64,20 @@ let SubscribeProLib = {
      *
      * API Endpoint: GET /services/v2/subscriptions
      *
-     * @return Object an object containing whether or not this service returned an error and the results of the API request
+     * @param {string} customerID Customer ID whose subscriptions to get
+     * @returns {Object} an object containing whether or not this service returned an error and the results of the API request
      */
-    getSubscription: function(customerID) {
+    getSubscription: function (customerID) {
         if (!customerID) {
             return {
-                error: true,
-                result: "Customer ID is required for the getSubscription method"
+                error  : true,
+                result : 'Customer ID is required for the getSubscription method'
             };
         }
 
-        let service = SubscribeProLib.getService("subpro.http.get.subscriptions");
+        var service = SubscribeProLib.getService('subpro.http.get.subscriptions');
 
-        return SubscribeProLib.handleResponse(service.call({customer_id: customerID}));
+        return SubscribeProLib.handleResponse(service.call({ customer_id: customerID }));
     },
 
     /**
@@ -85,12 +85,13 @@ let SubscribeProLib = {
      *
      * API Endpoint: POST /services/v2/subscription.{_format}
      *
-     * @return Object an object containing whether or not this service returned an error and the results of the API request
+     * @param {Object} subscription The subscription data
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
-    postSubscription: function(subscription) {
-        let service = SubscribeProLib.getService("subpro.http.post.subscription");
+    postSubscription: function (subscription) {
+        var service = SubscribeProLib.getService('subpro.http.post.subscription');
 
-        return SubscribeProLib.handleResponse(service.call({subscription: subscription}));
+        return SubscribeProLib.handleResponse(service.call({ subscription: subscription }));
     },
 
     /**
@@ -98,12 +99,13 @@ let SubscribeProLib = {
      *
      * API Endpoint: POST /services/v2/address.{_format}
      *
-     * @return Object an object containing whether or not this service returned an error and the results of the API request
+     * @param {Object} address The address to create
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
-    postCreateAddress: function(address) {
-        let service = SubscribeProLib.getService("subpro.http.post.addresses");
+    postCreateAddress: function (address) {
+        var service = SubscribeProLib.getService('subpro.http.post.addresses');
 
-        return SubscribeProLib.handleResponse(service.call({address: address}));
+        return SubscribeProLib.handleResponse(service.call({ address: address }));
     },
 
     /**
@@ -111,19 +113,21 @@ let SubscribeProLib = {
      *
      * API Endpoint: GET /services/v2/addresses/{id}
      *
-     * @return Object an object containing whether or not this service returned an error and the results of the API request
+     * @param {int} addressID The ID of the address to update
+     * @param {Object} address The new address data
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
-    postUpdateAddress: function(addressID, address) {
+    postUpdateAddress: function (addressID, address) {
         if (!addressID) {
             return {
-                error: true,
-                result: "Address ID is required for the postUpdateAddress method"
+                error  : true,
+                result : 'Address ID is required for the postUpdateAddress method'
             };
         }
 
-        let service = SubscribeProLib.getService("subpro.http.post.addresses");
+        var service = SubscribeProLib.getService('subpro.http.post.addresses');
 
-        return SubscribeProLib.handleResponse(service.call({address_id: addressID, address: address}));
+        return SubscribeProLib.handleResponse(service.call({ address_id: addressID, address: address }));
     },
 
     /**
@@ -131,11 +135,12 @@ let SubscribeProLib = {
      *
      * API Endpoint: POST /services/v2/address/find-or-create.{_format}
      *
-     * @return Object an object containing whether or not this service returned an error and the results of the API request
+     * @param {Object} address The address to find or create
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
-    findCreateAddress: function(address) {
-        let service = SubscribeProLib.getService("subpro.http.post.addressfindcreate");
-        return SubscribeProLib.handleResponse(service.call({address: address}));
+    findCreateAddress: function (address) {
+        var service = SubscribeProLib.getService('subpro.http.post.addressfindcreate');
+        return SubscribeProLib.handleResponse(service.call({ address: address }));
     },
 
     /**
@@ -144,19 +149,20 @@ let SubscribeProLib = {
      *
      * API Endpoint: GET /services/v2/addresses
      *
-     * @return Object an object containing whether or not this service returned an error and the results of the API request
+     * @param {int} customerID The ID of the customer whose addresses should be fetched
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
-    getAddresses: function(customerID) {
+    getAddresses: function (customerID) {
         if (!customerID) {
             return {
-                error: true,
-                result: "Customer ID is required for the getAddresses method"
+                error  : true,
+                result : 'Customer ID is required for the getAddresses method'
             };
         }
 
-        let service = SubscribeProLib.getService("subpro.http.get.addresses");
+        var service = SubscribeProLib.getService('subpro.http.get.addresses');
 
-        return SubscribeProLib.handleResponse(service.call({customer_id: customerID}));
+        return SubscribeProLib.handleResponse(service.call({ customer_id: customerID }));
     },
 
     /**
@@ -164,19 +170,20 @@ let SubscribeProLib = {
      *
      * API Endpoint: GET /services/v2/products.{_format}
      *
-     * @return Object an object containing whether or not this service returned an error and the results of the API request
+     * @param {string} sku The SKU of the product to get
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
-    getProduct: function(sku) {
+    getProduct: function (sku) {
         if (!sku) {
             return {
-                error: true,
-                result: "sku is required for the getProduct method"
+                error  : true,
+                result : 'sku is required for the getProduct method'
             };
         }
 
-        let service = SubscribeProLib.getService("subpro.http.get.products");
+        var service = SubscribeProLib.getService('subpro.http.get.products');
 
-        return SubscribeProLib.handleResponse(service.call({sku: sku}));
+        return SubscribeProLib.handleResponse(service.call({ sku: sku }));
     },
 
     /**
@@ -184,23 +191,25 @@ let SubscribeProLib = {
      *
      * API Endpoint: GET /services/v2/customers/{id}.{_format}
      *
-     * @return Object an object containing whether or not this service returned an error and the results of the API request
+     * @param {int} customerID ID of the customer to get
+     * @param {string} customerEmail Email address of the customer to get
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
-    getCustomer: function(customerID, customerEmail) {
+    getCustomer: function (customerID, customerEmail) {
         if (!customerID && !customerEmail) {
             return {
-                error: true,
-                result: "customerID or customerEmail is required for the getCustomer method"
+                error  : true,
+                result : 'customerID or customerEmail is required for the getCustomer method'
             };
         }
 
-        let service = SubscribeProLib.getService("subpro.http.get.customers");
-        let params = {};
+        var service = SubscribeProLib.getService('subpro.http.get.customers');
+        var params = {};
 
-        if (customerID){
-            params = {customer_id: customerID};
+        if (customerID) {
+            params = { customer_id: customerID };
         } else if (customerEmail) {
-            params = {email: customerEmail};
+            params = { email: customerEmail };
         }
 
         return SubscribeProLib.handleResponse(service.call(params));
@@ -211,12 +220,13 @@ let SubscribeProLib = {
      *
      * API Endpoint: POST /services/v2/customer.{_format}
      *
-     * @return Object an object containing whether or not this service returned an error and the results of the API request
+     * @param {Object} customer The customer data to create
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
-    createCustomer: function(customer) {
-        let service = SubscribeProLib.getService("subpro.http.post.customer");
+    createCustomer: function (customer) {
+        var service = SubscribeProLib.getService('subpro.http.post.customer');
 
-        return SubscribeProLib.handleResponse(service.call({customer: customer}));
+        return SubscribeProLib.handleResponse(service.call({ customer: customer }));
     },
 
     /**
@@ -224,19 +234,21 @@ let SubscribeProLib = {
      *
      * API Endpoint: POST /services/v2/customers/{id}.{_format}
      *
-     * @return Object an object containing whether or not this service returned an error and the results of the API request
+     * @param {int} customerID The ID of the customer to update
+     * @param {Object} customer The new customer data
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
-    updateCustomer: function(customerID, customer) {
+    updateCustomer: function (customerID, customer) {
         if (!customerID) {
             return {
-                error: true,
-                result: "customerID is required for the updateCustomer method"
+                error  : true,
+                result : 'customerID is required for the updateCustomer method'
             };
         }
 
-        let service = SubscribeProLib.getService("subpro.http.post.customers");
+        var service = SubscribeProLib.getService('subpro.http.post.customers');
 
-        return SubscribeProLib.handleResponse(service.call({customer_id: customerID, customer: customer}));
+        return SubscribeProLib.handleResponse(service.call({ customer_id: customerID, customer: customer }));
     },
 
     /**
@@ -244,22 +256,25 @@ let SubscribeProLib = {
      *
      * API Endpoint: GET|POST /oauth/v2/token
      *
-     * @return Object an object containing whether or not this service returned an error and the results of the API request
+     * @param {int} customerID The ID of the customer for whom a token should be requested
+     * @param {string} grantType The request Grant Type
+     * @param {string} scope The request Scope
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
-    getToken: function(customerID, grantType, scope) {
+    getToken: function (customerID, grantType, scope) {
         if (!customerID || !grantType || !scope) {
             return {
-                error: true,
-                result: "customerID or grantType or scope parameter is missing"
+                error  : true,
+                result : 'customerID or grantType or scope parameter is missing'
             };
         }
 
-        let service = SubscribeProLib.getService("subpro.http.get.token");
+        var service = SubscribeProLib.getService('subpro.http.get.token');
 
         return SubscribeProLib.handleResponse(service.call({
-            customer_id: customerID,
-            grant_type: grantType,
-            scope: scope
+            customer_id : customerID,
+            grant_type  : grantType,
+            scope       : scope
         }));
     },
 
@@ -268,23 +283,25 @@ let SubscribeProLib = {
      *
      * API Endpoint: GET /services/v1/vault/paymentprofiles/{id}.{_format}
      *
-     * @return Object an object containing whether or not this service returned an error and the results of the API request
+     * @param {int} paymentProfileID The ID of the payment profile to get
+     * @param {int} transactionID The ID of the transaction to use to get a payment profile
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
-    getPaymentProfile: function(paymentProfileID, transactionID) {
+    getPaymentProfile: function (paymentProfileID, transactionID) {
         if (!paymentProfileID && !transactionID) {
             return {
-                error: true,
-                result: "paymentprofileID or transactionID is required for the getPaymentProfile method"
+                error  : true,
+                result : 'paymentprofileID or transactionID is required for the getPaymentProfile method'
             };
         }
 
-        let service = SubscribeProLib.getService("subpro.http.get.paymentprofile");
-        let params = {};
+        var service = SubscribeProLib.getService('subpro.http.get.paymentprofile');
+        var params = {};
 
         if (paymentProfileID) {
-            params = {paymentprofile_id: paymentProfileID};
+            params = { paymentprofile_id: paymentProfileID };
         } else if (transactionID) {
-            params = {transaction_id: transactionID};
+            params = { transaction_id: transactionID };
         }
 
         return SubscribeProLib.handleResponse(service.call(params));
@@ -295,23 +312,22 @@ let SubscribeProLib = {
      *
      * API Endpoint: POST /services/v2/vault/paymentprofile/external-vault.{_format}
      *
-     * @return Object an object containing whether or not this service returned an error and the results of the API request
+     * @param {Object} paymentProfile The data to use to create a payment profile
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
-    createPaymentProfile: function(paymentProfile) {
-        let service = SubscribeProLib.getService("subpro.http.post.paymentprofile.vault");
-        var requestData = service.getRequestData();
+    createPaymentProfile: function (paymentProfile) {
+        var service = SubscribeProLib.getService('subpro.http.post.paymentprofile.vault');
 
-        var returnObj = SubscribeProLib.handleResponse(service.call({paymentProfile: paymentProfile}));
-
-        return returnObj;
+        return SubscribeProLib.handleResponse(service.call({ paymentProfile: paymentProfile }));
     },
 
     /**
      * Check if customer is registered. This is necessary to proceed to checkout with SubPro subscription
      *
-     * @return boolean if customer is registered
+     * @returns {boolean} True customer is registered; otherwise, files
      */
-    isCheckoutPermitted: function() {
+    isCheckoutPermitted: function () {
+        /* global customer */
         return customer.authenticated && customer.registered;
     },
 
@@ -320,18 +336,18 @@ let SubscribeProLib = {
      *
      * @param {module:models/CartModel~CartModel} cart - A CartModel wrapping the current Basket.
      *
-     * @return boolean if cart has at least one credit card payment method
+     * @returns {boolean} True if cart has at least one credit card payment method; otherwise, false
      */
-    hasCreditCard: function(cart) {
+    hasCreditCard: function (cart) {
         if (!cart) {
             return false;
         }
 
-        let instruments = cart.object.paymentInstruments,
-            hasCreditCard = false;
+        var instruments = cart.object.paymentInstruments;
+        var hasCreditCard = false;
 
-        for (let i = 0, count = instruments.length; i < count; i++) {
-            if (instruments[i].paymentMethod === "CREDIT_CARD") {
+        for (var i = 0, count = instruments.length; i < count; i + 1) {
+            if (instruments[i].paymentMethod === 'CREDIT_CARD') {
                 hasCreditCard = true;
                 break;
             }
@@ -343,24 +359,25 @@ let SubscribeProLib = {
     /**
      * Check if cart has Product Line Items with SubPro subscription
      *
-     * @return boolean if cart has items SubPro subscription
+     * @returns {boolean} True if cart has items SubPro subscription; otherwise, false
      */
-    isSubPro: function() {
-        let BasketMgr = require("dw/order/BasketMgr"),
-            basket = BasketMgr.getCurrentOrNewBasket(),
-            plis = basket.getAllProductLineItems(),
-            isSubpro = false;
+    isSubPro: function () {
+        var BasketMgr = require('dw/order/BasketMgr');
+        var basket = BasketMgr.getCurrentOrNewBasket();
+        var plis = basket.getAllProductLineItems();
+        var isSubpro = false;
 
         if (!plis) {
             return false;
         }
 
-        for (let i = 0, il = plis.length; i < il; i++) {
+        for (var i = 0, il = plis.length; i < il; i + 1) {
             try {
-                isSubpro = plis[i].custom.subproSubscriptionSelectedOptionMode === "regular";
-                if (isSubpro)
-                    break;
-            } catch (e) {}
+                isSubpro = plis[i].custom.subproSubscriptionSelectedOptionMode === 'regular';
+                if (isSubpro) break;
+            } catch (e) {
+                break;
+            }
         }
 
         return !!isSubpro;
@@ -370,28 +387,25 @@ let SubscribeProLib = {
      * Update the URL Parameter of the Service to include the
      * specified endpoint and any supplied parameters
      *
-     * @param svc : HTTPService HTTP Service to update URL on
-     * @param endpoint : String API Endpoint to call on the service
-     * @param parameters : String GET URL parameters to append to the URL
+     * @param {HTTPService} svc HTTP Service to update URL on
+     * @param {string} endpoint API Endpoint to call on the service
+     * @param {string} parameters GET URL parameters to append to the URL
+     * @param {string} credPrefix Prefix for credential ID
      */
     setURL: function (svc, endpoint, parameters, credPrefix) {
-        if (!credPrefix) {
-            credPrefix = "subpro.http.cred.";
-        }
-
         /**
          * Current Site, used to reference site preferences
          */
-        var CurrentSite = require("dw/system/Site").getCurrent();
+        var CurrentSite = require('dw/system/Site').getCurrent();
 
-        svc.setCredentialID(credPrefix + CurrentSite.getCustomPreferenceValue("subproAPICredSuffix"));
+        svc.setCredentialID((credPrefix || 'subpro.http.cred.') + CurrentSite.getCustomPreferenceValue('subproAPICredSuffix'));
 
         /**
          * Replace the URL parameters with the relevant values
          */
         var url = svc.getURL();
-        url = url.replace("{ENDPOINT}", endpoint);
-        url = url.replace("{PARAMS}", parameters);
+        url = url.replace('{ENDPOINT}', endpoint);
+        url = url.replace('{PARAMS}', parameters);
 
         /**
          * Save the newly constructed url
