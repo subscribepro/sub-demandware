@@ -1,7 +1,5 @@
 <iscontent type="text/html" charset="UTF-8" compact="true" />
 
-<iscache type="relative" hour="24" />
-
 <isset name="product" value="${pdict.product}" scope="page" />
 <isif condition="${product.selected_option_mode != 'onetime'}">
     <div class="subpro-options ${pdict.page}">
