@@ -25,7 +25,7 @@ var Resource = require('dw/web/Resource');
 /**
  * SFRA Email Helper
  */
-var Email = require('/app_storefront_base/cartridge/scripts/helpers/emailHelpers');
+var Email = require('*/cartridge/scripts/helpers/emailHelpers');
 
 /**
  * Main Subscribe Pro Library,
