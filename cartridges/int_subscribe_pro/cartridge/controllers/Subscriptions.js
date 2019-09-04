@@ -7,8 +7,8 @@
  */
 
 /* Script Modules */
-const app = require('/app_storefront_controllers/cartridge/scripts/app');
-const guard = require('/app_storefront_controllers/cartridge/scripts/guard');
+var app = require('/app_storefront_controllers/cartridge/scripts/app');
+var guard = require('/app_storefront_controllers/cartridge/scripts/guard');
 
 /**
  * Displays a list of customer Subscribe Pro subscriptions.

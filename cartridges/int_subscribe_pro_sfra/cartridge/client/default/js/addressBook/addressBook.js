@@ -1,6 +1,8 @@
 'use strict';
 
-var formValidation = require('../../../../../../../../storefront-reference-architecture/cartridges/app_storefront_base/cartridge/client/default/js/components/formValidation');
+/* eslint no-undef: 0 */
+
+var formValidation = require('base/components/formValidation');
 
 var url;
 var isDefault;
@@ -10,11 +12,11 @@ var isDefault;
  * @param {Object} message - Error message to display
  */
 function createErrorNotification(message) {
-    var errorHtml = '<div class="alert alert-danger alert-dismissible valid-cart-error ' +
-        'fade show" role="alert">' +
-        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
-        '<span aria-hidden="true">&times;</span>' +
-        '</button>' + message + '</div>';
+    var errorHtml = '<div class="alert alert-danger alert-dismissible valid-cart-error '
+        + 'fade show" role="alert">'
+        + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'
+        + '<span aria-hidden="true">&times;</span>'
+        + '</button>' + message + '</div>';
 
     $('.error-messaging').append(errorHtml);
 }
@@ -41,10 +43,10 @@ module.exports = {
         $('.delete-confirmation-btn').click(function (e) {
             e.preventDefault();
             $.ajax({
-                url: url,
-                type: 'get',
-                dataType: 'json',
-                success: function (data) {
+                url      : url,
+                type     : 'get',
+                dataType : 'json',
+                success  : function (data) {
                     $('#uuid-' + data.UUID).remove();
                     if (isDefault) {
                         var addressId = $('.card .address-heading').first().text();
@@ -53,9 +55,9 @@ module.exports = {
                         $('.card .card-make-default-link').first().remove();
                         $('.remove-address').data('default', true);
                         if (data.message) {
-                            var toInsert = '<div><h3>' +
-                                data.message +
-                                '</h3><div>';
+                            var toInsert = '<div><h3>'
+                                + data.message
+                                + '</h3><div>';
                             $('.addressList').after(toInsert);
                         }
                     }
@@ -81,16 +83,16 @@ module.exports = {
             $form.spinner().start();
             $('form.address-form').trigger('address:submit', e);
             $.ajax({
-                url: url,
-                type: 'post',
-                dataType: 'json',
-                data: $form.serialize(),
-                success: function (data) {
+                url      : url,
+                type     : 'post',
+                dataType : 'json',
+                data     : $form.serialize(),
+                success  : function (data) {
                     $form.spinner().stop();
                     if (!data.success) {
                         formValidation($form, data);
                     } else {
-                        location.href = data.redirectUrl;
+                        window.location.href = data.redirectUrl;
                     }
                 },
                 error: function (err) {

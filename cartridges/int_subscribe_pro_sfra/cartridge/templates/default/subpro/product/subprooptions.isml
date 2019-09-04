@@ -1,8 +1,6 @@
 <isif condition="${pdict.sfccproduct.custom.subproSubscriptionEnabled}">
     <iscontent type="text/html" charset="UTF-8" compact="true" />
 
-    <iscache type="relative" hour="24" />
-
     <isset name="product" value="${pdict.subproduct}" scope="page" />
     <isset name="currencySymbol" value="${dw.util.Currency.getCurrency(session.currency).getSymbol()}" scope="page" />
     <isset name="discount" value="${product.is_discount_percentage ? product.discount * 100 + '%' : currencySymbol + product.discount}" scope="page" />

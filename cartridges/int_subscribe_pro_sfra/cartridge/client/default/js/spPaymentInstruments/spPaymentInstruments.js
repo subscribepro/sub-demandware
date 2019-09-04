@@ -1,6 +1,6 @@
 'use strict';
 
-var url;
+/* eslint no-undef: 0 */
 
 module.exports = {
     afterRemovePayment: function () {

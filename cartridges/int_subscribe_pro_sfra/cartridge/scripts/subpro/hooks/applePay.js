@@ -7,13 +7,18 @@ var OrderMgr = require('dw/order/OrderMgr');
 var ApplePayHookResult = require('dw/extensions/applepay/ApplePayHookResult');
 var Status = require('dw/system/Status');
 
+/* eslint no-unused-vars: "off" */
+
 /**
  * Create Order Hook
  * "Called after handling the given ApplePayPaymentAuthorizedEvent for the given basket."
  * We use this hook to update the Order with the necessary details of the subscription.
+ * @param {Basket} basket The Basket object
+ * @param {Event} event The Event object
+ * @return {Order} The created Order object
  */
 exports.createOrder = function (basket, event) {
-    let isSubPro = require('~/cartridge/scripts/subpro/lib/SubscribeProLib.js').isSubPro();
+    var isSubPro = require('~/cartridge/scripts/subpro/lib/SubscribeProLib.js').isSubPro();
 
     /**
      * If this basket has a subscription,
@@ -26,7 +31,7 @@ exports.createOrder = function (basket, event) {
         });
     }
 
-   /**
+    /**
     * Create the order, so we can return it
     */
     var order = Transaction.wrap(function () {
@@ -37,13 +42,13 @@ exports.createOrder = function (basket, event) {
 };
 
 exports.prepareBasket = function (basket, parameters) {
-    const app = require('/app_storefront_controllers/cartridge/scripts/app');
-    let cart = app.getModel('Cart').get();
+    var app = require('/app_storefront_controllers/cartridge/scripts/app');
+    var cart = app.getModel('Cart').get();
     cart.calculate();
 
     var returnStatus = new Status(Status.OK);
     var applePayHookResult = new ApplePayHookResult(returnStatus, null);
-    applePayHookResult.setEvent("foobar");
+    applePayHookResult.setEvent('foobar');
 
     return applePayHookResult;
 };

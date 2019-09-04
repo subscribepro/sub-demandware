@@ -1,6 +1,8 @@
 'use strict';
 
-var processInclude = require('../../../../../../../storefront-reference-architecture/cartridges/app_storefront_base/cartridge/client/default/js/util');
+/* eslint no-undef: 0 */
+
+var processInclude = require('base/util');
 
 $(document).ready(function () {
     processInclude(require('./spPaymentInstruments/spPaymentInstruments'));
