@@ -12,7 +12,7 @@ var customerMockData = require('../../../../../mocks/scripts/CustomerMockData');
 
 describe('customerHelpers', function () {
     it('getSubproCustomer should return an object in the format of a Subscribe Pro customer', function () {
-        assert.deepEqual(customerHelper.getSubproCustomer(customerMockData.sfccCustomer), customerMockData.spCustomer)
+        assert.deepEqual(customerHelper.getSubproCustomer(customerMockData.sfccCustomer), customerMockData.spCustomer);
     });
 
     it('findOrCreate customer should load and return a customer object in the SP customer format', function () {

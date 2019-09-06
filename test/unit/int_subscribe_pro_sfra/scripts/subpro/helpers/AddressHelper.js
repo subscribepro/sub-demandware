@@ -10,7 +10,7 @@ var addressHelperMockData = require('../../../../../mocks/scripts/AddressMockDat
 
 describe('addressHelpers', function () {
     it('getSubproAddress should return an address object in the format of a Subscribe Pro address', function () {
-        assert.deepEqual(addressHelper.getSubproAddress(addressHelperMockData.sfccAddress, addressHelperMockData.sfccProfile, true, false), addressHelperMockData.spAddress)
+        assert.deepEqual(addressHelper.getSubproAddress(addressHelperMockData.sfccAddress, addressHelperMockData.sfccProfile, true, false), addressHelperMockData.spAddress);
     });
 
     it('compareAddresses should return true if two addresses are the same', function () {

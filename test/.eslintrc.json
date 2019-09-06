@@ -8,5 +8,8 @@
         "quote-props": "off",
         "no-new": "off",
         "valid-jsdoc": "off"
+    },
+    "globals": {
+        "require": "readonly"
     }
 }
