@@ -23,9 +23,9 @@ var Logger = require('dw/system/Logger');
 var Resource = require('dw/web/Resource');
 
 /**
- * SFRA Email Helper
+ * Current Site, used to reference site preferences
  */
-var Email = require('*/cartridge/scripts/helpers/emailHelpers');
+var CurrentSite = require('dw/system/Site').getCurrent();
 
 /**
  * Main Subscribe Pro Library,
@@ -39,11 +39,6 @@ var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/SubscribeProLib');
 var AddressHelper = require('~/cartridge/scripts/subpro/helpers/AddressHelper');
 var CustomerHelper = require('~/cartridge/scripts/subpro/helpers/CustomerHelper');
 var PaymentsHelper = require('~/cartridge/scripts/subpro/helpers/PaymentsHelper');
-
-/**
- * Current Site, used to reference site preferences
- */
-var CurrentSite = require('dw/system/Site').getCurrent();
 
 /**
  * List of Errors
@@ -289,12 +284,21 @@ function start() {
      * If there were any errors, send an email to the preference email
      */
     if (errors.length) {
-        Email.sendEmail({
+        var hooksHelper = require('*/cartridge/scripts/helpers/hooks');
+        hooksHelper('app.customer.email', 'sendEmail', [{
             to      : CurrentSite.getCustomPreferenceValue('subproOrderProcessingErrorMail'),
             from    : CurrentSite.getCustomPreferenceValue('subproOrderProcessingErrorMail'),
             subject : Resource.msg('order.processing.failureemail.subject', 'order', null)
         }, 'subpro/mail/orderprocessingerror', {
             Errors: errors
+        }], function (object, template, context) {
+            var Mail = require('dw/net/Mail');
+            var mail = new Mail();
+            mail.addTo(object.to);
+            mail.setSubject(object.subject);
+            mail.setFrom(object.from);
+            mail.setContent(require('*/cartridge/scripts/renderTemplateHelper').getRenderedHtml(context, template), 'text/html', 'UTF-8');
+            mail.send();
         });
     }
 }
