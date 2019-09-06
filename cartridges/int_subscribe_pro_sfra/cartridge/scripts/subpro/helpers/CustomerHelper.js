@@ -20,10 +20,10 @@ var CustomerHelper = {
         var profile = customer.getProfile();
 
         return {
-            email                         : profile.getEmail(),
-            first_name                    : profile.getFirstName(),
-            last_name                     : profile.getLastName(),
-            platform_specific_customer_id : profile.getCustomerNo()
+            email                         : profile.email,
+            first_name                    : profile.firstName,
+            last_name                     : profile.lastName,
+            platform_specific_customer_id : profile.customerNo
         };
     },
 

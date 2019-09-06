@@ -22,8 +22,8 @@ var AddressHelper = {
         }
 
         var subproCustomerID;
-        var firstName = profile.getFirstName();
-        var lastName = profile.getLastName();
+        var firstName = profile.firstName;
+        var lastName = profile.lastName;
 
         try {
             subproCustomerID = profile.custom.subproCustomerID;
@@ -44,14 +44,14 @@ var AddressHelper = {
             first_name  : firstName,
             middle_name : '',
             last_name   : lastName,
-            company     : address.getCompanyName() || '',
-            street1     : address.getAddress1() || '',
-            street2     : address.getAddress2() || '',
-            city        : address.getCity() || '',
-            region      : address.getStateCode() || '',
-            postcode    : address.getPostalCode() || '',
-            country     : (address.getCountryCode() ? address.getCountryCode().toString().toUpperCase() : ''),
-            phone       : address.getPhone() || ''
+            company     : address.companyName || '',
+            street1     : address.address1 || '',
+            street2     : address.address2 || '',
+            city        : address.city || '',
+            region      : address.stateCode || '',
+            postcode    : address.postalCode || '',
+            country     : (address.countryCode ? address.countryCode.toString().toUpperCase() : ''),
+            phone       : address.phone || ''
         };
 
         if (includeDefaults) {
@@ -91,6 +91,9 @@ var AddressHelper = {
      * @returns {boolean} if two given addresses are equal
      */
     compareAddresses: function (address1, address2) {
+        if (address1 == {} || address2 == {}) {
+            return false;
+        }
         return address1.address1 === address2.address1
             && address1.address2 === address2.address2
             && address1.city === address2.city
@@ -103,15 +106,14 @@ var AddressHelper = {
     /**
      * Get customer address which is equal to specified
      *
-     * @param {dw.customer.CustomerAddress} addressBook Sales Force Commerce Cloud Customer Address Object
+     * @param {Array} addresses Sales Force Commerce Cloud Customer Address Object
      * @param {dw.customer.CustomerAddress} address Sales Force Commerce Cloud Customer Address Object
      *
      * @returns {dw.customer.CustomerAddress | null} found address or null
      */
-    getCustomerAddress: function (addressBook, address) {
-        var addresses = addressBook.addresses.iterator();
-        while (addresses.hasNext()) {
-            var currentAddress = addresses.next();
+    getCustomerAddress: function (addresses, address) {
+        for (var i in addresses) {
+            var currentAddress = addresses[i];
             var areEqual = this.compareAddresses(currentAddress, address);
 
             if (areEqual) {

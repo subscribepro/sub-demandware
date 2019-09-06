@@ -145,7 +145,7 @@ function start() {
             var paymentProfileID = PaymentsHelper.findOrCreatePaymentProfile(
                 order.paymentInstrument,
                 PaymentsHelper.getCustomerPaymentInstrument(
-                    customerProfile.wallet.paymentInstruments,
+                    customerProfile.wallet.paymentInstruments.toArray(),
                     order.paymentInstrument
                 ),
                 customer.profile,
@@ -176,7 +176,8 @@ function start() {
                          * Validate / Create shipping addresses using the customers saved address and
                          * the Find / Create Subscribe Pro API
                          */
-                        var shippingAddress = AddressHelper.getCustomerAddress(customer.addressBook, shipment.shippingAddress);
+                        var customerAddressBook = customer.addressBook;
+                        var shippingAddress = AddressHelper.getCustomerAddress(customerAddressBook.toArray(), shipment.shippingAddress);
 
                         if (!shippingAddress) {
                             var profile = order.customer.getProfile();

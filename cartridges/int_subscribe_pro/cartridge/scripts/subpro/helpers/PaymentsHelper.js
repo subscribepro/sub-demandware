@@ -43,14 +43,13 @@ var PaymentsHelper = {
         }
 
         var returnObject = {
-            customer_id             : customerID,
-            payment_token           : card.UUID,
-            creditcard_type         : subProCardType,
-            creditcard_first_digits : card.custom.subproCCPrefix,
-            creditcard_last_digits  : card.creditCardNumberLastDigits,
-            creditcard_month        : card.creditCardExpirationMonth,
-            creditcard_year         : card.creditCardExpirationYear,
-            vault_specific_fields   : {
+            customer_id            : customerID,
+            payment_token          : card.UUID,
+            creditcard_type        : subProCardType,
+            creditcard_last_digits : card.creditCardNumberLastDigits,
+            creditcard_month       : card.creditCardExpirationMonth,
+            creditcard_year        : card.creditCardExpirationYear,
+            vault_specific_fields  : {
                 sfcc: {
                     payment_instrument_id: card.UUID
                 }
