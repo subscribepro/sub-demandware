@@ -50,17 +50,30 @@ var WidgetsHelper = {
             this.getAccessToken(customerID, grantType, scope);
         }
 
-
-        var widgetConfig = {
-            element        : widgetID,
-            apiBaseUrl     : require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproApiBaseUrl'),
-            apiAccessToken : session.custom.widgetAccessToken,
-            environmentKey : session.custom.widgetEnvironmentKey,
-            customerId     : session.custom.widgetCustomerId
+        //
+        // My Subscriptions Widget Configuration
+        //
+        let originalWidgetConfig = {
+            element: widgetID,
+            apiBaseUrl: require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproApiBaseUrl'),
+            apiAccessToken: session.custom.widgetAccessToken,
+            environmentKey: session.custom.widgetEnvironmentKey,
+            customerId: session.custom.widgetCustomerId
         };
 
+        let customWidgetConfig = JSON.parse(require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproSubscriptionsWidgetConfig'));
+
+        let widgetConfig = {};
+        for (let key in customWidgetConfig) {
+            widgetConfig[key] = customWidgetConfig[key];
+        }
+
+        for (let key in originalWidgetConfig) {
+            widgetConfig[key] = originalWidgetConfig[key];
+        }
+
         if (widgetParent) {
-            widgetConfig.addToOrderElementClass = widgetParent;
+            widgetConfig['addToOrderElementClass'] = widgetParent;
         }
 
         return widgetConfig;
