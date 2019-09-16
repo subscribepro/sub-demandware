@@ -7,10 +7,10 @@ var PaymentMgr = require('../../../../../mocks/dw/order/PaymentMgr');
 var OrderPaymentInstrument = require('../../../../../mocks/dw/order/OrderPaymentInstrument');
 var OrderAddress = require('../../../../../mocks/dw/order/OrderAddress');
 var paymentsHelper = proxyquire('../../../../../../cartridges/int_subscribe_pro_sfra/cartridge/scripts/subpro/helpers/PaymentsHelper', {
-    'dw/system/Logger'                               : loggerMock,
-    'dw/system/Transaction'                          : transactionMock,
-    'dw/order/PaymentMgr'                            : PaymentMgr,
-    '~/cartridge/scripts/subpro/lib/SubscribeProLib' : subscribeProLibMock
+    'dw/system/Logger': loggerMock,
+    'dw/system/Transaction': transactionMock,
+    'dw/order/PaymentMgr': PaymentMgr,
+    '~/cartridge/scripts/subpro/lib/SubscribeProLib': subscribeProLibMock
 });
 var paymentsMockData = require('../../../../../mocks/scripts/PaymentProfileMockData');
 var customerMockData = require('../../../../../mocks/scripts/CustomerMockData');
@@ -36,11 +36,11 @@ describe('paymentsHelper', function () {
     it('comparePaymentInstruments should return true if both payment instruments are the same, otherwise false', function () {
         assert.isTrue(paymentsHelper.comparePaymentInstruments(paymentsMockData.sfccPaymentInstrument, paymentsMockData.sfccPaymentInstrument));
         assert.isFalse(paymentsHelper.comparePaymentInstruments(paymentsMockData.sfccPaymentInstrument, {
-            paymentMethod             : 'CREDIT_CARD',
-            creditCardNumber          : '4111111111111116',
-            creditCardHolder          : 'Mock Data',
-            creditCardExpirationYear  : '2026',
-            creditCardExpirationMonth : '05'
+            paymentMethod: 'CREDIT_CARD',
+            creditCardNumber: '4111111111111116',
+            creditCardHolder: 'Mock Data',
+            creditCardExpirationYear: '2026',
+            creditCardExpirationMonth: '05'
         }));
     });
 

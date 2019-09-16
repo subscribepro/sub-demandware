@@ -43,13 +43,13 @@ var PaymentsHelper = {
         }
 
         var returnObject = {
-            customer_id            : customerID,
-            payment_token          : card.UUID,
-            creditcard_type        : subProCardType,
-            creditcard_last_digits : card.creditCardNumberLastDigits,
-            creditcard_month       : card.creditCardExpirationMonth,
-            creditcard_year        : card.creditCardExpirationYear,
-            vault_specific_fields  : {
+            customer_id: customerID,
+            payment_token: card.UUID,
+            creditcard_type: subProCardType,
+            creditcard_last_digits: card.creditCardNumberLastDigits,
+            creditcard_month: card.creditCardExpirationMonth,
+            creditcard_year: card.creditCardExpirationYear,
+            vault_specific_fields: {
                 sfcc: {
                     payment_instrument_id: card.UUID
                 }
@@ -62,25 +62,25 @@ var PaymentsHelper = {
 
         if (typeof billingAddress.getCountryCode === 'function') {
             returnObject.billing_address = {
-                first_name  : billingAddress.firstName,
-                middle_name : '',
-                last_name   : billingAddress.lastName,
-                company     : billingAddress.companyName || '',
-                street1     : billingAddress.address1,
-                street2     : billingAddress.address2 || '',
-                city        : billingAddress.city,
-                region      : billingAddress.stateCode,
-                postcode    : billingAddress.postalCode,
-                country     : (billingAddress.getCountryCode() ? billingAddress.getCountryCode().toString().toUpperCase() : ''),
-                phone       : billingAddress.phone || ''
+                first_name: billingAddress.firstName,
+                middle_name: '',
+                last_name: billingAddress.lastName,
+                company: billingAddress.companyName || '',
+                street1: billingAddress.address1,
+                street2: billingAddress.address2 || '',
+                city: billingAddress.city,
+                region: billingAddress.stateCode,
+                postcode: billingAddress.postalCode,
+                country: (billingAddress.getCountryCode() ? billingAddress.getCountryCode().toString().toUpperCase() : ''),
+                phone: billingAddress.phone || ''
             };
         } else {
             var nameParts = card.getCreditCardHolder().split(' ');
             var lastName = nameParts.pop();
             var firstName = nameParts.join(' ');
             returnObject.billing_address = {
-                first_name : firstName,
-                last_name  : lastName
+                first_name: firstName,
+                last_name: lastName
             };
         }
 

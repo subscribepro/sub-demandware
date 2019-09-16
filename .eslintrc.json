@@ -1,6 +1,6 @@
 {
     "root": true,
-    "extends": "eslint-config-commercecloud",
+    "extends": "airbnb-base/legacy",
     "rules": {
         "import/no-unresolved": "off",
         "indent": ["error", 4, { "SwitchCase": 1, "VariableDeclarator": 1 }],
@@ -8,13 +8,40 @@
         "require-jsdoc": "error",
         "valid-jsdoc": ["error", { "preferType": { "Boolean": "boolean", "Number": "number", "object": "Object", "String": "string" }, "requireReturn": false}],
         "vars-on-top": "off",
+        "no-undef": "off",
         "global-require": "off",
         "no-shadow": ["error", { "allow": ["err", "callback"]}],
         "max-len": "off",
-        "no-underscore-dangle": "off",
-        "linebreak-style": 0
+        "eqeqeq": "off",
+        "consistent-return": "off",
+        "no-plusplus": "off",
+        "no-unused-vars": "off",
+        "no-param-reassign": "off",
+        "no-empty": "off",
+        "no-restricted-syntax": [
+            0,
+            "ForInStatement",
+            "ForOfStatement",
+            "LabeledStatement",
+            "WithStatement"
+        ],
+        "dot-notation": [
+            "error",
+            {
+                "allowKeywords": true
+            }
+        ],
+        "no-unused-expressions": [
+            0,
+            {
+                "allowShortCircuit": false,
+                "allowTernary": false
+            }
+        ],
+        "radix": 0,
+        "no-prototype-builtins": 0,
+        "guard-for-in": 0,
+        "no-unreachable": "error"
     },
-    "env": {
-        "jquery": true
-    }
+    "plugins": ["sitegenesis"]
 }

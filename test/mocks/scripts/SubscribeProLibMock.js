@@ -10,8 +10,8 @@ var SubscribeProLib = {
     },
     createCustomer: function (customer) {
         return {
-            error  : false,
-            result : {
+            error: false,
+            result: {
                 customer: {
                     id: customerMockData.spCustomerWithId.id
                 }
@@ -20,8 +20,8 @@ var SubscribeProLib = {
     },
     getPaymentProfile: function (paymentProfile) {
         return {
-            error  : false,
-            result : {
+            error: false,
+            result: {
                 payment_profile: {
                     id: paymentsMockData.spPaymentProfile.payment_profile_id
                 }
@@ -30,8 +30,8 @@ var SubscribeProLib = {
     },
     createPaymentProfile: function () {
         return {
-            error  : false,
-            result : {
+            error: false,
+            result: {
                 payment_profile: {
                     id: paymentsMockData.spPaymentProfile.payment_profile_id
                 }
@@ -40,11 +40,11 @@ var SubscribeProLib = {
     },
     getToken: function (customerID, grantType, scope) {
         return {
-            error  : false,
-            result : {
-                access_token             : 'abcde12345',
-                spreedly_environment_key : 'DUMMY_KEY',
-                customer_id              : customerID
+            error: false,
+            result: {
+                access_token: 'abcde12345',
+                spreedly_environment_key: 'DUMMY_KEY',
+                customer_id: customerID
             }
         };
     }

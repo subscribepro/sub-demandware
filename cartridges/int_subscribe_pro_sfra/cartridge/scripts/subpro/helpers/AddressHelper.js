@@ -40,18 +40,18 @@ var AddressHelper = {
         }
 
         var payload = {
-            customer_id : subproCustomerID,
-            first_name  : firstName,
-            middle_name : '',
-            last_name   : lastName,
-            company     : address.companyName || '',
-            street1     : address.address1 || '',
-            street2     : address.address2 || '',
-            city        : address.city || '',
-            region      : address.stateCode || '',
-            postcode    : address.postalCode || '',
-            country     : (address.countryCode ? address.countryCode.toString().toUpperCase() : ''),
-            phone       : address.phone || ''
+            customer_id: subproCustomerID,
+            first_name: firstName,
+            middle_name: '',
+            last_name: lastName,
+            company: address.companyName || '',
+            street1: address.address1 || '',
+            street2: address.address2 || '',
+            city: address.city || '',
+            region: address.stateCode || '',
+            postcode: address.postalCode || '',
+            country: (address.countryCode ? address.countryCode.toString().toUpperCase() : ''),
+            phone: address.phone || ''
         };
 
         if (includeDefaults) {

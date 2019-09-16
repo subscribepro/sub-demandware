@@ -4,9 +4,9 @@ var loggerMock = require('../../../../../mocks/dw/system/Logger');
 var transactionMock = require('../../../../../mocks/dw/system/Transaction');
 var subscribeProLibMock = require('../../../../../mocks/scripts/SubscribeProLibMock');
 var customerHelper = proxyquire('../../../../../../cartridges/int_subscribe_pro_sfra/cartridge/scripts/subpro/helpers/CustomerHelper', {
-    '~/cartridge/scripts/subpro/lib/SubscribeProLib' : subscribeProLibMock,
-    'dw/system/Logger'                               : loggerMock,
-    'dw/system/Transaction'                          : transactionMock
+    '~/cartridge/scripts/subpro/lib/SubscribeProLib': subscribeProLibMock,
+    'dw/system/Logger': loggerMock,
+    'dw/system/Transaction': transactionMock
 });
 var customerMockData = require('../../../../../mocks/scripts/CustomerMockData');
 

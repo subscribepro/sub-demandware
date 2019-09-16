@@ -37,13 +37,13 @@ var SubscribeProLib = {
             }
 
             return {
-                error  : true,
-                result : jsonObject
+                error: true,
+                result: jsonObject
             };
         }
         return {
-            error  : false,
-            result : result.object
+            error: false,
+            result: result.object
         };
     },
 
@@ -70,8 +70,8 @@ var SubscribeProLib = {
     getSubscription: function (customerID) {
         if (!customerID) {
             return {
-                error  : true,
-                result : 'Customer ID is required for the getSubscription method'
+                error: true,
+                result: 'Customer ID is required for the getSubscription method'
             };
         }
 
@@ -120,8 +120,8 @@ var SubscribeProLib = {
     postUpdateAddress: function (addressID, address) {
         if (!addressID) {
             return {
-                error  : true,
-                result : 'Address ID is required for the postUpdateAddress method'
+                error: true,
+                result: 'Address ID is required for the postUpdateAddress method'
             };
         }
 
@@ -155,8 +155,8 @@ var SubscribeProLib = {
     getAddresses: function (customerID) {
         if (!customerID) {
             return {
-                error  : true,
-                result : 'Customer ID is required for the getAddresses method'
+                error: true,
+                result: 'Customer ID is required for the getAddresses method'
             };
         }
 
@@ -176,8 +176,8 @@ var SubscribeProLib = {
     getProduct: function (sku) {
         if (!sku) {
             return {
-                error  : true,
-                result : 'sku is required for the getProduct method'
+                error: true,
+                result: 'sku is required for the getProduct method'
             };
         }
 
@@ -198,8 +198,8 @@ var SubscribeProLib = {
     getCustomer: function (customerID, customerEmail) {
         if (!customerID && !customerEmail) {
             return {
-                error  : true,
-                result : 'customerID or customerEmail is required for the getCustomer method'
+                error: true,
+                result: 'customerID or customerEmail is required for the getCustomer method'
             };
         }
 
@@ -241,8 +241,8 @@ var SubscribeProLib = {
     updateCustomer: function (customerID, customer) {
         if (!customerID) {
             return {
-                error  : true,
-                result : 'customerID is required for the updateCustomer method'
+                error: true,
+                result: 'customerID is required for the updateCustomer method'
             };
         }
 
@@ -264,17 +264,17 @@ var SubscribeProLib = {
     getToken: function (customerID, grantType, scope) {
         if (!customerID || !grantType || !scope) {
             return {
-                error  : true,
-                result : 'customerID or grantType or scope parameter is missing'
+                error: true,
+                result: 'customerID or grantType or scope parameter is missing'
             };
         }
 
         var service = SubscribeProLib.getService('subpro.http.get.token');
 
         return SubscribeProLib.handleResponse(service.call({
-            customer_id : customerID,
-            grant_type  : grantType,
-            scope       : scope
+            customer_id: customerID,
+            grant_type: grantType,
+            scope: scope
         }));
     },
 
@@ -290,8 +290,8 @@ var SubscribeProLib = {
     getPaymentProfile: function (paymentProfileID, transactionID) {
         if (!paymentProfileID && !transactionID) {
             return {
-                error  : true,
-                result : 'paymentprofileID or transactionID is required for the getPaymentProfile method'
+                error: true,
+                result: 'paymentprofileID or transactionID is required for the getPaymentProfile method'
             };
         }
 

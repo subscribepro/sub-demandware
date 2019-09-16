@@ -76,8 +76,8 @@ function logError(response, serviceName) {
     Logger.error(msg);
 
     errors.push({
-        orderNo     : currentOrderNo,
-        description : msg
+        orderNo: currentOrderNo,
+        description: msg
     });
 }
 
@@ -325,19 +325,19 @@ function start() {
                         var orderCreationDate = order.getCreationDate();
 
                         var subscription = {
-                            customer_id                      : customerSubproID,
-                            payment_profile_id               : paymentProfileID,
-                            requires_shipping                : true,
-                            shipping_address_id              : subproShippingAddressID,
-                            shipping_method_code             : shipment.shippingMethodID,
-                            product_sku                      : pli.productID,
-                            qty                              : pli.quantityValue,
-                            use_fixed_price                  : false,
-                            interval                         : pli.custom.subproSubscriptionInterval,
-                            next_order_date                  : dw.util.StringUtils.formatCalendar(new dw.util.Calendar(orderCreationDate), 'yyy-MM-dd'),
-                            first_order_already_created      : true,
-                            send_customer_notification_email : true,
-                            platform_specific_fields         : {
+                            customer_id: customerSubproID,
+                            payment_profile_id: paymentProfileID,
+                            requires_shipping: true,
+                            shipping_address_id: subproShippingAddressID,
+                            shipping_method_code: shipment.shippingMethodID,
+                            product_sku: pli.productID,
+                            qty: pli.quantityValue,
+                            use_fixed_price: false,
+                            interval: pli.custom.subproSubscriptionInterval,
+                            next_order_date: dw.util.StringUtils.formatCalendar(new dw.util.Calendar(orderCreationDate), 'yyy-MM-dd'),
+                            first_order_already_created: true,
+                            send_customer_notification_email: true,
+                            platform_specific_fields: {
                                 sfcc: {
                                     product_options: []
                                 }
@@ -350,8 +350,8 @@ function start() {
                             for (var poInc in productOptions) {
                                 var productOption = productOptions[poInc];
                                 subscription.platform_specific_fields.sfcc.product_options.push({
-                                    id    : productOption.optionID,
-                                    value : productOption.optionValueID
+                                    id: productOption.optionID,
+                                    value: productOption.optionValueID
                                 });
                             }
                         } else {
@@ -394,10 +394,10 @@ function start() {
      */
     if (errors.length) {
         Email.sendMail({
-            template  : 'subpro/mail/orderprocessingerror',
-            recipient : CurrentSite.getCustomPreferenceValue('subproOrderProcessingErrorMail'),
-            subject   : Resource.msg('order.processing.failureemail.subject', 'order', null),
-            context   : {
+            template: 'subpro/mail/orderprocessingerror',
+            recipient: CurrentSite.getCustomPreferenceValue('subproOrderProcessingErrorMail'),
+            subject: Resource.msg('order.processing.failureemail.subject', 'order', null),
+            context: {
                 Errors: errors
             }
         });

@@ -4,7 +4,7 @@ var PaymentMgr = {
             custom: {
                 subproCardType: 'visa'
             }
-        }
+        };
     }
 };
 

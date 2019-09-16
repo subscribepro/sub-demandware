@@ -75,12 +75,12 @@ function verifyCard(card, form) {
  */
 function getDetailsObject(paymentForm) {
     return {
-        name            : paymentForm.cardOwner.value,
-        cardNumber      : paymentForm.cardNumber.value,
-        cardType        : paymentForm.cardType.value,
-        expirationMonth : paymentForm.expirationMonth.value,
-        expirationYear  : paymentForm.expirationYear.value,
-        paymentForm     : paymentForm
+        name: paymentForm.cardOwner.value,
+        cardNumber: paymentForm.cardNumber.value,
+        cardType: paymentForm.cardType.value,
+        expirationMonth: paymentForm.expirationMonth.value,
+        expirationYear: paymentForm.expirationYear.value,
+        paymentForm: paymentForm
     };
 }
 
@@ -183,8 +183,8 @@ server.replace('SavePayment', csrfProtection.validateAjaxRequest, function (req,
                 paymentInstrument.setCreditCardToken(token);
 
                 session.custom.newCard = {
-                    sp   : paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, paymentInstrument, {}, false),
-                    sfcc : paymentInstrument
+                    sp: paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, paymentInstrument, {}, false),
+                    sfcc: paymentInstrument
                 };
             });
 
@@ -192,14 +192,14 @@ server.replace('SavePayment', csrfProtection.validateAjaxRequest, function (req,
             accountHelpers.sendAccountEditedEmail(customer.profile);
 
             res.json({
-                success     : true,
-                redirectUrl : URLUtils.url('PaymentInstruments-List').toString()
+                success: true,
+                redirectUrl: URLUtils.url('PaymentInstruments-List').toString()
             });
         });
     } else {
         res.json({
-            success : false,
-            fields  : formErrors.getFormErrors(paymentForm)
+            success: false,
+            fields: formErrors.getFormErrors(paymentForm)
         });
     }
     return next();
@@ -234,8 +234,8 @@ server.replace('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req
 
         Transaction.wrap(function () {
             session.custom.deletedCard = {
-                sp   : paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, payment.raw, {}, true),
-                sfcc : payment
+                sp: paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, payment.raw, {}, true),
+                sfcc: payment
             };
             wallet.removePaymentInstrument(payment.raw);
         });
@@ -245,8 +245,8 @@ server.replace('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req
 
         if (wallet.getPaymentInstruments().length === 0) {
             res.json({
-                UUID    : UUID,
-                message : Resource.msg('msg.no.saved.payments', 'payment', null)
+                UUID: UUID,
+                message: Resource.msg('msg.no.saved.payments', 'payment', null)
             });
         } else {
             res.json({ UUID: UUID });

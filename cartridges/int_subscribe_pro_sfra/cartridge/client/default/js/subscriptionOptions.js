@@ -19,15 +19,15 @@ function toggleDeliveryIntervalDropdown(event, $deliveryInterval) {
  * @return {string} The serialized parameters
  */
 function serializeURLParams(obj, prefix) {
-    var str = [],
-        p;
+    var str = [];
+    var p;
     for (p in obj) {
         if (obj.hasOwnProperty(p)) {
-            var k = prefix ? prefix + '[' + p + ']' : p,
-                v = obj[p];
-            str.push((v !== null && typeof v === 'object') ?
-                serialize(v, k) :
-                encodeURIComponent(k) + '=' + encodeURIComponent(v));
+            var k = prefix ? prefix + '[' + p + ']' : p;
+            var v = obj[p];
+            str.push((v !== null && typeof v === 'object')
+                ? serialize(v, k)
+                : encodeURIComponent(k) + '=' + encodeURIComponent(v));
         }
     }
     return str.join('&');
@@ -85,8 +85,8 @@ var subscriptionOptions = {
     },
 
     getOptionsState: function (target, page) {
-        var parent,
-            pliUUID;
+        var parent;
+        var pliUUID;
 
         if (page !== 'pdp' && page !== 'cart') {
             return;
@@ -100,11 +100,11 @@ var subscriptionOptions = {
         }
 
         return {
-            pliUUID              : pliUUID,
-            subscriptionMode     : parent.find('input[name^=subproSubscriptionOptionMode]:checked').val(),
-            deliveryInteval      : parent.find('#delivery-interval').val(),
-            discount             : parent.find('input[name=subproSubscriptionDiscount]').val(),
-            isDiscountPercentage : parent.find('input[name=subproSubscriptionIsDiscountPercentage]').val()
+            pliUUID: pliUUID,
+            subscriptionMode: parent.find('input[name^=subproSubscriptionOptionMode]:checked').val(),
+            deliveryInteval: parent.find('#delivery-interval').val(),
+            discount: parent.find('input[name=subproSubscriptionDiscount]').val(),
+            isDiscountPercentage: parent.find('input[name=subproSubscriptionIsDiscountPercentage]').val()
         };
     },
 
@@ -143,11 +143,11 @@ function ajaxUpdateOptions(target, page) {
     var data = subscriptionOptions.getOptionsState(target, page);
     var queryString = serializeURLParams(data);
     $.ajax({
-        type        : 'POST',
-        cache       : false,
-        contentType : 'application/json',
-        url         : $('input[name=subproSubscriptionOptionsUrl]').val() + '?' + queryString,
-        success     : function () {
+        type: 'POST',
+        cache: false,
+        contentType: 'application/json',
+        url: $('input[name=subproSubscriptionOptionsUrl]').val() + '?' + queryString,
+        success: function () {
             if (page == 'cart') {
                 window.location.reload(true);
             }

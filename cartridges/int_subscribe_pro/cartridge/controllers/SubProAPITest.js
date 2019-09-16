@@ -35,8 +35,8 @@ exports.Subscriptions = function () {
      */
     if (!httpParameters || !httpParameters.containsKey('customer_id')) {
         r.renderJSON({
-            error : true,
-            msg   : 'The subscriptions API request requires a customer_id URL parameter to be set'
+            error: true,
+            msg: 'The subscriptions API request requires a customer_id URL parameter to be set'
         });
 
         return;
@@ -59,18 +59,18 @@ exports.Subscriptions.public = true;
  */
 exports.CreateSubscription = function () {
     var subscription = {
-        customer_id        : '761431',
-        payment_profile_id : 1041328,
-        requires_shipping  : true,
-        shipping_address   : {
-            first_name : 'Test',
-            last_name  : 'User'
+        customer_id: '761431',
+        payment_profile_id: 1041328,
+        requires_shipping: true,
+        shipping_address: {
+            first_name: 'Test',
+            last_name: 'User'
         },
-        product_sku     : 'test-product',
-        qty             : 1,
-        use_fixed_price : false,
-        interval        : 'Every 2 Months',
-        next_order_date : '2017-04-23'
+        product_sku: 'test-product',
+        qty: 1,
+        use_fixed_price: false,
+        interval: 'Every 2 Months',
+        next_order_date: '2017-04-23'
     };
 
     var result = SubscribeProLib.postSubscription(subscription);
@@ -95,8 +95,8 @@ exports.Addresses = function () {
      */
     if (!httpParameters || !httpParameters.containsKey('address_id')) {
         r.renderJSON({
-            error : true,
-            msg   : 'The addresses API request requires a address_id URL parameter to be set'
+            error: true,
+            msg: 'The addresses API request requires a address_id URL parameter to be set'
         });
 
         return;
@@ -105,16 +105,16 @@ exports.Addresses = function () {
     var addressID = httpParameters.get('address_id').pop();
 
     var address = {
-        first_name  : 'Foo',
-        middle_name : '',
-        last_name   : 'Date: ' + new Date().toISOString(),
-        street1     : '123 Main Street',
-        street2     : 'Apt 1F',
-        city        : 'Baltimore',
-        region      : 'MD',
-        postcode    : '22222',
-        country     : 'United States',
-        phone       : '1234567890'
+        first_name: 'Foo',
+        middle_name: '',
+        last_name: 'Date: ' + new Date().toISOString(),
+        street1: '123 Main Street',
+        street2: 'Apt 1F',
+        city: 'Baltimore',
+        region: 'MD',
+        postcode: '22222',
+        country: 'United States',
+        phone: '1234567890'
     };
 
     var result = SubscribeProLib.postUpdateAddress(addressID, address);
@@ -133,17 +133,17 @@ exports.Addresses.public = true;
  */
 exports.CreateAddress = function () {
     var address = {
-        customer_id : '761431',
-        first_name  : 'Foo',
-        middle_name : '',
-        last_name   : 'Date: ' + new Date().toISOString(),
-        street1     : '123 Main Street',
-        street2     : 'Apt 1F',
-        city        : 'Baltimore',
-        region      : 'MD',
-        postcode    : '22222',
-        country     : 'United States',
-        phone       : '1234567890'
+        customer_id: '761431',
+        first_name: 'Foo',
+        middle_name: '',
+        last_name: 'Date: ' + new Date().toISOString(),
+        street1: '123 Main Street',
+        street2: 'Apt 1F',
+        city: 'Baltimore',
+        region: 'MD',
+        postcode: '22222',
+        country: 'United States',
+        phone: '1234567890'
     };
 
     var result = SubscribeProLib.postCreateAddress(address);
@@ -162,16 +162,16 @@ exports.CreateAddress.public = true;
  */
 exports.FindCreateAddress = function () {
     var address = {
-        customer_id : 761431,
-        first_name  : 'Foo',
-        last_name   : 'Date: ' + new Date().toISOString(),
-        street1     : '123 Main Street',
-        street2     : 'Apt 1F',
-        city        : 'Baltimore',
-        region      : 'MD',
-        postcode    : '22222',
-        country     : 'United States',
-        phone       : '1234567890'
+        customer_id: 761431,
+        first_name: 'Foo',
+        last_name: 'Date: ' + new Date().toISOString(),
+        street1: '123 Main Street',
+        street2: 'Apt 1F',
+        city: 'Baltimore',
+        region: 'MD',
+        postcode: '22222',
+        country: 'United States',
+        phone: '1234567890'
     };
 
     var result = SubscribeProLib.findCreateAddress(address);
@@ -196,8 +196,8 @@ exports.GetAddresses = function () {
      */
     if (!httpParameters || !httpParameters.containsKey('customer_id')) {
         r.renderJSON({
-            error : true,
-            msg   : 'The addresses API request requires a customer_id URL parameter to be set'
+            error: true,
+            msg: 'The addresses API request requires a customer_id URL parameter to be set'
         });
 
         return;
@@ -226,8 +226,8 @@ exports.Products = function () {
      */
     if (!httpParameters || !httpParameters.containsKey('sku')) {
         r.renderJSON({
-            error : true,
-            msg   : 'The product API request requires a sku URL parameter to be set'
+            error: true,
+            msg: 'The product API request requires a sku URL parameter to be set'
         });
 
         return;
@@ -256,8 +256,8 @@ exports.Customers = function () {
      */
     if (!httpParameters || (!httpParameters.containsKey('customer_id') && !httpParameters.containsKey('email'))) {
         r.renderJSON({
-            error : true,
-            msg   : 'The customers API request requires a customer_id or email URL parameter to be set'
+            error: true,
+            msg: 'The customers API request requires a customer_id or email URL parameter to be set'
         });
 
         return;
@@ -290,11 +290,11 @@ exports.Customers.public = true;
  */
 exports.Customer = function () {
     var customer = {
-        email               : 'test@mail.com',
-        first_name          : 'Name',
-        last_name           : 'Surname',
-        middle_name         : 'mid',
-        magento_customer_id : 1
+        email: 'test@mail.com',
+        first_name: 'Name',
+        last_name: 'Surname',
+        middle_name: 'mid',
+        magento_customer_id: 1
     };
 
     var result = SubscribeProLib.createCustomer(customer);
@@ -320,19 +320,19 @@ exports.UpdateCustomer = function () {
      */
     if (!httpParameters || !httpParameters.containsKey('customer_id')) {
         r.renderJSON({
-            error : true,
-            msg   : 'The customers API request requires a customer_id URL parameter to be set'
+            error: true,
+            msg: 'The customers API request requires a customer_id URL parameter to be set'
         });
 
         return;
     }
 
     var customer = {
-        email               : 'test@mail.com',
-        first_name          : 'Name',
-        last_name           : 'Surname',
-        middle_name         : 'mid',
-        magento_customer_id : 1
+        email: 'test@mail.com',
+        first_name: 'Name',
+        last_name: 'Surname',
+        middle_name: 'mid',
+        magento_customer_id: 1
     };
 
     var customerID = httpParameters.get('customer_id').pop();
@@ -361,8 +361,8 @@ exports.GetTokenWidget = function () {
         || !httpParameters.containsKey('grant_type')
         || !httpParameters.containsKey('scope')) {
         r.renderJSON({
-            error : true,
-            msg   : 'The customers API request requires a customer_id, grant_type and scope URL parameters to be set'
+            error: true,
+            msg: 'The customers API request requires a customer_id, grant_type and scope URL parameters to be set'
         });
 
         return;
@@ -393,8 +393,8 @@ exports.GetPaymentProfile = function () {
      */
     if (!httpParameters || (!httpParameters.containsKey('paymentprofile_id') && !httpParameters.containsKey('transaction_id'))) {
         r.renderJSON({
-            error : true,
-            msg   : 'The paymentprofiles API request requires a paymentprofile_id URL parameter to be set'
+            error: true,
+            msg: 'The paymentprofiles API request requires a paymentprofile_id URL parameter to be set'
         });
 
         return;
@@ -427,31 +427,31 @@ exports.GetPaymentProfile.public = true;
  */
 exports.SavePaymentProfile = function () {
     var paymentProfile = {
-        customer_id             : '348323',
-        payment_token           : 'ABCD-UNIQUE-PAY-TOKEN',
-        creditcard_type         : 'visa',
-        creditcard_first_digits : '41111',
-        creditcard_last_digits  : '1111',
-        creditcard_month        : '3',
-        creditcard_year         : '2025',
-        vault_specific_fields   : {
+        customer_id: '348323',
+        payment_token: 'ABCD-UNIQUE-PAY-TOKEN',
+        creditcard_type: 'visa',
+        creditcard_first_digits: '41111',
+        creditcard_last_digits: '1111',
+        creditcard_month: '3',
+        creditcard_year: '2025',
+        vault_specific_fields: {
             sfcc: {
-                payment_instrument_id : '12341234123',
-                my_other_field        : 'stuff'
+                payment_instrument_id: '12341234123',
+                my_other_field: 'stuff'
             }
         },
         billing_address: {
-            first_name  : 'Bob',
-            middle_name : 'A',
-            last_name   : 'Jones',
-            company     : 'Bobs Emporium',
-            street1     : '123 Here St',
-            street2     : 'Apt B',
-            city        : 'Baltimore',
-            region      : 'MD',
-            postcode    : '21212',
-            country     : 'US',
-            phone       : '410-123-4567'
+            first_name: 'Bob',
+            middle_name: 'A',
+            last_name: 'Jones',
+            company: 'Bobs Emporium',
+            street1: '123 Here St',
+            street2: 'Apt B',
+            city: 'Baltimore',
+            region: 'MD',
+            postcode: '21212',
+            country: 'US',
+            phone: '410-123-4567'
         }
     };
 

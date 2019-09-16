@@ -34,7 +34,7 @@
  */
 var Transaction = function () { };
 
-Transaction.prototype = new Object();
+Transaction.prototype = {};
 
 /**
  * Begins a transaction.

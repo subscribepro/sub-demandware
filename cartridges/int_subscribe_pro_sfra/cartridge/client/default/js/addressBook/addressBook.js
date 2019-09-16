@@ -43,10 +43,10 @@ module.exports = {
         $('.delete-confirmation-btn').click(function (e) {
             e.preventDefault();
             $.ajax({
-                url      : url,
-                type     : 'get',
-                dataType : 'json',
-                success  : function (data) {
+                url: url,
+                type: 'get',
+                dataType: 'json',
+                success: function (data) {
                     $('#uuid-' + data.UUID).remove();
                     if (isDefault) {
                         var addressId = $('.card .address-heading').first().text();
@@ -83,11 +83,11 @@ module.exports = {
             $form.spinner().start();
             $('form.address-form').trigger('address:submit', e);
             $.ajax({
-                url      : url,
-                type     : 'post',
-                dataType : 'json',
-                data     : $form.serialize(),
-                success  : function (data) {
+                url: url,
+                type: 'post',
+                dataType: 'json',
+                data: $form.serialize(),
+                success: function (data) {
                     $form.spinner().stop();
                     if (!data.success) {
                         formValidation($form, data);
