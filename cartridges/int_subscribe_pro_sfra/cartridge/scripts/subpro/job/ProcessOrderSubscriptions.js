@@ -172,7 +172,7 @@ function start() {
                          * the Find / Create Subscribe Pro API
                          */
                         var customerAddressBook = customer.addressBook;
-                        var shippingAddress = AddressHelper.getCustomerAddress(customerAddressBook.toArray(), shipment.shippingAddress);
+                        var shippingAddress = AddressHelper.getCustomerAddress(customerAddressBook.getAddresses().toArray(), shipment.shippingAddress);
 
                         if (!shippingAddress) {
                             var profile = order.customer.getProfile();
