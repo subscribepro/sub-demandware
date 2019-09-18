@@ -43,8 +43,8 @@ function productSubscriptionsPDP() {
     }
 
     ISML.renderTemplate('subpro/product/subprooptions', {
-        product : product,
-        page    : 'pdp'
+        product: product,
+        page: 'pdp'
     });
 }
 
@@ -62,18 +62,18 @@ function productSubscriptionsCart() {
     }
 
     var product = {
-        ID                       : pli.productID,
-        subscription_option_mode : pli.custom.subproSubscriptionOptionMode,
-        selected_option_mode     : pli.custom.subproSubscriptionSelectedOptionMode,
-        selected_interval        : pli.custom.subproSubscriptionInterval,
-        intervals                : pli.custom.subproSubscriptionAvailableIntervals.split(','),
-        is_discount_percentage   : pli.custom.subproSubscriptionIsDiscountPercentage,
-        discount                 : pli.custom.subproSubscriptionDiscount
+        ID: pli.productID,
+        subscription_option_mode: pli.custom.subproSubscriptionOptionMode,
+        selected_option_mode: pli.custom.subproSubscriptionSelectedOptionMode,
+        selected_interval: pli.custom.subproSubscriptionInterval,
+        intervals: pli.custom.subproSubscriptionAvailableIntervals.split(','),
+        is_discount_percentage: pli.custom.subproSubscriptionIsDiscountPercentage,
+        discount: pli.custom.subproSubscriptionDiscount
     };
 
     ISML.renderTemplate('subpro/product/subprooptions', {
-        product : product,
-        page    : 'cart'
+        product: product,
+        page: 'cart'
     });
 }
 
@@ -91,13 +91,13 @@ function productSubscriptionsOrderSummary() {
     }
 
     var product = {
-        selected_option_mode : pli.custom.subproSubscriptionSelectedOptionMode,
-        selected_interval    : pli.custom.subproSubscriptionInterval
+        selected_option_mode: pli.custom.subproSubscriptionSelectedOptionMode,
+        selected_interval: pli.custom.subproSubscriptionInterval
     };
 
     ISML.renderTemplate('subpro/order/subprooptions', {
-        product : product,
-        page    : 'order-summary'
+        product: product,
+        page: 'order-summary'
     });
 }
 
@@ -121,13 +121,13 @@ function productSubscriptionsOrderConfirmation() {
             var pli = plis[j];
             if (pli.productID === productID) {
                 var product = {
-                    selected_option_mode : pli.custom.subproSubscriptionSelectedOptionMode,
-                    selected_interval    : pli.custom.subproSubscriptionInterval
+                    selected_option_mode: pli.custom.subproSubscriptionSelectedOptionMode,
+                    selected_interval: pli.custom.subproSubscriptionInterval
                 };
 
                 ISML.renderTemplate('subpro/order/subprooptions', {
-                    product : product,
-                    page    : 'order-confirmation'
+                    product: product,
+                    page: 'order-confirmation'
                 });
             }
         }

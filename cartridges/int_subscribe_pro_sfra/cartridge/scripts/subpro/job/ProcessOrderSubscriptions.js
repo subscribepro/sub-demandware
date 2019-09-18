@@ -23,9 +23,9 @@ var Logger = require('dw/system/Logger');
 var Resource = require('dw/web/Resource');
 
 /**
- * SFRA Email Helper
+ * Current Site, used to reference site preferences
  */
-var Email = require('/app_storefront_base/cartridge/scripts/helpers/emailHelpers');
+var CurrentSite = require('dw/system/Site').getCurrent();
 
 /**
  * Main Subscribe Pro Library,
@@ -39,11 +39,6 @@ var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/SubscribeProLib');
 var AddressHelper = require('~/cartridge/scripts/subpro/helpers/AddressHelper');
 var CustomerHelper = require('~/cartridge/scripts/subpro/helpers/CustomerHelper');
 var PaymentsHelper = require('~/cartridge/scripts/subpro/helpers/PaymentsHelper');
-
-/**
- * Current Site, used to reference site preferences
- */
-var CurrentSite = require('dw/system/Site').getCurrent();
 
 /**
  * List of Errors
@@ -71,8 +66,8 @@ function logError(response, serviceName) {
     Logger.error(msg);
 
     errors.push({
-        orderNo     : currentOrderNo,
-        description : msg
+        orderNo: currentOrderNo,
+        description: msg
     });
 }
 
@@ -145,7 +140,7 @@ function start() {
             var paymentProfileID = PaymentsHelper.findOrCreatePaymentProfile(
                 order.paymentInstrument,
                 PaymentsHelper.getCustomerPaymentInstrument(
-                    customerProfile.wallet.paymentInstruments,
+                    customerProfile.wallet.paymentInstruments.toArray(),
                     order.paymentInstrument
                 ),
                 customer.profile,
@@ -176,7 +171,8 @@ function start() {
                          * Validate / Create shipping addresses using the customers saved address and
                          * the Find / Create Subscribe Pro API
                          */
-                        var shippingAddress = AddressHelper.getCustomerAddress(customer.addressBook, shipment.shippingAddress);
+                        var customerAddressBook = customer.addressBook;
+                        var shippingAddress = AddressHelper.getCustomerAddress(customerAddressBook.getAddresses().toArray(), shipment.shippingAddress);
 
                         if (!shippingAddress) {
                             var profile = order.customer.getProfile();
@@ -220,19 +216,19 @@ function start() {
                         var orderCreationDate = order.getCreationDate();
 
                         var subscription = {
-                            customer_id                      : customerSubproID,
-                            payment_profile_id               : paymentProfileID,
-                            requires_shipping                : true,
-                            shipping_address_id              : subproShippingAddressID,
-                            shipping_method_code             : shipment.shippingMethodID,
-                            product_sku                      : pli.productID,
-                            qty                              : pli.quantityValue,
-                            use_fixed_price                  : false,
-                            interval                         : pli.custom.subproSubscriptionInterval,
-                            next_order_date                  : dw.util.StringUtils.formatCalendar(new dw.util.Calendar(orderCreationDate), 'yyy-MM-dd'),
-                            first_order_already_created      : true,
-                            send_customer_notification_email : true,
-                            platform_specific_fields         : {
+                            customer_id: customerSubproID,
+                            payment_profile_id: paymentProfileID,
+                            requires_shipping: true,
+                            shipping_address_id: subproShippingAddressID,
+                            shipping_method_code: shipment.shippingMethodID,
+                            product_sku: pli.productID,
+                            qty: pli.quantityValue,
+                            use_fixed_price: false,
+                            interval: pli.custom.subproSubscriptionInterval,
+                            next_order_date: dw.util.StringUtils.formatCalendar(new dw.util.Calendar(orderCreationDate), 'yyy-MM-dd'),
+                            first_order_already_created: true,
+                            send_customer_notification_email: true,
+                            platform_specific_fields: {
                                 sfcc: {
                                     product_options: []
                                 }
@@ -245,8 +241,8 @@ function start() {
                             for (var poInc in productOptions) {
                                 var productOption = productOptions[poInc];
                                 subscription.platform_specific_fields.sfcc.product_options.push({
-                                    id    : productOption.optionID,
-                                    value : productOption.optionValueID
+                                    id: productOption.optionID,
+                                    value: productOption.optionValueID
                                 });
                             }
                         } else {
@@ -288,12 +284,21 @@ function start() {
      * If there were any errors, send an email to the preference email
      */
     if (errors.length) {
-        Email.sendEmail({
-            to      : CurrentSite.getCustomPreferenceValue('subproOrderProcessingErrorMail'),
-            from    : CurrentSite.getCustomPreferenceValue('subproOrderProcessingErrorMail'),
-            subject : Resource.msg('order.processing.failureemail.subject', 'order', null)
+        var hooksHelper = require('*/cartridge/scripts/helpers/hooks');
+        hooksHelper('app.customer.email', 'sendEmail', [{
+            to: CurrentSite.getCustomPreferenceValue('subproOrderProcessingErrorMail'),
+            from: CurrentSite.getCustomPreferenceValue('subproOrderProcessingErrorMail'),
+            subject: Resource.msg('order.processing.failureemail.subject', 'order', null)
         }, 'subpro/mail/orderprocessingerror', {
             Errors: errors
+        }], function (object, template, context) {
+            var Mail = require('dw/net/Mail');
+            var mail = new Mail();
+            mail.addTo(object.to);
+            mail.setSubject(object.subject);
+            mail.setFrom(object.from);
+            mail.setContent(require('*/cartridge/scripts/renderTemplateHelper').getRenderedHtml(context, template), 'text/html', 'UTF-8');
+            mail.send();
         });
     }
 }

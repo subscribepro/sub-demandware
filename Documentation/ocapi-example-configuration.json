@@ -82,6 +82,12 @@
                     "methods":["patch"],
                     "read_attributes":"(**)",
                     "write_attributes":"(**)"
+                },
+                {
+                    "resource_id":"/baskets/*/coupons",
+                    "methods":["post"],
+                    "read_attributes":"(**)",
+                    "write_attributes":"(**)"
                 }
             ]
         }

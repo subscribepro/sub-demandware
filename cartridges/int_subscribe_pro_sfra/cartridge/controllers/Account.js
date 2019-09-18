@@ -15,10 +15,10 @@ server.append('SaveProfile',
         if (customer.getProfile().custom.subproCustomerID) {
             var profileForm = server.forms.getForm('profile');
             CustomerHelper.updateCustomerInPlatform(customer.getProfile().custom.subproCustomerID, {
-                email                         : profileForm.customer.email.value,
-                first_name                    : profileForm.customer.firstname.value,
-                last_name                     : profileForm.customer.lastname.value,
-                platform_specific_customer_id : customer.getProfile().getCustomerNo()
+                email: profileForm.customer.email.value,
+                first_name: profileForm.customer.firstname.value,
+                last_name: profileForm.customer.lastname.value,
+                platform_specific_customer_id: customer.getProfile().getCustomerNo()
             });
         }
         next();

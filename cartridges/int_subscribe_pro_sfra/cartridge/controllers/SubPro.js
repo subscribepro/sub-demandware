@@ -35,10 +35,10 @@ server.get('PDP', function (req, res, next) {
         }
 
         res.render('subpro/product/subprooptions', {
-            subproduct       : spproduct,
-            sfccproduct      : product,
-            subprooptionsurl : URLUtils.url('SubPro-UpdateOptions').toString(),
-            page             : 'pdp'
+            subproduct: spproduct,
+            sfccproduct: product,
+            subprooptionsurl: URLUtils.url('SubPro-UpdateOptions').toString(),
+            page: 'pdp'
         });
     }
     next();
@@ -62,19 +62,19 @@ server.get('Cart', function (req, res, next) {
         var sfccProduct = ProductMgr.getProduct(params.sku.stringValue);
 
         var productData = {
-            ID                       : pli.getProductID(),
-            subscription_option_mode : spproduct.subscription_option_mode,
-            selected_option_mode     : pli.custom.subproSubscriptionSelectedOptionMode,
-            selected_interval        : pli.custom.subproSubscriptionInterval,
-            intervals                : spproduct.intervals.toString().split(','),
-            is_discount_percentage   : pli.custom.subproSubscriptionIsDiscountPercentage,
-            discount                 : pli.custom.subproSubscriptionDiscount
+            ID: pli.getProductID(),
+            subscription_option_mode: spproduct.subscription_option_mode,
+            selected_option_mode: pli.custom.subproSubscriptionSelectedOptionMode,
+            selected_interval: pli.custom.subproSubscriptionInterval,
+            intervals: spproduct.intervals.toString().split(','),
+            is_discount_percentage: pli.custom.subproSubscriptionIsDiscountPercentage,
+            discount: pli.custom.subproSubscriptionDiscount
         };
         res.render('subpro/product/subprooptions', {
-            subproduct       : productData,
-            sfccproduct      : sfccProduct,
-            subprooptionsurl : URLUtils.url('SubPro-UpdateOptions').toString(),
-            page             : 'cart'
+            subproduct: productData,
+            sfccproduct: sfccProduct,
+            subprooptionsurl: URLUtils.url('SubPro-UpdateOptions').toString(),
+            page: 'cart'
         });
     }
     next();
@@ -90,13 +90,13 @@ server.get('OrderSummary', function (req, res, next) {
         }
 
         var product = {
-            selected_option_mode : pli.custom.subproSubscriptionSelectedOptionMode,
-            selected_interval    : pli.custom.subproSubscriptionInterval
+            selected_option_mode: pli.custom.subproSubscriptionSelectedOptionMode,
+            selected_interval: pli.custom.subproSubscriptionInterval
         };
 
         res.render('subpro/cart/subprooptions', {
-            product : product,
-            page    : 'order-summary'
+            product: product,
+            page: 'order-summary'
         });
     }
     next();
@@ -118,13 +118,13 @@ server.get('OrderConfirmation', function (req, res, next) {
                 var pli = plis[j];
                 if (pli.productID === productID) {
                     var product = {
-                        selected_option_mode : pli.custom.subproSubscriptionSelectedOptionMode,
-                        selected_interval    : pli.custom.subproSubscriptionInterval
+                        selected_option_mode: pli.custom.subproSubscriptionSelectedOptionMode,
+                        selected_interval: pli.custom.subproSubscriptionInterval
                     };
 
                     res.render('subpro/cart/subprooptions', {
-                        product : product,
-                        page    : 'order-confirmation'
+                        product: product,
+                        page: 'order-confirmation'
                     });
                 }
             }

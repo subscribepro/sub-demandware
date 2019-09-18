@@ -52,11 +52,11 @@ var WidgetsHelper = {
 
 
         var widgetConfig = {
-            element        : widgetID,
-            apiBaseUrl     : require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproApiBaseUrl'),
-            apiAccessToken : session.custom.widgetAccessToken,
-            environmentKey : session.custom.widgetEnvironmentKey,
-            customerId     : session.custom.widgetCustomerId
+            element: widgetID,
+            apiBaseUrl: require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproApiBaseUrl'),
+            apiAccessToken: session.custom.widgetAccessToken,
+            environmentKey: session.custom.widgetEnvironmentKey,
+            customerId: session.custom.widgetCustomerId
         };
 
         if (widgetParent) {

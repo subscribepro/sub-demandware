@@ -111,14 +111,6 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-            <attribute-definition attribute-id="subproCCPrefix">
-                <display-name xml:lang="x-default">Subscribe Pro Credit Card Prefix</display-name>
-                <description xml:lang="x-default">This attribute will contain the first six characters of the users credit card number. This will be used when creating the payment profile at Subscribe Pro.</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="subscribe-pro">

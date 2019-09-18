@@ -75,8 +75,8 @@ server.replace('SaveAddress', csrfProtection.validateAjaxRequest, function (req,
                 if (address) {
                     if (!isNewAddress && subproEnabled) {
                         session.custom.updatedOldAddress = {
-                            sp   : addressHelper.getSubproAddress(address, session.customer.profile, true, true),
-                            sfcc : address
+                            sp: addressHelper.getSubproAddress(address, session.customer.profile, true, true),
+                            sfcc: address
                         };
                     }
 
@@ -116,36 +116,36 @@ server.replace('SaveAddress', csrfProtection.validateAjaxRequest, function (req,
                         var spAddress = addressHelper.getSubproAddress(address, session.customer.profile, false, true);
                         if (isNewAddress) {
                             session.custom.newAddress = {
-                                sp   : spAddress,
-                                sfcc : address
+                                sp: spAddress,
+                                sfcc: address
                             };
                         } else {
                             session.custom.updatedNewAddress = {
-                                sp   : spAddress,
-                                sfcc : address
+                                sp: spAddress,
+                                sfcc: address
                             };
                         }
                     }
 
                     res.json({
-                        success     : true,
-                        redirectUrl : URLUtils.url('Address-List').toString()
+                        success: true,
+                        redirectUrl: URLUtils.url('Address-List').toString()
                     });
                 } else {
                     formInfo.addressForm.valid = false;
                     formInfo.addressForm.addressId.valid = false;
                     formInfo.addressForm.addressId.error = Resource.msg('error.message.idalreadyexists', 'forms', null);
                     res.json({
-                        success : false,
-                        fields  : formErrors.getFormErrors(addressForm)
+                        success: false,
+                        fields: formErrors.getFormErrors(addressForm)
                     });
                 }
             });
         });
     } else {
         res.json({
-            success : false,
-            fields  : formErrors.getFormErrors(addressForm)
+            success: false,
+            fields: formErrors.getFormErrors(addressForm)
         });
     }
     return next();
@@ -175,8 +175,8 @@ server.replace('DeleteAddress', userLoggedIn.validateLoggedInAjax, function (req
         Transaction.wrap(function () {
             if (subproEnabled) {
                 session.custom.deletedAddress = {
-                    sp   : addressHelper.getSubproAddress(address, session.customer.profile, true, true),
-                    sfcc : address
+                    sp: addressHelper.getSubproAddress(address, session.customer.profile, true, true),
+                    sfcc: address
                 };
             }
 
@@ -193,14 +193,14 @@ server.replace('DeleteAddress', userLoggedIn.validateLoggedInAjax, function (req
 
         if (length === 0) {
             res.json({
-                UUID       : UUID,
-                defaultMsg : Resource.msg('label.addressbook.defaultaddress', 'account', null),
-                message    : Resource.msg('msg.no.saved.addresses', 'address', null)
+                UUID: UUID,
+                defaultMsg: Resource.msg('label.addressbook.defaultaddress', 'account', null),
+                message: Resource.msg('msg.no.saved.addresses', 'address', null)
             });
         } else {
             res.json({
-                UUID       : UUID,
-                defaultMsg : Resource.msg('label.addressbook.defaultaddress', 'account', null)
+                UUID: UUID,
+                defaultMsg: Resource.msg('label.addressbook.defaultaddress', 'account', null)
             });
         }
     });

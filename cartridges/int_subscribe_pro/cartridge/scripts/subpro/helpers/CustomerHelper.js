@@ -18,9 +18,9 @@ var CustomerHelper = {
         var profile = customer.getProfile();
 
         return {
-            email      : profile.getEmail(),
-            first_name : profile.getFirstName(),
-            last_name  : profile.getLastName()
+            email: profile.getEmail(),
+            first_name: profile.getFirstName(),
+            last_name: profile.getLastName()
         };
     },
 

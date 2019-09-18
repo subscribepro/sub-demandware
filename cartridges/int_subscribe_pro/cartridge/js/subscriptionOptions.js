@@ -56,8 +56,8 @@ var subscriptionOptions = {
     },
 
     getOptionsState: function (target, page) {
-        var parent,
-            pliUUID;
+        var parent;
+        var pliUUID;
 
         if (page === 'pdp') {
             parent = target.closest('.subpro-options.pdp');
@@ -70,20 +70,20 @@ var subscriptionOptions = {
         }
 
         return {
-            pliUUID              : pliUUID,
-            subscriptionMode     : parent.find('input[name^=subproSubscriptionOptionMode]:checked').val(),
-            deliveryInteval      : parent.find('#delivery-interval').val(),
-            discount             : parent.find('input[name=subproSubscriptionDiscount]').val(),
-            isDiscountPercentage : parent.find('input[name=subproSubscriptionIsDiscountPercentage]').val()
+            pliUUID: pliUUID,
+            subscriptionMode: parent.find('input[name^=subproSubscriptionOptionMode]:checked').val(),
+            deliveryInteval: parent.find('#delivery-interval').val(),
+            discount: parent.find('input[name=subproSubscriptionDiscount]').val(),
+            isDiscountPercentage: parent.find('input[name=subproSubscriptionIsDiscountPercentage]').val()
         };
     },
 
     ajaxUpdateOptions: function (data) {
         $.ajax({
-            type        : 'POST',
-            cache       : false,
-            contentType : 'application/json',
-            url         : util.appendParamToURL(Urls.subproSubscriptionOptions, 'options', JSON.stringify(data))
+            type: 'POST',
+            cache: false,
+            contentType: 'application/json',
+            url: util.appendParamToURL(Urls.subproSubscriptionOptions, 'options', JSON.stringify(data))
         });
     },
 

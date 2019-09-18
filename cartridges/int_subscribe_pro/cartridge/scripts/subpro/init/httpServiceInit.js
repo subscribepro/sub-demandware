@@ -32,9 +32,9 @@ var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/SubscribeProLib');
  */
 var getMockJSON = function (data) {
     return {
-        statusCode    : 200,
-        statusMessage : 'Success',
-        text          : JSON.stringify(data)
+        statusCode: 200,
+        statusMessage: 'Success',
+        text: JSON.stringify(data)
     };
 };
 
@@ -399,8 +399,8 @@ ServiceRegistry.configure('subpro.http.get.token', {
      */
     createRequest: function (svc, args) {
         svc.setRequestMethod('GET');
-        SubscribeProLib.setURL(svc, 'token', 'grant_type=' + args.grant_type +
-            '&scope=' + args.scope + '&customer_id=' + Encoding.toURI(args.customer_id), 'subpro.http.cred.oauth.');
+        SubscribeProLib.setURL(svc, 'token', 'grant_type=' + args.grant_type
+            + '&scope=' + args.scope + '&customer_id=' + Encoding.toURI(args.customer_id), 'subpro.http.cred.oauth.');
     },
 
     /**

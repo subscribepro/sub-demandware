@@ -46,14 +46,13 @@ var PaymentsHelper = {
         }
 
         var returnObject = {
-            customer_id             : customerID,
-            payment_token           : card.UUID,
-            creditcard_type         : subProCardType,
-            creditcard_first_digits : card.custom.subproCCPrefix,
-            creditcard_last_digits  : card.creditCardNumberLastDigits,
-            creditcard_month        : card.creditCardExpirationMonth,
-            creditcard_year         : card.creditCardExpirationYear,
-            vault_specific_fields   : {
+            customer_id: customerID,
+            payment_token: card.UUID,
+            creditcard_type: subProCardType,
+            creditcard_last_digits: card.creditCardNumberLastDigits,
+            creditcard_month: card.creditCardExpirationMonth,
+            creditcard_year: card.creditCardExpirationYear,
+            vault_specific_fields: {
                 sfcc: {
                     payment_instrument_id: card.UUID
                 }
@@ -66,25 +65,25 @@ var PaymentsHelper = {
 
         if (typeof billingAddress.getCountryCode === 'function') {
             returnObject.billing_address = {
-                first_name  : billingAddress.firstName,
-                middle_name : '',
-                last_name   : billingAddress.lastName,
-                company     : billingAddress.companyName || '',
-                street1     : billingAddress.address1,
-                street2     : billingAddress.address2 || '',
-                city        : billingAddress.city,
-                region      : billingAddress.stateCode,
-                postcode    : billingAddress.postalCode,
-                country     : (billingAddress.getCountryCode() ? billingAddress.getCountryCode().toString().toUpperCase() : ''),
-                phone       : billingAddress.phone || ''
+                first_name: billingAddress.firstName,
+                middle_name: '',
+                last_name: billingAddress.lastName,
+                company: billingAddress.companyName || '',
+                street1: billingAddress.address1,
+                street2: billingAddress.address2 || '',
+                city: billingAddress.city,
+                region: billingAddress.stateCode,
+                postcode: billingAddress.postalCode,
+                country: (billingAddress.getCountryCode() ? billingAddress.getCountryCode().toString().toUpperCase() : ''),
+                phone: billingAddress.phone || ''
             };
         } else {
-            var nameParts = card.getCreditCardHolder().split(' ');
+            var nameParts = card.creditCardHolder.split(' ');
             var lastName = nameParts.pop();
             var firstName = nameParts.join(' ');
             returnObject.billing_address = {
-                first_name : firstName,
-                last_name  : lastName
+                first_name: firstName,
+                last_name: lastName
             };
         }
 
@@ -126,15 +125,14 @@ var PaymentsHelper = {
     /**
      * Get customer payment instrument  which is equal to specified
      *
-     * @param {dw.customer.CustomerPaymentInstrument} customerPaymentInstruments Sales Force Commerce Cloud Customer Payment Instrument
+     * @param {Array} customerPaymentInstruments Sales Force Commerce Cloud Customer Payment Instruments
      * @param {dw.order.PaymentInstrument} paymentInstrument Sales Force Commerce Cloud Payment Instrument
      *
      * @returns {dw.customer.CustomerPaymentInstrument | null } found payment instrument or null
      */
     getCustomerPaymentInstrument: function (customerPaymentInstruments, paymentInstrument) {
-        var paymentInstruments = customerPaymentInstruments.iterator();
-        while (paymentInstruments.hasNext()) {
-            var currentInstrument = paymentInstruments.next();
+        for (var i in customerPaymentInstruments) {
+            var currentInstrument = customerPaymentInstruments[i];
             var areEqual = this.comparePaymentInstruments(currentInstrument, paymentInstrument);
 
             if (areEqual) {
@@ -155,8 +153,8 @@ var PaymentsHelper = {
      */
     findOrCreatePaymentProfile: function (paymentInstrument, customerPaymentInstrument, customerProfile, billingAddress) {
         var paymentProfileID = (
-            customerPaymentInstrument &&
-            ('subproPaymentProfileID' in customerPaymentInstrument.custom)
+            customerPaymentInstrument
+            && ('subproPaymentProfileID' in customerPaymentInstrument.custom)
         ) ? customerPaymentInstrument.custom.subproPaymentProfileID : false;
 
         /**
