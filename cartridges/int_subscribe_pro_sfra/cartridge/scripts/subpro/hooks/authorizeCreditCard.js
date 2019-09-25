@@ -8,37 +8,27 @@ var OrderMgr = require('dw/order/OrderMgr');
 // var hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 // var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
 
-/**
- * Throw an error as a string representation of a JSON object containing an error code and a message.
- * @param {string} errorCode The error code
- * @param {string} errorMessage The error message
- */
-function throwError(errorCode, errorMessage) {
-    var error = {
-        code: errorCode,
-        message: errorMessage
-    };
-    throw new Error(JSON.stringify(error));
-}
-
 /*
  * authorizing credit card payment instrument
  * Hook: dw.ocapi.shop.order.authorizeCreditCard
  * */
 exports.authorizeCreditCard = function (order, paymentDetails, cvn) {
-    try {
-        throwError('SP_SOFT_DECLINE', 'payment handle processing failed');
 
-    } catch (e) {
-        Logger.error('authorizeCreditCard order ' + order.orderNo + ', error:' + e.message);
-        // Transaction.wrap(function () {
-        //     order.getCustom().ocapiError = e.message;
-        // });
-        // Transaction.wrap(function () {
-        //     OrderMgr.failOrder(order);
-        // });
-        return new Status(Status.ERROR, 'authorizeCreditCard error:' + e.message);
-    }
+    // Attempt to process the transaction
 
-    return new Status(Status.OK);
+    // If it fails, return a Status with an ERROR type.
+    // The error code should be 'payment_error'
+    // The error message should be the error message from the gateway response
+    // A detail should be added to the status with the name being error_code from the gateway, and the value being the error message.
+    Transaction.wrap(function () {
+        OrderMgr.failOrder(order);
+    });
+
+    var status = new Status(Status.ERROR, 'error code', 'error message');
+    status.addDetail('detail1', { key: 'value' });
+    status.addDetail('detail2', 'string2');
+    status.addDetail('detail3', true);
+    status.addDetail('detaul4', 500);
+
+    return status;
 };
