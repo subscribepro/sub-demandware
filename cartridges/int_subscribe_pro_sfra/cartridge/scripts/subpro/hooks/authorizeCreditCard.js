@@ -20,9 +20,9 @@ exports.authorizeCreditCard = function (order, paymentDetails, cvn) {
     // The Status error message should be a generic message about failure to process the payment.
     var status = new Status(Status.ERROR, 'payment_error', 'There was an error processing the payment.');
 
-    // Details should be added for the gateway_name, gateway_error_code, and gateway_error_message,
+    // Details should be added for the gateway_type, gateway_error_code, and gateway_error_message,
     // which should be parsed from the gateway transaction response
-    status.addDetail('gateway_name', 'braintree');
+    status.addDetail('gateway_type', 'braintree');
     status.addDetail('gateway_error_code', '2001');
     status.addDetail('gateway_error_message', 'Insufficient Funds');
 
