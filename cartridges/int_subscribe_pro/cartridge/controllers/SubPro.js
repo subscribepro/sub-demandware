@@ -140,9 +140,10 @@ function productSubscriptionsOrderConfirmation() {
  * @transactional
  */
 function updateSubscriptionOptions() {
+    var BasketMgr = require('dw/order/BasketMgr');
     var options = JSON.parse(params.options);
-    var cart = app.getModel('Cart').get();
-    var pli = cart.getProductLineItemByUUID(options.pliUUID);
+    var basket = BasketMgr.getCurrentOrNewBasket();
+    var pli = basket.getAllProductLineItems(options.pliUUID).pop();
 
     if (!pli) {
         return;
@@ -150,7 +151,7 @@ function updateSubscriptionOptions() {
 
     require('dw/system/Transaction').wrap(function () {
         pli.custom.subproSubscriptionSelectedOptionMode = options.subscriptionMode;
-        pli.custom.subproSubscriptionInterval = options.deliveryInteval;
+        pli.custom.subproSubscriptionInterval = options.deliveryInterval;
 
         var discountValue = parseFloat(options.discount);
         var discountToApply = (options.isDiscountPercentage === 'true' || options.isDiscountPercentage === true)

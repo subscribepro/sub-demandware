@@ -11,20 +11,12 @@ var subscriptionOptions = {
             .on('change', function (event) {
                 subscriptionOptions.toggleDeliveryIntervalDropdown(event, $('.subpro-options.cart .delivery-interval-group'));
                 subscriptionOptions.ajaxUpdateOptions(subscriptionOptions.getOptionsState($(event.currentTarget), 'cart'));
-
-                var parents = $(event.currentTarget).parentsUntil('.item-details');
-                var editLink = $(parents[parents.length - 1]).parent().find('.item-edit-details a');
-                editLink.attr('href', subscriptionOptions.rebuildURL('selectedOptionMode', $(event.currentTarget).val(), editLink.attr('href')));
             });
 
         $('.subpro-options.cart #delivery-interval')
             .off('change')
             .on('change', function (event) {
                 subscriptionOptions.ajaxUpdateOptions(subscriptionOptions.getOptionsState($(event.currentTarget), 'cart'));
-
-                var parents = $(event.currentTarget).parentsUntil('.item-details');
-                var editLink = $(parents[parents.length - 1]).parent().find('.item-edit-details a');
-                editLink.attr('href', subscriptionOptions.rebuildURL('selectedInterval', $(event.currentTarget).val(), editLink.attr('href')));
             });
     },
 
@@ -58,13 +50,12 @@ var subscriptionOptions = {
     getOptionsState: function (target, page) {
         var parent;
         var pliUUID;
-
         if (page === 'pdp') {
             parent = target.closest('.subpro-options.pdp');
-            pliUUID = parent.closest('.product-add-to-cart').find('input[name=uuid]').val();
+            pliUUID = $('div.product-number span').html();
         } else if (page == 'cart') {
             parent = target.closest('.subpro-options.cart');
-            pliUUID = parent.closest('.cart-row').data('uuid');
+            pliUUID = parent.find('input[name^=subproProductLineItemID]').val();
         } else {
             return;
         }
@@ -72,7 +63,7 @@ var subscriptionOptions = {
         return {
             pliUUID: pliUUID,
             subscriptionMode: parent.find('input[name^=subproSubscriptionOptionMode]:checked').val(),
-            deliveryInteval: parent.find('#delivery-interval').val(),
+            deliveryInterval: parent.find('#delivery-interval').val(),
             discount: parent.find('input[name=subproSubscriptionDiscount]').val(),
             isDiscountPercentage: parent.find('input[name=subproSubscriptionIsDiscountPercentage]').val()
         };

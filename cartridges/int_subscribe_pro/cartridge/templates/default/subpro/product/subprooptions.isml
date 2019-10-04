@@ -42,6 +42,7 @@
     <br />
 
     <iscomment> Hidden fields to pass subscription info to Product Line Item </iscomment>
+    <input type="hidden" name="subproProductLineItemID" value="${product.ID}" />
     <input type="hidden" name="subproSubscriptionAvailableOptionMode" value="${product.subscription_option_mode.toString()}">
     <input type="hidden" name="subproSubscriptionAvailableIntervals" value="${product.intervals.toString()}">
     <input type="hidden" name="subproSubscriptionDiscount" value="${product.discount}">
