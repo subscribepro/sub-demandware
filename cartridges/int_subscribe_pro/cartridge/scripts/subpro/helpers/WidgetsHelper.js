@@ -27,7 +27,7 @@ var WidgetsHelper = {
         // Set the expiration to 5 minutes earlier than what it actually is, just to be safe. Use timeGap variable for that purpose.
         var timeGap = 5 * 60 * 1000;
         var expirationTime = new Date().setTime(Date.now() + response.result.expires_in * 1000 - timeGap);
-
+        /* global session */
         session.custom.widgetAccessToken = response.result.access_token;
         session.custom.widgetEnvironmentKey = response.result.spreedly_environment_key;
         session.custom.widgetCustomerId = response.result.customer_id;
@@ -50,14 +50,29 @@ var WidgetsHelper = {
             this.getAccessToken(customerID, grantType, scope);
         }
 
-
-        var widgetConfig = {
+        //
+        // My Subscriptions Widget Configuration
+        //
+        var originalWidgetConfig = {
             element: widgetID,
             apiBaseUrl: require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproApiBaseUrl'),
             apiAccessToken: session.custom.widgetAccessToken,
             environmentKey: session.custom.widgetEnvironmentKey,
             customerId: session.custom.widgetCustomerId
         };
+
+        var customWidgetConfig = JSON.parse(require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproSubscriptionsWidgetConfig'));
+
+        var widgetConfig = {};
+        var key = null;
+        for (key in customWidgetConfig) {
+            widgetConfig[key] = customWidgetConfig[key];
+        }
+
+        var origKey = null;
+        for (origKey in originalWidgetConfig) {
+            widgetConfig[origKey] = originalWidgetConfig[origKey];
+        }
 
         if (widgetParent) {
             widgetConfig.addToOrderElementClass = widgetParent;
