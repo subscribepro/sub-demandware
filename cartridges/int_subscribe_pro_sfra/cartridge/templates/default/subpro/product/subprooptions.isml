@@ -41,7 +41,7 @@
 
         <iscomment> Hidden fields to pass subscription info to Product Line Item </iscomment>
         <input type="hidden" name="subproSubscriptionAvailableOptionMode" value="${pdict.subproduct.subscription_option_mode}">
-        <input type="hidden" name="subproSubscriptionAvailableIntervals" value="${JSON.stringify(product.intervals)}">
+        <input type="hidden" name="subproSubscriptionAvailableIntervals" value="${JSON.stringify(pdict.subproduct.intervals)}">
         <input type="hidden" name="subproSubscriptionDiscount" value="${pdict.subproduct.discount}">
         <input type="hidden" name="subproSubscriptionIsDiscountPercentage" value="${pdict.subproduct.is_discount_percentage}">
         <input type="hidden" name="subproSubscriptionOptionsUrl" value="${pdict.subprooptionsurl}" />
