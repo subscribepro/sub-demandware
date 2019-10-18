@@ -17,15 +17,15 @@ server.append('List', userLoggedIn.validateLoggedIn, consentTracking.consent, fu
     if (subproEnabled) {
         var viewData = res.getViewData();
 
-        var newAddress = session.custom.newAddress ? session.custom.newAddress : null;
-        var updatedOldAddress = session.custom.updatedOldAddress ? session.custom.updatedOldAddress.sp : null;
-        var updatedNewAddress = session.custom.updatedNewAddress ? session.custom.updatedNewAddress.sp : null;
-        var deletedAddress = session.custom.deletedAddress ? session.custom.deletedAddress : null;
+        var newAddress = session.privacy.newAddress ? session.privacy.newAddress : null;
+        var updatedOldAddress = session.privacy.updatedOldAddress ? session.privacy.updatedOldAddress.sp : null;
+        var updatedNewAddress = session.privacy.updatedNewAddress ? session.privacy.updatedNewAddress.sp : null;
+        var deletedAddress = session.privacy.deletedAddress ? session.privacy.deletedAddress : null;
 
-        session.custom.newAddress = null;
-        session.custom.updatedOldAddress = null;
-        session.custom.updatedNewAddress = null;
-        session.custom.deletedAddress = null;
+        session.privacy.newAddress = null;
+        session.privacy.updatedOldAddress = null;
+        session.privacy.updatedNewAddress = null;
+        session.privacy.deletedAddress = null;
 
         var newAddressPayload = newAddress ? { address: newAddress.sp } : null;
         var newAddressSfccId = newAddress ? newAddress.sfcc.getID() : null;
@@ -74,7 +74,7 @@ server.replace('SaveAddress', csrfProtection.validateAjaxRequest, function (req,
                     : addressBook.createAddress(formInfo.addressId);
                 if (address) {
                     if (!isNewAddress && subproEnabled) {
-                        session.custom.updatedOldAddress = {
+                        session.privacy.updatedOldAddress = {
                             sp: addressHelper.getSubproAddress(address, session.customer.profile, true, true),
                             sfcc: address
                         };
@@ -115,12 +115,12 @@ server.replace('SaveAddress', csrfProtection.validateAjaxRequest, function (req,
                     if (subproEnabled) {
                         var spAddress = addressHelper.getSubproAddress(address, session.customer.profile, false, true);
                         if (isNewAddress) {
-                            session.custom.newAddress = {
+                            session.privacy.newAddress = {
                                 sp: spAddress,
                                 sfcc: address
                             };
                         } else {
-                            session.custom.updatedNewAddress = {
+                            session.privacy.updatedNewAddress = {
                                 sp: spAddress,
                                 sfcc: address
                             };
@@ -174,7 +174,7 @@ server.replace('DeleteAddress', userLoggedIn.validateLoggedInAjax, function (req
         var length;
         Transaction.wrap(function () {
             if (subproEnabled) {
-                session.custom.deletedAddress = {
+                session.privacy.deletedAddress = {
                     sp: addressHelper.getSubproAddress(address, session.customer.profile, true, true),
                     sfcc: address
                 };

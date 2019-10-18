@@ -103,11 +103,11 @@ server.append('List', userLoggedIn.validateLoggedIn, consentTracking.consent, fu
     if (subproEnabled) {
         var viewData = res.getViewData();
 
-        var newCard = session.custom.newCard ? session.custom.newCard : null;
-        var deletedCard = session.custom.deletedCard ? session.custom.deletedCard : null;
+        var newCard = session.privacy.newCard ? session.privacy.newCard : null;
+        var deletedCard = session.privacy.deletedCard ? session.privacy.deletedCard : null;
 
-        session.custom.newCard = null;
-        session.custom.deletedCard = null;
+        session.privacy.newCard = null;
+        session.privacy.deletedCard = null;
 
         var newCardSfccId = newCard ? newCard.sfcc.getUUID() : null;
         var newCardPayload = newCard ? { payment_profile: newCard.sp } : null;
@@ -182,7 +182,7 @@ server.replace('SavePayment', csrfProtection.validateAjaxRequest, function (req,
 
                 paymentInstrument.setCreditCardToken(token);
 
-                session.custom.newCard = {
+                session.privacy.newCard = {
                     sp: paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, paymentInstrument, {}, false),
                     sfcc: paymentInstrument
                 };
@@ -233,7 +233,7 @@ server.replace('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req
         var wallet = customer.getProfile().getWallet();
 
         Transaction.wrap(function () {
-            session.custom.deletedCard = {
+            session.privacy.deletedCard = {
                 sp: paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, payment.raw, {}, true),
                 sfcc: payment
             };

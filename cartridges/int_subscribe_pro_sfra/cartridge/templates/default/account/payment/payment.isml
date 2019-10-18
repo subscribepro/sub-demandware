@@ -60,18 +60,18 @@
                 <!-- Pass configuration and init the Subscribe Pro widget -->
             <script>
                 // Setup config for Subscribe Pro
-                var widgetConfig = <isprint value="${JSON.stringify(widgetConfig)}" encoding="off" />;
-                WalletAssist.init(widgetConfig);
+                var widgetConfig = "<isprint value="${JSON.stringify(widgetConfig)}" encoding="jsblock" />";
+                WalletAssist.init(JSON.parse(widgetConfig));
                 <isif condition="${pdict.newCard != 'null'}">
-                    var newCard = <isprint value="${pdict.newCard}" encoding="off" />;
-                    WalletAssist.onPaymentProfileCreated(newCard, function (result) {
-                        var newCardSfccId = '<isprint value="${pdict.newCardSfccId}" encoding="off" />';
+                    var newCard = "<isprint value="${pdict.newCard}" encoding="jsblock" />";
+                    WalletAssist.onPaymentProfileCreated(JSON.parse(newCard), function (result) {
+                        var newCardSfccId = '<isprint value="${pdict.newCardSfccId}" encoding="jsblock" />';
                         jQuery.get("${URLUtils.url('PaymentInstruments-SetSPPaymentProfileID')}", {"paymentInstrumentId": newCardSfccId, "spPaymentProfileId": result.id});
                     });
                 </isif>
                 <isif condition="${pdict.deletedCard != 'null'}">
-                    var deletedCard = <isprint value="${pdict.deletedCard}" encoding="off" />;
-                    WalletAssist.onPaymentProfileDeleted(deletedCard);
+                    var deletedCard = "<isprint value="${pdict.deletedCard}" encoding="jsblock" />";
+                    WalletAssist.onPaymentProfileDeleted(JSON.parse(deletedCard));
                 </isif>
             </script>
         </isif>
