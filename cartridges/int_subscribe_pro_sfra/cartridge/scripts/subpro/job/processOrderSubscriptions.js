@@ -31,14 +31,14 @@ var CurrentSite = require('dw/system/Site').getCurrent();
  * Main Subscribe Pro Library,
  * This library has various methods to help facilitate API requests
  */
-var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/SubscribeProLib');
+var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/subscribeProLib');
 
 /**
  * Subscribe Pro Object Helpers, used to help map Commerce Cloud Modules to Subscribe Pro Modules
  */
-var AddressHelper = require('~/cartridge/scripts/subpro/helpers/AddressHelper');
-var CustomerHelper = require('~/cartridge/scripts/subpro/helpers/CustomerHelper');
-var PaymentsHelper = require('~/cartridge/scripts/subpro/helpers/PaymentsHelper');
+var AddressHelper = require('~/cartridge/scripts/subpro/helpers/addressHelper');
+var CustomerHelper = require('~/cartridge/scripts/subpro/helpers/customerHelper');
+var PaymentsHelper = require('~/cartridge/scripts/subpro/helpers/paymentsHelper');
 
 /**
  * List of Errors

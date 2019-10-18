@@ -1,4 +1,4 @@
-var ServiceRegistry = require('dw/svc/ServiceRegistry');
+var HttpServices = require('~/cartridge/scripts/subpro/init/httpServiceInit.js');
 
 /**
  * SubscribeProLib
@@ -15,7 +15,12 @@ var SubscribeProLib = {
      * @returns {Object} Service
      */
     getService: function (serviceName) {
-        return ServiceRegistry.get(serviceName);
+        var serviceNameParts = serviceName.split('.');
+        Object.keys(serviceNameParts).forEach(function (item) {
+            serviceNameParts[item] = serviceNameParts[item].charAt(0).toUpperCase() + serviceNameParts[item].substr(1);
+        });
+        serviceName = serviceNameParts.join('');
+        return HttpServices[serviceName];
     },
 
     /**
@@ -381,36 +386,6 @@ var SubscribeProLib = {
         }
 
         return !!isSubpro;
-    },
-
-    /**
-     * Update the URL Parameter of the Service to include the
-     * specified endpoint and any supplied parameters
-     *
-     * @param {HTTPService} svc HTTP Service to update URL on
-     * @param {string} endpoint API Endpoint to call on the service
-     * @param {string} parameters GET URL parameters to append to the URL
-     * @param {string} credPrefix Prefix for credential ID
-     */
-    setURL: function (svc, endpoint, parameters, credPrefix) {
-        /**
-         * Current Site, used to reference site preferences
-         */
-        var CurrentSite = require('dw/system/Site').getCurrent();
-
-        svc.setCredentialID((credPrefix || 'subpro.http.cred.') + CurrentSite.getCustomPreferenceValue('subproAPICredSuffix'));
-
-        /**
-         * Replace the URL parameters with the relevant values
-         */
-        var url = svc.getURL();
-        url = url.replace('{ENDPOINT}', endpoint);
-        url = url.replace('{PARAMS}', parameters);
-
-        /**
-         * Save the newly constructed url
-         */
-        svc.setURL(url);
     }
 };
 

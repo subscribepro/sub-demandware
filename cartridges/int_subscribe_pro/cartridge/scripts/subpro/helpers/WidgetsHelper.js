@@ -27,11 +27,11 @@ var WidgetsHelper = {
         // Set the expiration to 5 minutes earlier than what it actually is, just to be safe. Use timeGap variable for that purpose.
         var timeGap = 5 * 60 * 1000;
         var expirationTime = new Date().setTime(Date.now() + response.result.expires_in * 1000 - timeGap);
-
-        session.custom.widgetAccessToken = response.result.access_token;
-        session.custom.widgetEnvironmentKey = response.result.spreedly_environment_key;
-        session.custom.widgetCustomerId = response.result.customer_id;
-        session.custom.widgetExpiresOn = expirationTime;
+        /* global session */
+        session.privacy.widgetAccessToken = response.result.access_token;
+        session.privacy.widgetEnvironmentKey = response.result.spreedly_environment_key;
+        session.privacy.widgetCustomerId = response.result.customer_id;
+        session.privacy.widgetExpiresOn = expirationTime;
     },
 
     /**
@@ -46,18 +46,33 @@ var WidgetsHelper = {
      * @return {Object} widget properties
      */
     getWidgetConfig: function (customerID, grantType, scope, widgetID, widgetParent) {
-        if (!session.custom.widgetExpiresOn || Date.now() >= session.custom.widgetExpiresOn) {
+        if (!session.privacy.widgetExpiresOn || Date.now() >= session.privacy.widgetExpiresOn) {
             this.getAccessToken(customerID, grantType, scope);
         }
 
-
-        var widgetConfig = {
+        //
+        // My Subscriptions Widget Configuration
+        //
+        var originalWidgetConfig = {
             element: widgetID,
             apiBaseUrl: require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproApiBaseUrl'),
-            apiAccessToken: session.custom.widgetAccessToken,
-            environmentKey: session.custom.widgetEnvironmentKey,
-            customerId: session.custom.widgetCustomerId
+            apiAccessToken: session.privacy.widgetAccessToken,
+            environmentKey: session.privacy.widgetEnvironmentKey,
+            customerId: session.privacy.widgetCustomerId
         };
+
+        var customWidgetConfig = JSON.parse(require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproSubscriptionsWidgetConfig'));
+
+        var widgetConfig = {};
+        var key = null;
+        for (key in customWidgetConfig) {
+            widgetConfig[key] = customWidgetConfig[key];
+        }
+
+        var origKey = null;
+        for (origKey in originalWidgetConfig) {
+            widgetConfig[origKey] = originalWidgetConfig[origKey];
+        }
 
         if (widgetParent) {
             widgetConfig.addToOrderElementClass = widgetParent;

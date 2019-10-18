@@ -13,14 +13,11 @@
     <!-- Load the Subscribe Pro widget script -->
     <script src="${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproWidgetScriptUrl')}"></script>
 
-    <isset name="widgetConfig" scope="page"
-        value="${require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/WidgetsHelper').getWidgetConfig(customer.profile.custom.subproCustomerID, 'client_credentials', 'widget', 'sp-my-subscriptions')}"/>
-
     <!-- Pass configuration and init the Subscribe Pro widget -->
     <script>
         // Setup config for Subscribe Pro
-        var widgetConfig = <isprint value="${JSON.stringify(widgetConfig)}" encoding="off" />;
-        MySubscriptions.init(widgetConfig);
+        var widgetConfig = "<isprint value="${JSON.stringify(require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/WidgetsHelper').getWidgetConfig(customer.profile.custom.subproCustomerID, 'client_credentials', 'widget', 'sp-my-subscriptions'))}" encoding="jsblock" />";
+        MySubscriptions.init(JSON.parse(widgetConfig));
     </script>
 
 </isdecorate>

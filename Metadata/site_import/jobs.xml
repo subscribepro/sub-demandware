@@ -8,7 +8,7 @@
             <step step-id="ProcessSubproSubscriptions-Process" type="ExecuteScriptModule" enforce-restart="false">
                 <description/>
                 <parameters>
-                    <parameter name="ExecuteScriptModule.Module">int_subscribe_pro_sfra/cartridge/scripts/subpro/job/ProcessOrderSubscriptions.js</parameter>
+                    <parameter name="ExecuteScriptModule.Module">int_subscribe_pro_sfra/cartridge/scripts/subpro/job/processOrderSubscriptions.js</parameter>
                     <parameter name="ExecuteScriptModule.FunctionName">Start</parameter>
                     <parameter name="ExecuteScriptModule.Transactional">true</parameter>
                     <parameter name="ordersProcessInterval">24</parameter>

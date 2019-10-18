@@ -61,27 +61,25 @@
             <!-- Subscribe Pro Address Book Widget -->
             <script src="${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproAddressWidgetScriptUrl')}"></script>
             <div id="sp-address-book-widget"></div>
-            <isset name="widgetConfig" scope="page"
-                value="${require('~/cartridge/scripts/subpro/helpers/WidgetsHelper').getWidgetConfig(customer.profile.custom.subproCustomerID, 'client_credentials', 'widget', 'sp-address-book-widget')}"/>
             <!-- Pass configuration and init the Subscribe Pro widget -->
             <script>
                 // Setup config for Subscribe Pro
-                var widgetConfig = <isprint value="${JSON.stringify(widgetConfig)}" encoding="off" />;
-                AddressBookAssist.init(widgetConfig);
+                var widgetConfig = "<isprint value="${JSON.stringify(require('~/cartridge/scripts/subpro/helpers/widgetsHelper').getWidgetConfig(customer.profile.custom.subproCustomerID, 'client_credentials', 'widget', 'sp-address-book-widget'))}" encoding="jsblock" />";
+                AddressBookAssist.init(JSON.parse(widgetConfig));
                 <isif condition="${pdict.newAddress != 'null'}">
-                    var newAddress = <isprint value="${pdict.newAddress}" encoding="off" />;
-                    var newAddressSfccId = '<isprint value="${pdict.newAddressSfccId}" encoding="off" />';
-                    AddressBookAssist.onAddressCreated(newAddress).then(function (result) {
+                    var newAddress = "<isprint value="${pdict.newAddress}" encoding="jsblock" />";
+                    var newAddressSfccId = '${pdict.newAddressSfccId}';
+                    AddressBookAssist.onAddressCreated(JSON.parse(newAddress)).then(function (result) {
                         jQuery.get("${URLUtils.url('Address-SetSPAddressID')}", {"addressId": newAddressSfccId, "spAddressId": result.id});
                     });
                 </isif>
                 <isif condition="${pdict.updatedAddress != 'null'}">
-                    var updatedAddress = <isprint value="${pdict.updatedAddress}" encoding="off" />;
+                    var updatedAddress = "<isprint value="${pdict.updatedAddress}" encoding="jsblock" />";
                     AddressBookAssist.onAddressUpdated(updatedAddress);
                 </isif>
                 <isif condition="${pdict.deletedAddress != 'null'}">
-                    var deletedAddress = <isprint value="${pdict.deletedAddress}" encoding="off" />;
-                    AddressBookAssist.onAddressDeleted(deletedAddress);
+                    var deletedAddress = "<isprint value="${pdict.deletedAddress}" encoding="jsblock" />";
+                    AddressBookAssist.onAddressDeleted(JSON.parse(deletedAddress));
                 </isif>
             </script>
         </isif>
