@@ -7,7 +7,7 @@ var Resource = require('dw/web/Resource');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
-var addressHelper = require('~/cartridge/scripts/subpro/helpers/AddressHelper');
+var addressHelper = require('~/cartridge/scripts/subpro/helpers/addressHelper');
 var subproEnabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproEnabled');
 
 var page = module.superModule;

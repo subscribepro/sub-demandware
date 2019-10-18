@@ -7,7 +7,7 @@ var server = require('server');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
-var paymentsHelper = require('~/cartridge/scripts/subpro/helpers/PaymentsHelper');
+var paymentsHelper = require('~/cartridge/scripts/subpro/helpers/paymentsHelper');
 var subproEnabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproEnabled');
 
 var page = module.superModule;

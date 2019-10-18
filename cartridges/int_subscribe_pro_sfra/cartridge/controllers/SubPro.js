@@ -1,7 +1,7 @@
 'use strict';
 
 var server = require('server');
-var SubscribeProLib = require('/int_subscribe_pro_sfra/cartridge/scripts/subpro/lib/SubscribeProLib');
+var SubscribeProLib = require('/int_subscribe_pro_sfra/cartridge/scripts/subpro/lib/subscribeProLib');
 var ProductMgr = require('dw/catalog/ProductMgr');
 var URLUtils = require('dw/web/URLUtils');
 var BasketMgr = require('dw/order/BasketMgr');

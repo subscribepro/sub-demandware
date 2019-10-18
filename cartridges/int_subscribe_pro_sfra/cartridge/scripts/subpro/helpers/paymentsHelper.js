@@ -2,7 +2,7 @@
 
 var Transaction = require('dw/system/Transaction');
 var Logger = require('dw/system/Logger');
-var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/SubscribeProLib');
+var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/subscribeProLib');
 
 /**
  * Provides an interface to handle Subscribe Pro payment objects.

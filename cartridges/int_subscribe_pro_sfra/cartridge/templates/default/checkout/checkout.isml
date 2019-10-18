@@ -5,7 +5,7 @@
     <!----------------------------------------------------------------------------------->
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
-        var SubscribeProLib = require('/int_subscribe_pro_sfra/cartridge/scripts/subpro/lib/SubscribeProLib.js');
+        var SubscribeProLib = require('/int_subscribe_pro_sfra/cartridge/scripts/subpro/lib/subscribeProLib.js');
         assets.addJs('/js/checkout.js');
         assets.addCss('/css/checkout/checkout.css');
     </isscript>

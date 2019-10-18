@@ -58,7 +58,7 @@
             <!-- Pass configuration and init the Subscribe Pro widget -->
             <script>
                 // Setup config for Subscribe Pro
-                var widgetConfig = "<isprint value="${JSON.stringify(${require('~/cartridge/scripts/subpro/helpers/WidgetsHelper').getWidgetConfig(customer.profile.custom.subproCustomerID, 'client_credentials', 'widget', 'sp-wallet-assist-widget')})}" encoding="jsblock" />";
+                var widgetConfig = "<isprint value="${JSON.stringify(${require('~/cartridge/scripts/subpro/helpers/widgetsHelper').getWidgetConfig(customer.profile.custom.subproCustomerID, 'client_credentials', 'widget', 'sp-wallet-assist-widget')})}" encoding="jsblock" />";
                 WalletAssist.init(JSON.parse(widgetConfig));
                 <isif condition="${pdict.newCard != 'null'}">
                     var newCard = "<isprint value="${pdict.newCard}" encoding="jsblock" />";
