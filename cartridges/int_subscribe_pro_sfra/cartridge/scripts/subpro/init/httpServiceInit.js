@@ -60,6 +60,15 @@ module.exports.SubproHttpGetConfig = LocalServiceRegistry.createService('subpro.
      */
     parseResponse: function (svc, client) {
         return JSON.parse(client.text);
+    },
+
+    /**
+     * Filter Log messages for this request
+     * @param {string} msg Original message
+     * @return {string} Filtered message
+     */
+    filterLogMessage: function (msg) {
+        return msg;
     }
 });
 
@@ -88,6 +97,15 @@ module.exports.SubproHttpGetSubscriptions = LocalServiceRegistry.createService('
      */
     parseResponse: function (svc, client) {
         return JSON.parse(client.text);
+    },
+
+    /**
+     * Filter Log messages for this request
+     * @param {string} msg Original message
+     * @return {string} Filtered message
+     */
+    filterLogMessage: function (msg) {
+        return msg;
     }
 });
 
@@ -122,6 +140,15 @@ module.exports.SubproHttpPostSubscription = LocalServiceRegistry.createService('
      */
     parseResponse: function (svc, client) {
         return JSON.parse(client.text);
+    },
+
+    /**
+     * Filter Log messages for this request
+     * @param {string} msg Original message
+     * @return {string} Filtered message
+     */
+    filterLogMessage: function (msg) {
+        return msg;
     }
 });
 
@@ -167,6 +194,15 @@ module.exports.SubproHttpPostAddresses = LocalServiceRegistry.createService('sub
      */
     parseResponse: function (svc, client) {
         return JSON.parse(client.text);
+    },
+
+    /**
+     * Filter Log messages for this request
+     * @param {string} msg Original message
+     * @return {string} Filtered message
+     */
+    filterLogMessage: function (msg) {
+        return msg;
     }
 });
 
@@ -201,6 +237,15 @@ module.exports.SubproHttpPostAddressfindcreate = LocalServiceRegistry.createServ
      */
     parseResponse: function (svc, client) {
         return JSON.parse(client.text);
+    },
+
+    /**
+     * Filter Log messages for this request
+     * @param {string} msg Original message
+     * @return {string} Filtered message
+     */
+    filterLogMessage: function (msg) {
+        return msg;
     }
 });
 
@@ -227,6 +272,15 @@ module.exports.SubproHttpGetAddresses = LocalServiceRegistry.createService('subp
      */
     parseResponse: function (svc, client) {
         return JSON.parse(client.text);
+    },
+
+    /**
+     * Filter Log messages for this request
+     * @param {string} msg Original message
+     * @return {string} Filtered message
+     */
+    filterLogMessage: function (msg) {
+        return msg;
     }
 });
 
@@ -253,6 +307,15 @@ module.exports.SubproHttpGetProducts = LocalServiceRegistry.createService('subpr
      */
     parseResponse: function (svc, client) {
         return JSON.parse(client.text);
+    },
+
+    /**
+     * Filter Log messages for this request
+     * @param {string} msg Original message
+     * @return {string} Filtered message
+     */
+    filterLogMessage: function (msg) {
+        return msg;
     }
 });
 
@@ -284,6 +347,15 @@ module.exports.SubproHttpGetCustomers = LocalServiceRegistry.createService('subp
      */
     parseResponse: function (svc, client) {
         return JSON.parse(client.text);
+    },
+
+    /**
+     * Filter Log messages for this request
+     * @param {string} msg Original message
+     * @return {string} Filtered message
+     */
+    filterLogMessage: function (msg) {
+        return msg;
     }
 });
 
@@ -317,6 +389,15 @@ module.exports.SubproHttpPostCustomer = LocalServiceRegistry.createService('subp
      */
     parseResponse: function (svc, client) {
         return JSON.parse(client.text);
+    },
+
+    /**
+     * Filter Log messages for this request
+     * @param {string} msg Original message
+     * @return {string} Filtered message
+     */
+    filterLogMessage: function (msg) {
+        return msg;
     }
 });
 
@@ -351,6 +432,15 @@ module.exports.SubproHttpPostCustomers = LocalServiceRegistry.createService('sub
      */
     parseResponse: function (svc, client) {
         return JSON.parse(client.text);
+    },
+
+    /**
+     * Filter Log messages for this request
+     * @param {string} msg Original message
+     * @return {string} Filtered message
+     */
+    filterLogMessage: function (msg) {
+        return msg;
     }
 });
 
@@ -378,6 +468,15 @@ module.exports.SubproHttpGetToken = LocalServiceRegistry.createService('subpro.h
      */
     parseResponse: function (svc, client) {
         return JSON.parse(client.text);
+    },
+
+    /**
+     * Filter Log messages for this request
+     * @param {string} msg Original message
+     * @return {string} Filtered message
+     */
+    filterLogMessage: function (msg) {
+        return msg;
     }
 });
 
@@ -410,6 +509,15 @@ module.exports.SubproHttpGetPaymentprofile = LocalServiceRegistry.createService(
      */
     parseResponse: function (svc, client) {
         return JSON.parse(client.text);
+    },
+
+    /**
+     * Filter Log messages for this request
+     * @param {string} msg Original message
+     * @return {string} Filtered message
+     */
+    filterLogMessage: function (msg) {
+        return msg;
     }
 });
 
@@ -444,5 +552,14 @@ module.exports.SubproHttpPostPaymentprofileVault = LocalServiceRegistry.createSe
      */
     parseResponse: function (svc, client) {
         return JSON.parse(client.text);
+    },
+
+    /**
+     * Filter Log messages for this request
+     * @param {string} msg Original message
+     * @return {string} Filtered message
+     */
+    filterLogMessage: function (msg) {
+        return msg;
     }
 });
