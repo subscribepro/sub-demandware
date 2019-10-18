@@ -10,8 +10,6 @@
         assets.addCss('/css/checkout/checkout.css');
     </isscript>
 
-    <isset name="isSubPro" value="${SubscribeProLib.isSubPro()}" scope="page" />
-
     <isif condition="${pdict.reportingURLs && pdict.reportingURLs.length}">
         <isinclude template="reporting/reportingUrls" />
     </isif>

@@ -1,9 +1,8 @@
 <iscontent type="text/html" charset="UTF-8" compact="true" />
 
-<isset name="product" value="${pdict.product}" scope="page" />
-<isif condition="${product.selected_option_mode != 'onetime'}">
+<isif condition="${pdict.product.selected_option_mode != 'onetime'}">
     <div class="subpro-options ${pdict.page}">
         <div class="line-item-attributes mode">${Resource.msg('order.subscription.delivery.regular', 'order', null)}</div>
-        <div class="line-item-attributes interval">${Resource.msg('order.subscription.delivery.interval', 'order', null)}: ${product.selected_interval}</div>
+        <div class="line-item-attributes interval">${Resource.msg('order.subscription.delivery.interval', 'order', null)}: ${pdict.product.selected_interval}</div>
     </div>
 </isif>

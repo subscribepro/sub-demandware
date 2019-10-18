@@ -103,13 +103,13 @@
     <div class="col">
         <isif condition="${pdict.customer.registeredUser}">
             <div class="save-credit-card custom-control custom-checkbox ">
-                <isif condition="${isSubPro}">
+                <isif condition="${SubscribeProLib.isSubPro()}">
                 <input type="checkbox" class="custom-control-input" id="saveCreditCard" name="${creditFields.saveCard.htmlName}" value="true" disabled="disabled" checked>
                 <iselse>
                 <input type="checkbox" class="custom-control-input" id="saveCreditCard" name="${creditFields.saveCard.htmlName}" value="true" checked>
                 </isif>
                 <label class="custom-control-label" for="saveCreditCard">
-                    ${creditFields.saveCard.label} (<isif condition="${isSubPro}">${Resource.msg('saveCard.subscription', 'checkout', null)}</isif>)
+                    ${creditFields.saveCard.label} (<isif condition="${SubscribeProLib.isSubPro()}">${Resource.msg('saveCard.subscription', 'checkout', null)}</isif>)
                 </label>
             </div>
         </isif>
