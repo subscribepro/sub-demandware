@@ -205,9 +205,8 @@ server.replace('SavePayment', csrfProtection.validateAjaxRequest, function (req,
     return next();
 });
 
-server.replace('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req, res, next) {
+server.prepend('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req, res, next) {
     var array = require('*/cartridge/scripts/util/array');
-    var accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
 
     var data = res.getViewData();
     if (data && !data.loggedin) {
@@ -217,41 +216,13 @@ server.replace('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req
 
     var UUID = req.querystring.UUID;
     var paymentInstruments = req.currentCustomer.wallet.paymentInstruments;
-    var paymentToDelete = array.find(paymentInstruments, function (item) {
+    var payment = array.find(paymentInstruments, function (item) {
         return UUID === item.UUID;
     });
-    res.setViewData(paymentToDelete);
-    this.on('route:BeforeComplete', function () { // eslint-disable-line no-shadow
-        var CustomerMgr = require('dw/customer/CustomerMgr');
-        var Transaction = require('dw/system/Transaction');
-        var Resource = require('dw/web/Resource');
-
-        var payment = res.getViewData();
-        var customer = CustomerMgr.getCustomerByCustomerNumber(
-            req.currentCustomer.profile.customerNo
-        );
-        var wallet = customer.getProfile().getWallet();
-
-        Transaction.wrap(function () {
-            session.privacy.deletedCard = {
-                sp: paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, payment.raw, {}, true),
-                sfcc: payment
-            };
-            wallet.removePaymentInstrument(payment.raw);
-        });
-
-        // Send account edited email
-        accountHelpers.sendAccountEditedEmail(customer.profile);
-
-        if (wallet.getPaymentInstruments().length === 0) {
-            res.json({
-                UUID: UUID,
-                message: Resource.msg('msg.no.saved.payments', 'payment', null)
-            });
-        } else {
-            res.json({ UUID: UUID });
-        }
-    });
+    session.privacy.deletedCard = {
+        sp: paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, payment.raw, {}, true),
+        sfcc: payment
+    };
 
     return next();
 });

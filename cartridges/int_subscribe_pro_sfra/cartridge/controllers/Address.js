@@ -151,10 +151,8 @@ server.replace('SaveAddress', csrfProtection.validateAjaxRequest, function (req,
     return next();
 });
 
-server.replace('DeleteAddress', userLoggedIn.validateLoggedInAjax, function (req, res, next) {
+server.prepend('DeleteAddress', userLoggedIn.validateLoggedInAjax, function (req, res, next) {
     var CustomerMgr = require('dw/customer/CustomerMgr');
-    var Transaction = require('dw/system/Transaction');
-    var accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
 
     var data = res.getViewData();
     if (data && !data.loggedin) {
@@ -163,49 +161,19 @@ server.replace('DeleteAddress', userLoggedIn.validateLoggedInAjax, function (req
     }
 
     var addressId = req.querystring.addressId;
-    var isDefault = req.querystring.isDefault;
     var customer = CustomerMgr.getCustomerByCustomerNumber(
         req.currentCustomer.profile.customerNo
     );
     var addressBook = customer.getProfile().getAddressBook();
     var address = addressBook.getAddress(addressId);
-    var UUID = address.getUUID();
-    this.on('route:BeforeComplete', function () { // eslint-disable-line no-shadow
-        var length;
-        Transaction.wrap(function () {
-            if (subproEnabled) {
-                session.privacy.deletedAddress = {
-                    sp: addressHelper.getSubproAddress(address, session.customer.profile, true, true),
-                    sfcc: address
-                };
-            }
+    if (subproEnabled) {
+        session.privacy.deletedAddress = {
+            sp: addressHelper.getSubproAddress(address, session.customer.profile, true, true),
+            sfcc: address
+        };
+    }
 
-            addressBook.removeAddress(address);
-            length = addressBook.getAddresses().length;
-            if (isDefault && length > 0) {
-                var newDefaultAddress = addressBook.getAddresses()[0];
-                addressBook.setPreferredAddress(newDefaultAddress);
-            }
-        });
-
-        // Send account edited email
-        accountHelpers.sendAccountEditedEmail(customer.profile);
-
-        if (length === 0) {
-            res.json({
-                UUID: UUID,
-                defaultMsg: Resource.msg('label.addressbook.defaultaddress', 'account', null),
-                message: Resource.msg('msg.no.saved.addresses', 'address', null)
-            });
-        } else {
-            res.json({
-                UUID: UUID,
-                defaultMsg: Resource.msg('label.addressbook.defaultaddress', 'account', null)
-            });
-        }
-    });
     return next();
 });
-
 
 module.exports = server.exports();
