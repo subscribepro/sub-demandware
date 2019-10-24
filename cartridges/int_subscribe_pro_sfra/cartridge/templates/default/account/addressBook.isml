@@ -75,7 +75,7 @@
                 </isif>
                 <isif condition="${pdict.updatedAddress != 'null'}">
                     var updatedAddress = "<isprint value="${pdict.updatedAddress}" encoding="jsblock" />";
-                    AddressBookAssist.onAddressUpdated(updatedAddress);
+                    AddressBookAssist.onAddressUpdated(JSON.parse(updatedAddress));
                 </isif>
                 <isif condition="${pdict.deletedAddress != 'null'}">
                     var deletedAddress = "<isprint value="${pdict.deletedAddress}" encoding="jsblock" />";

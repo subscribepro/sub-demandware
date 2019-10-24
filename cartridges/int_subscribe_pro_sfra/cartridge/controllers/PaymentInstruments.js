@@ -143,65 +143,36 @@ server.get('SetSPPaymentProfileID', function (req, res, next) {
     next();
 });
 
-server.replace('SavePayment', csrfProtection.validateAjaxRequest, function (req, res, next) {
-    var formErrors = require('*/cartridge/scripts/formErrors');
-    var HookMgr = require('dw/system/HookMgr');
-    var PaymentMgr = require('dw/order/PaymentMgr');
-    var dwOrderPaymentInstrument = require('dw/order/PaymentInstrument');
-    var accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
-
-    var paymentForm = server.forms.getForm('creditCard');
-    var result = getDetailsObject(paymentForm);
-
-    if (paymentForm.valid && !verifyCard(result, paymentForm)) {
-        res.setViewData(result);
-        this.on('route:BeforeComplete', function (req, res) { // eslint-disable-line no-shadow
-            var URLUtils = require('dw/web/URLUtils');
-            var CustomerMgr = require('dw/customer/CustomerMgr');
-            var Transaction = require('dw/system/Transaction');
-
-            var formInfo = res.getViewData();
-            var customer = CustomerMgr.getCustomerByCustomerNumber(
-                req.currentCustomer.profile.customerNo
-            );
-            var wallet = customer.getProfile().getWallet();
-
-            Transaction.wrap(function () {
-                var paymentInstrument = wallet.createPaymentInstrument(dwOrderPaymentInstrument.METHOD_CREDIT_CARD);
-                paymentInstrument.setCreditCardHolder(formInfo.name);
-                paymentInstrument.setCreditCardNumber(formInfo.cardNumber);
-                paymentInstrument.setCreditCardType(formInfo.cardType);
-                paymentInstrument.setCreditCardExpirationMonth(formInfo.expirationMonth);
-                paymentInstrument.setCreditCardExpirationYear(formInfo.expirationYear);
-
-                var processor = PaymentMgr.getPaymentMethod(dwOrderPaymentInstrument.METHOD_CREDIT_CARD).getPaymentProcessor();
-                var token = HookMgr.callHook(
-                    'app.payment.processor.' + processor.ID.toLowerCase(),
-                    'createToken'
-                );
-
-                paymentInstrument.setCreditCardToken(token);
-
-                session.privacy.newCard = {
-                    sp: paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, paymentInstrument, {}, false),
-                    sfcc: paymentInstrument
-                };
-            });
-
-            // Send account edited email
-            accountHelpers.sendAccountEditedEmail(customer.profile);
-
-            res.json({
-                success: true,
-                redirectUrl: URLUtils.url('PaymentInstruments-List').toString()
-            });
-        });
-    } else {
-        res.json({
-            success: false,
-            fields: formErrors.getFormErrors(paymentForm)
-        });
+server.append('SavePayment', csrfProtection.validateAjaxRequest, function (req, res, next) {
+    var CustomerMgr = require('dw/customer/CustomerMgr');
+    if (!subproEnabled) {
+        return next();
     }
+    this.on('route:Complete', function (req, res) { // eslint-disable-line no-shadow
+        var viewData = res.getViewData();
+        var cardNum = viewData.cardNumber;
+        var last4 = cardNum.substring(cardNum.length - 4);
+        var customer = CustomerMgr.getCustomerByCustomerNumber(
+            req.currentCustomer.profile.customerNo
+        );
+        var wallet = customer.getProfile().getWallet();
+        var savedCard = null;
+        var savedCards = wallet.getPaymentInstruments('CREDIT_CARD');
+        for (var i = 0; i < savedCards.length; i++) {
+            if (savedCards[i].getCreditCardNumberLastDigits() == last4) {
+                savedCard = savedCards[i];
+                break;
+            }
+        }
+        if (!savedCard) {
+            return next();
+        }
+
+        session.privacy.newCard = {
+            sp: paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, savedCard, {}, false),
+            sfcc: savedCard
+        };
+    });
     return next();
 });
 
