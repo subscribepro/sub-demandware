@@ -6,11 +6,11 @@ var subscribeProLibMock = require('../../../../../mocks/scripts/SubscribeProLibM
 var PaymentMgr = require('../../../../../mocks/dw/order/PaymentMgr');
 var OrderPaymentInstrument = require('../../../../../mocks/dw/order/OrderPaymentInstrument');
 var OrderAddress = require('../../../../../mocks/dw/order/OrderAddress');
-var paymentsHelper = proxyquire('../../../../../../cartridges/int_subscribe_pro_sfra/cartridge/scripts/subpro/helpers/PaymentsHelper', {
+var paymentsHelper = proxyquire('../../../../../../cartridges/int_subscribe_pro_sfra/cartridge/scripts/subpro/helpers/paymentsHelper', {
     'dw/system/Logger': loggerMock,
     'dw/system/Transaction': transactionMock,
     'dw/order/PaymentMgr': PaymentMgr,
-    '~/cartridge/scripts/subpro/lib/SubscribeProLib': subscribeProLibMock
+    '~/cartridge/scripts/subpro/lib/subscribeProLib': subscribeProLibMock
 });
 var paymentsMockData = require('../../../../../mocks/scripts/PaymentProfileMockData');
 var customerMockData = require('../../../../../mocks/scripts/CustomerMockData');

@@ -1,6 +1,6 @@
 cartridges/int_subscribe_pro_sfra/cartridge/static/
 cartridges/app_storefront_core/
 cartridges/app_storefront_controllers/
-dw.json
+dw*.json
 node_modules/
 package-lock.json

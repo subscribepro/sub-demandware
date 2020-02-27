@@ -2,7 +2,7 @@ var assert = require('chai').assert;
 var loggerMock = require('../../../../../mocks/dw/system/Logger');
 var proxyquire = require('proxyquire').noCallThru().noPreserveCache();
 var transactionMock = require('../../../../../mocks/dw/system/Transaction');
-var addressHelper = proxyquire('../../../../../../cartridges/int_subscribe_pro_sfra/cartridge/scripts/subpro/helpers/AddressHelper', {
+var addressHelper = proxyquire('../../../../../../cartridges/int_subscribe_pro_sfra/cartridge/scripts/subpro/helpers/addressHelper', {
     'dw/system/Logger': loggerMock,
     'dw/system/Transaction': transactionMock
 });

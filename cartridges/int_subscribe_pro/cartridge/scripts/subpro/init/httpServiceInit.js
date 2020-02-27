@@ -49,13 +49,13 @@ function setURL(svc, endpoint, parameters, credPrefix) {
 module.exports.SubproHttpGetConfig = LocalServiceRegistry.createService(
     'subpro.http.get.config',
     {
-    /**
-     * Create the service request
-     * - Set request method to be the HTTP GET method
-     * - Append the customer as a URL parameter
-     * @param {HTTPService} svc Service object
-     * @param {array} args Arguments
-     */
+        /**
+         * Create the service request
+         * - Set request method to be the HTTP GET method
+         * - Append the customer as a URL parameter
+         * @param {HTTPService} svc Service object
+         * @param {array} args Arguments
+         */
         createRequest: function (svc, args) {
             svc.setRequestMethod('GET');
             setURL(svc, 'config.json', '');
@@ -65,6 +65,11 @@ module.exports.SubproHttpGetConfig = LocalServiceRegistry.createService(
             return JSON.parse(client.text);
         },
 
+        /**
+         * Filter Log messages for this request
+         * @param {string} msg Original message
+         * @return {string} Filtered message
+         */
         filterLogMessage: function (msg) {
             return msg;
         }
@@ -78,13 +83,13 @@ module.exports.SubproHttpGetConfig = LocalServiceRegistry.createService(
 module.exports.SubproHttpGetSubscriptions = LocalServiceRegistry.createService(
     'subpro.http.get.subscriptions',
     {
-    /**
-     * Create the service request
-     * - Set request method to be the HTTP GET method
-     * - Append the customer as a URL parameter
-     * @param {HTTPService} svc Service Object
-     * @param {Object} args Arguments
-     */
+        /**
+         * Create the service request
+         * - Set request method to be the HTTP GET method
+         * - Append the customer as a URL parameter
+         * @param {HTTPService} svc Service Object
+         * @param {Object} args Arguments
+         */
         createRequest: function (svc, args) {
             svc.setRequestMethod('GET');
             setURL(
@@ -98,6 +103,11 @@ module.exports.SubproHttpGetSubscriptions = LocalServiceRegistry.createService(
             return JSON.parse(client.text);
         },
 
+        /**
+         * Filter Log messages for this request
+         * @param {string} msg Original message
+         * @return {string} Filtered message
+         */
         filterLogMessage: function (msg) {
             return msg;
         }
@@ -111,19 +121,19 @@ module.exports.SubproHttpGetSubscriptions = LocalServiceRegistry.createService(
 module.exports.SubproHttpPostSubscription = LocalServiceRegistry.createService(
     'subpro.http.post.subscription',
     {
-    /**
-     * Create the service request
-     * @param {HTTPService} svc Service Object
-     * @param {Object} args Arguments
-     * @return {string|null} JSON string of parameters POSTed.
-     */
+        /**
+             * Create the service request
+             * @param {HTTPService} svc Service Object
+             * @param {Object} args Arguments
+             * @return {string|null} JSON string of parameters POSTed.
+             */
         createRequest: function (svc, args) {
             svc.setRequestMethod('POST');
             setURL(svc, 'subscription.json', '');
 
             /**
-       * Return the parameters to be POSTed to the URL, if there are any
-       */
+             * Return the parameters to be POSTed to the URL, if there are any
+             */
             if (args) {
                 return JSON.stringify({ subscription: args.subscription });
             }
@@ -133,6 +143,11 @@ module.exports.SubproHttpPostSubscription = LocalServiceRegistry.createService(
             return JSON.parse(client.text);
         },
 
+        /**
+         * Filter Log messages for this request
+         * @param {string} msg Original message
+         * @return {string} Filtered message
+         */
         filterLogMessage: function (msg) {
             return msg;
         }
@@ -146,12 +161,12 @@ module.exports.SubproHttpPostSubscription = LocalServiceRegistry.createService(
 module.exports.SubproHttpPostAddresses = LocalServiceRegistry.createService(
     'subpro.http.post.addresses',
     {
-    /**
-     * Create the service request
-     * @param {HTTPFormService} svc Form service
-     * @param {Object} args Arguments
-     * @return {string|null} JSON string of parameters POSTed.
-     */
+        /**
+         * Create the service request
+         * @param {HTTPFormService} svc Form service
+         * @param {Object} args Arguments
+         * @return {string|null} JSON string of parameters POSTed.
+         */
         createRequest: function (svc, args) {
             /**
        * Since the service type is HTTP Form, this is unnecessary but was added anyway to show the functionality
@@ -168,8 +183,8 @@ module.exports.SubproHttpPostAddresses = LocalServiceRegistry.createService(
             }
 
             /**
-       * Return the parameters to be POSTed to the URL, if there are any
-       */
+             * Return the parameters to be POSTed to the URL, if there are any
+             */
             if (args) {
                 return JSON.stringify({ address: args.address });
             }
@@ -179,6 +194,11 @@ module.exports.SubproHttpPostAddresses = LocalServiceRegistry.createService(
             return JSON.parse(client.text);
         },
 
+        /**
+         * Filter Log messages for this request
+         * @param {string} msg Original message
+         * @return {string} Filtered message
+         */
         filterLogMessage: function (msg) {
             return msg;
         }
@@ -192,19 +212,19 @@ module.exports.SubproHttpPostAddresses = LocalServiceRegistry.createService(
 module.exports.SubproHttpPostAddressfindcreate = LocalServiceRegistry.createService(
     'subpro.http.post.addressfindcreate',
     {
-    /**
-     * Create the service request
-     * @param {HTTPFormService} svc Form service
-     * @param {Object} args Arguments
-     * @return {string|null} JSON string of parameters POSTed.
-     */
+        /**
+         * Create the service request
+         * @param {HTTPFormService} svc Form service
+         * @param {Object} args Arguments
+         * @return {string|null} JSON string of parameters POSTed.
+         */
         createRequest: function (svc, args) {
             svc.setRequestMethod('POST');
             setURL(svc, 'address/find-or-create.json', '');
 
             /**
-       * Return the parameters to be POSTed to the URL, if there are any
-       */
+             * Return the parameters to be POSTed to the URL, if there are any
+             */
             if (args) {
                 return JSON.stringify({ address: args.address });
             }
@@ -214,6 +234,11 @@ module.exports.SubproHttpPostAddressfindcreate = LocalServiceRegistry.createServ
             return JSON.parse(client.text);
         },
 
+        /**
+         * Filter Log messages for this request
+         * @param {string} msg Original message
+         * @return {string} Filtered message
+         */
         filterLogMessage: function (msg) {
             return msg;
         }
@@ -227,11 +252,11 @@ module.exports.SubproHttpPostAddressfindcreate = LocalServiceRegistry.createServ
 module.exports.SubproHttpGetAddresses = LocalServiceRegistry.createService(
     'subpro.http.get.addresses',
     {
-    /**
-     * Create the service request
-     * @param {HTTPFormService} svc Form service
-     * @param {Object} args Arguments
-     */
+        /**
+         * Create the service request
+         * @param {HTTPFormService} svc Form service
+         * @param {Object} args Arguments
+         */
         createRequest: function (svc, args) {
             svc.setRequestMethod('GET');
             setURL(
@@ -245,6 +270,11 @@ module.exports.SubproHttpGetAddresses = LocalServiceRegistry.createService(
             return JSON.parse(client.text);
         },
 
+        /**
+         * Filter Log messages for this request
+         * @param {string} msg Original message
+         * @return {string} Filtered message
+         */
         filterLogMessage: function (msg) {
             return msg;
         }
@@ -258,11 +288,11 @@ module.exports.SubproHttpGetAddresses = LocalServiceRegistry.createService(
 module.exports.SubproHttpGetProducts = LocalServiceRegistry.createService(
     'subpro.http.get.products',
     {
-    /**
-     * Create the service request
-     * @param {HTTPFormService} svc Form service
-     * @param {Object} args Arguments
-     */
+        /**
+         * Create the service request
+         * @param {HTTPFormService} svc Form service
+         * @param {Object} args Arguments
+         */
         createRequest: function (svc, args) {
             svc.setRequestMethod('GET');
             setURL(svc, 'products.json', 'sku=' + Encoding.toURI(args.sku));
@@ -272,6 +302,11 @@ module.exports.SubproHttpGetProducts = LocalServiceRegistry.createService(
             return JSON.parse(client.text);
         },
 
+        /**
+         * Filter Log messages for this request
+         * @param {string} msg Original message
+         * @return {string} Filtered message
+         */
         filterLogMessage: function (msg) {
             return msg;
         }
@@ -285,11 +320,11 @@ module.exports.SubproHttpGetProducts = LocalServiceRegistry.createService(
 module.exports.SubproHttpGetCustomers = LocalServiceRegistry.createService(
     'subpro.http.get.customers',
     {
-    /**
-     * Create the service request
-     * @param {HTTPFormService} svc Form service
-     * @param {Object} args Arguments
-     */
+        /**
+         * Create the service request
+         * @param {HTTPFormService} svc Form service
+         * @param {Object} args Arguments
+         */
         createRequest: function (svc, args) {
             svc.setRequestMethod('GET');
 
@@ -308,6 +343,11 @@ module.exports.SubproHttpGetCustomers = LocalServiceRegistry.createService(
             return JSON.parse(client.text);
         },
 
+        /**
+         * Filter Log messages for this request
+         * @param {string} msg Original message
+         * @return {string} Filtered message
+         */
         filterLogMessage: function (msg) {
             return msg;
         }
@@ -321,19 +361,19 @@ module.exports.SubproHttpGetCustomers = LocalServiceRegistry.createService(
 module.exports.SubproHttpPostCustomer = LocalServiceRegistry.createService(
     'subpro.http.post.customer',
     {
-    /**
-     * Create the service request
-     * @param {HTTPFormService} svc Form service
-     * @param {Object} args Arguments
-     * @return {string|null} JSON string of parameters POSTed.
-     */
+        /**
+         * Create the service request
+         * @param {HTTPFormService} svc Form service
+         * @param {Object} args Arguments
+         * @return {string|null} JSON string of parameters POSTed.
+         */
         createRequest: function (svc, args) {
             svc.setRequestMethod('POST');
             setURL(svc, 'customer.json', '');
 
             /**
-       * Return the parameters to be POSTed to the URL, if there are any
-       */
+             * Return the parameters to be POSTed to the URL, if there are any
+             */
             if (args) {
                 return JSON.stringify({ customer: args.customer });
             }
@@ -342,6 +382,11 @@ module.exports.SubproHttpPostCustomer = LocalServiceRegistry.createService(
             return JSON.parse(client.text);
         },
 
+        /**
+         * Filter Log messages for this request
+         * @param {string} msg Original message
+         * @return {string} Filtered message
+         */
         filterLogMessage: function (msg) {
             return msg;
         }
@@ -355,12 +400,12 @@ module.exports.SubproHttpPostCustomer = LocalServiceRegistry.createService(
 module.exports.SubproHttpPostCustomers = LocalServiceRegistry.createService(
     'subpro.http.post.customers',
     {
-    /**
-     * Create the service request
-     * @param {HTTPFormService} svc Form service
-     * @param {Object} args Arguments
-     * @return {string|null} JSON string of parameters POSTed.
-     */
+        /**
+         * Create the service request
+         * @param {HTTPFormService} svc Form service
+         * @param {Object} args Arguments
+         * @return {string|null} JSON string of parameters POSTed.
+         */
         createRequest: function (svc, args) {
             svc.setRequestMethod('POST');
             setURL(
@@ -370,8 +415,8 @@ module.exports.SubproHttpPostCustomers = LocalServiceRegistry.createService(
             );
 
             /**
-       * Return the parameters to be POSTed to the URL, if there are any
-       */
+             * Return the parameters to be POSTed to the URL, if there are any
+             */
             if (args) {
                 return JSON.stringify({ customer: args.customer });
             }
@@ -381,6 +426,11 @@ module.exports.SubproHttpPostCustomers = LocalServiceRegistry.createService(
             return JSON.parse(client.text);
         },
 
+        /**
+         * Filter Log messages for this request
+         * @param {string} msg Original message
+         * @return {string} Filtered message
+         */
         filterLogMessage: function (msg) {
             return msg;
         }
@@ -394,11 +444,11 @@ module.exports.SubproHttpPostCustomers = LocalServiceRegistry.createService(
 module.exports.SubproHttpGetToken = LocalServiceRegistry.createService(
     'subpro.http.get.token',
     {
-    /**
-     * Create the service request
-     * @param {HTTPFormService} svc Form service
-     * @param {Object} args Arguments
-     */
+        /**
+         * Create the service request
+         * @param {HTTPFormService} svc Form service
+         * @param {Object} args Arguments
+         */
         createRequest: function (svc, args) {
             svc.setRequestMethod('GET');
             setURL(
@@ -424,6 +474,11 @@ module.exports.SubproHttpGetToken = LocalServiceRegistry.createService(
             return JSON.parse(client.text);
         },
 
+        /**
+         * Filter Log messages for this request
+         * @param {string} msg Original message
+         * @return {string} Filtered message
+         */
         filterLogMessage: function (msg) {
             return msg;
         }
@@ -437,11 +492,11 @@ module.exports.SubproHttpGetToken = LocalServiceRegistry.createService(
 module.exports.SubproHttpGetPaymentprofile = LocalServiceRegistry.createService(
     'subpro.http.get.paymentprofile',
     {
-    /**
-     * Create the service request
-     * @param {HTTPFormService} svc Form service
-     * @param {Object} args Arguments
-     */
+        /**
+         * Create the service request
+         * @param {HTTPFormService} svc Form service
+         * @param {Object} args Arguments
+         */
         createRequest: function (svc, args) {
             svc.setRequestMethod('GET');
             if (args.paymentprofile_id) {
@@ -475,6 +530,11 @@ module.exports.SubproHttpGetPaymentprofile = LocalServiceRegistry.createService(
             return JSON.parse(client.text);
         },
 
+        /**
+         * Filter Log messages for this request
+         * @param {string} msg Original message
+         * @return {string} Filtered message
+         */
         filterLogMessage: function (msg) {
             return msg;
         }
@@ -488,19 +548,19 @@ module.exports.SubproHttpGetPaymentprofile = LocalServiceRegistry.createService(
 module.exports.SubproHttpPostPaymentprofileVault = LocalServiceRegistry.createService(
     'subpro.http.post.paymentprofile.vault',
     {
-    /**
-     * Create the service request
-     * @param {HTTPFormService} svc Form service
-     * @param {Object} args Arguments
-     * @return {string|null} JSON string of parameters POSTed.
-     */
+        /**
+         * Create the service request
+         * @param {HTTPFormService} svc Form service
+         * @param {Object} args Arguments
+         * @return {string|null} JSON string of parameters POSTed.
+         */
         createRequest: function (svc, args) {
             svc.setRequestMethod('POST');
             setURL(svc, 'vault/paymentprofile/external-vault.json', '');
 
             /**
-       * Return the parameters to be POSTed to the URL, if there are any
-       */
+             * Return the parameters to be POSTed to the URL, if there are any
+             */
             if (args) {
                 return JSON.stringify({ payment_profile: args.paymentProfile });
             }
@@ -516,6 +576,11 @@ module.exports.SubproHttpPostPaymentprofileVault = LocalServiceRegistry.createSe
             return JSON.parse(client.text);
         },
 
+        /**
+         * Filter Log messages for this request
+         * @param {string} msg Original message
+         * @return {string} Filtered message
+         */
         filterLogMessage: function (msg) {
             return msg;
         }
