@@ -61,11 +61,10 @@ server.get('Cart', function (req, res, next) {
 
         var schedulingHelper = require('/int_subscribe_pro_sfra/cartridge/scripts/subpro/helpers/schedulingHelper.js');
         var productSchedule = schedulingHelper.getAvailableScheduleData(spproduct);
-        productSchedule = schedulingHelper.getScheduleFromPli(pli, productSchedule);
-
-        var Logger = require('dw/system/Logger');
-        Logger.info('Schedule');
-        Logger.info(productSchedule);
+        pliScheduleData = schedulingHelper.getScheduleParamsFromPli(pli, schedulingHelper.getProductScheduleType(spproduct));
+        for (var i in pliScheduleData) {
+            productSchedule[i] = pliScheduleData[i];
+        }
 
         var productData = {
             ID: pli.getProductID(),
@@ -105,7 +104,10 @@ server.get('OrderSummary', function (req, res, next) {
         var spproduct = response.result.products.pop();
         var schedulingHelper = require('/int_subscribe_pro_sfra/cartridge/scripts/subpro/helpers/schedulingHelper.js');
         var productSchedule = schedulingHelper.getAvailableScheduleData(spproduct);
-        productSchedule = schedulingHelper.getScheduleFromPli(pli, productSchedule);
+        pliScheduleData = schedulingHelper.getScheduleParamsFromPli(pli, schedulingHelper.getProductScheduleType(spproduct));
+        for (var i in pliScheduleData) {
+            productSchedule[i] = pliScheduleData[i];
+        }
 
         res.render('subpro/cart/subprooptions', {
             product: product,
@@ -142,7 +144,10 @@ server.get('OrderConfirmation', function (req, res, next) {
                     var spproduct = response.result.products.pop();
                     var schedulingHelper = require('/int_subscribe_pro_sfra/cartridge/scripts/subpro/helpers/schedulingHelper.js');
                     var productSchedule = schedulingHelper.getAvailableScheduleData(spproduct);
-                    productSchedule = schedulingHelper.getScheduleFromPli(pli, productSchedule);
+                    pliScheduleData = schedulingHelper.getScheduleParamsFromPli(pli, schedulingHelper.getProductScheduleType(spproduct));
+                    for (var k in pliScheduleData) {
+                        productSchedule[k] = pliScheduleData[k];
+                    }
 
                     res.render('subpro/cart/subprooptions', {
                         product: product,
@@ -166,17 +171,11 @@ server.post('UpdateOptions', function (req, res, next) {
             res.json({ success: 'false', errorMessage: 'pli is undefined' });
             return next();
         }
-        var Logger = require('dw/system/Logger');
-        Logger.info('Updating options in basket');
 
         require('dw/system/Transaction').wrap(function () {
             pli.custom.subproSubscriptionSelectedOptionMode = params.subscriptionMode;
             pli.custom.subproSubscriptionInterval = params.deliveryInteval;
             pli.custom.subproSubscriptionNumPeriods = parseInt(params.deliveryNumPeriods);
-            Logger.info(pli.custom.subproSubscriptionSelectedOptionMode);
-            Logger.info(pli.custom.subproSubscriptionInterval);
-            Logger.info('Periods:');
-            Logger.info(pli.custom.subproSubscriptionNumPeriods);
             var discountValue = parseFloat(params.discount);
             var discountToApply = params.isDiscountPercentage.getBooleanValue() === true
                 ? new dw.campaign.PercentageDiscount(discountValue * 100)
@@ -184,8 +183,6 @@ server.post('UpdateOptions', function (req, res, next) {
 
             pli.custom.subproSubscriptionIsDiscountPercentage = params.isDiscountPercentage.getBooleanValue();
             pli.custom.subproSubscriptionDiscount = discountValue;
-            Logger.info(pli.custom.subproSubscriptionIsDiscountPercentage);
-            Logger.info(pli.custom.subproSubscriptionDiscount);
 
             /**
              * Remove previous 'SubscribeProDiscount' adjustments if any

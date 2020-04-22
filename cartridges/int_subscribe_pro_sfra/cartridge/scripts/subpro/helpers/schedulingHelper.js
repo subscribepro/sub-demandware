@@ -34,16 +34,17 @@ var schedulingHelper = {
         return {};
     },
 
-    getScheduleFromPli: function (pli, productSchedule) {
-        switch (productSchedule.type) {
+    getScheduleParamsFromPli: function (pli, type) {
+        params = {};
+        switch (type) {
             case 'every_n_periods':
-                productSchedule.numPeriods = pli.custom.subproSubscriptionNumPeriods;
+                params.num_periods = pli.custom.subproSubscriptionNumPeriods;
                 break;
             default:
                 break;
         }
 
-        return productSchedule;
+        return params;
     },
 
     getAvailableScheduleData: function (productData) {
