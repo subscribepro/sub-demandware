@@ -3,6 +3,6 @@
 <isif condition="${pdict.product.selected_option_mode != 'onetime'}">
     <div class="subpro-options ${pdict.page}">
         <div class="line-item-attributes mode">${Resource.msg('order.subscription.delivery.regular', 'order', null)}</div>
-        <div class="line-item-attributes interval">${Resource.msg('order.subscription.delivery.interval', 'order', null)}: ${pdict.product.selected_interval}</div>
+        <div class="line-item-attributes interval">${Resource.msg('order.subscription.delivery.interval', 'order', null)}: <isif condition="${pdict.productSchedule.type == 'interval'}">${pdict.productSchedule.selectedInterval}<iselseif condition="${pdict.productSchedule.type == 'every_n_periods'}">${Resource.msgf('order.subscription.delivery.schedule.' + pdict.productSchedule.period, 'order', null, [pdict.productSchedule.numPeriods])}</iselseif></isif></div>
     </div>
 </isif>

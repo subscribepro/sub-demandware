@@ -51,7 +51,7 @@ var subscriptionOptions = {
                 // page is reloaded upon success in AJAX ajaxUpdateOptions
             });
 
-        $('.subpro-options.cart #delivery-interval')
+        $('.subpro-options.cart #delivery-interval, .subpro-options.cart #delivery-periods')
             .off('change')
             .on('change', function (event) {
                 $(event.currentTarget).parents('.card').spinner().start();
@@ -94,17 +94,18 @@ var subscriptionOptions = {
         parent = target.closest('.subpro-options.' + page);
 
         if (page === 'pdp') {
-            pliUUID = parent.find('input[name=subproSubscriptionProductId]').val();
+            pliUUID = parent.siblings('input[name=subproSubscriptionProductId]').val();
         } else {
             pliUUID = parent.closest('.product-info').find('button.remove-product').data('pid');
         }
 
         return {
             pliUUID: pliUUID,
-            subscriptionMode: parent.find('input[name^=subproSubscriptionOptionMode]:checked').val(),
+            subscriptionMode: $(document).find('input[name^=subproSubscriptionOptionMode]:checked').val(),
             deliveryInteval: parent.find('#delivery-interval').val(),
-            discount: parent.find('input[name=subproSubscriptionDiscount]').val(),
-            isDiscountPercentage: parent.find('input[name=subproSubscriptionIsDiscountPercentage]').val()
+            deliveryNumPeriods: parent.find('#delivery-periods').val(),
+            discount: parent.siblings('input[name=subproSubscriptionDiscount]').val(),
+            isDiscountPercentage: parent.siblings('input[name=subproSubscriptionIsDiscountPercentage]').val()
         };
     },
 
@@ -114,6 +115,7 @@ var subscriptionOptions = {
             data.pliUUID = subOptions.pliUUID;
             data.subscriptionMode = subOptions.subscriptionMode;
             data.deliveryInteval = subOptions.deliveryInteval;
+            data.deliveryNumPeriods = subOptions.deliveryNumPeriods;
             data.discount = subOptions.discount;
             data.isDiscountPercentage = subOptions.isDiscountPercentage;
         });
