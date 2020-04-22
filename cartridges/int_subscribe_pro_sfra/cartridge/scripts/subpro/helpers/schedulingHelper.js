@@ -21,9 +21,9 @@ var schedulingHelper = {
                 default:
                     // Fall back to interval-based scheduling if the 'type' isn't recognized here
                     Logger.info('No recognized advanced rule type set, though use_scheduling_rule is enabled. Falling back to interval-based scheduling.');
-                    return 'interval';
             }
         }
+        return 'interval';
     },
 
     getProductScheduleData: function (productData) {
@@ -47,13 +47,13 @@ var schedulingHelper = {
         return params;
     },
 
-    getAvailableScheduleData: function (productData) {
+    getAvailableScheduleData: function (productData, selectedInterval) {
         var productSchedule = {
             type: schedulingHelper.getProductScheduleType(productData)
         };
 
         if (productSchedule.type == 'interval') {
-            productSchedule.selectedInterval = params.selectedInterval.stringValue || productData.default_interval;
+            productSchedule.selectedInterval = selectedInterval || productData.default_interval;
             productSchedule.intervals = productData.intervals.toString().split(',');
         } else if (productSchedule.type == 'every_n_periods') {
             productScheduleData = schedulingHelper.getProductScheduleData(productData);

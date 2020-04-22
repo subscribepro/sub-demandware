@@ -28,8 +28,10 @@ server.get('PDP', function (req, res, next) {
             spproduct.selected_option_mode = (spproduct.subscription_option_mode === 'subscription_only' || spproduct.default_subscription_option === 'subscription') ? 'regular' : 'onetime';
         }
 
+        selectedInterval = params.selectedInterval.stringValue || null;
+
         var schedulingHelper = require('/int_subscribe_pro_sfra/cartridge/scripts/subpro/helpers/schedulingHelper.js');
-        var productSchedule = schedulingHelper.getAvailableScheduleData(spproduct);
+        var productSchedule = schedulingHelper.getAvailableScheduleData(spproduct, selectedInterval);
 
         res.render('subpro/product/subprooptions', {
             subproduct: spproduct,
@@ -59,8 +61,10 @@ server.get('Cart', function (req, res, next) {
         var spproduct = response.result.products.pop();
         var sfccProduct = ProductMgr.getProduct(params.sku.stringValue);
 
+        selectedInterval = params.selectedInterval.stringValue || null;
+
         var schedulingHelper = require('/int_subscribe_pro_sfra/cartridge/scripts/subpro/helpers/schedulingHelper.js');
-        var productSchedule = schedulingHelper.getAvailableScheduleData(spproduct);
+        var productSchedule = schedulingHelper.getAvailableScheduleData(spproduct, selectedInterval);
         pliScheduleData = schedulingHelper.getScheduleParamsFromPli(pli, schedulingHelper.getProductScheduleType(spproduct));
         for (var i in pliScheduleData) {
             productSchedule[i] = pliScheduleData[i];
@@ -103,7 +107,7 @@ server.get('OrderSummary', function (req, res, next) {
         }
         var spproduct = response.result.products.pop();
         var schedulingHelper = require('/int_subscribe_pro_sfra/cartridge/scripts/subpro/helpers/schedulingHelper.js');
-        var productSchedule = schedulingHelper.getAvailableScheduleData(spproduct);
+        var productSchedule = schedulingHelper.getAvailableScheduleData(spproduct, product.selected_interval);
         pliScheduleData = schedulingHelper.getScheduleParamsFromPli(pli, schedulingHelper.getProductScheduleType(spproduct));
         for (var i in pliScheduleData) {
             productSchedule[i] = pliScheduleData[i];
@@ -143,7 +147,7 @@ server.get('OrderConfirmation', function (req, res, next) {
                     }
                     var spproduct = response.result.products.pop();
                     var schedulingHelper = require('/int_subscribe_pro_sfra/cartridge/scripts/subpro/helpers/schedulingHelper.js');
-                    var productSchedule = schedulingHelper.getAvailableScheduleData(spproduct);
+                    var productSchedule = schedulingHelper.getAvailableScheduleData(spproduct, product.selected_interval);
                     pliScheduleData = schedulingHelper.getScheduleParamsFromPli(pli, schedulingHelper.getProductScheduleType(spproduct));
                     for (var k in pliScheduleData) {
                         productSchedule[k] = pliScheduleData[k];
