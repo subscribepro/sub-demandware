@@ -82,6 +82,18 @@ var subscriptionOptions = {
             .on('change', function (event) {
                 $('body').trigger('pdpOptionsUpdate', { event: event, page: 'pdp' });
             });
+        $('.subpro-options.pdp #delivery-periods')
+            .off('change')
+            .on('change', function (event) {
+                $(this).siblings('.error').empty();
+                var enteredVal = parseInt($(this).val());
+                var minAllowed = parseInt($('.subpro-options.pdp #delivery-periods').attr('min'));
+                if (enteredVal < minAllowed) {
+                    var plural = enteredVal !== 1;
+                    $(this).siblings('.error').append('<p>You have selected to receive this product every ' + enteredVal + ' day' + (plural ? 's' : '') + '. If this is not correct, please update your Auto-Ship frequency.</p>');
+                }
+                $('body').trigger('pdpOptionsUpdate', { event: event, page: 'pdp' });
+            });
     },
 
     getOptionsState: function (target, page) {

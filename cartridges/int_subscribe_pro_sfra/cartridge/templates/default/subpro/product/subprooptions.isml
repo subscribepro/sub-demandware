@@ -37,7 +37,8 @@
                         </isloop>
                     </select>
                     <iselseif condition="${pdict.productSchedule.type == 'every_n_periods'}">
-                        <input type="number" name="subproSubscriptionNumPeriods"<isif condition="${pdict.productSchedule.num_periods}">value="${pdict.productSchedule.num_periods}"</isif> id="delivery-periods" /> ${Resource.msg('order.subscription.delivery.schedule.' + pdict.productSchedule.period + 's', 'order', null)}
+                        <input type="number" min="10" name="subproSubscriptionNumPeriods"<isif condition="${pdict.productSchedule.num_periods}">value="${pdict.productSchedule.num_periods}"</isif> id="delivery-periods" /> ${Resource.msg('order.subscription.delivery.schedule.' + pdict.productSchedule.period + 's', 'order', null)}
+                        <div class="error"></div>
                     </iselseif>
                 </isif>
             </div>
