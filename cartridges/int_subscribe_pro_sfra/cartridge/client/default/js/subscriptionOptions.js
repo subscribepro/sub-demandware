@@ -51,13 +51,22 @@ var subscriptionOptions = {
                 // page is reloaded upon success in AJAX ajaxUpdateOptions
             });
 
-        $('.subpro-options.cart #delivery-interval, .subpro-options.cart #delivery-periods')
+        $('.subpro-options.cart #delivery-interval')
             .off('change')
             .on('change', function (event) {
                 $(event.currentTarget).parents('.card').spinner().start();
                 $('body').trigger('cartOptionsUpdate', { event: event, page: 'cart' });
                 // page is reloaded upon success in AJAX ajaxUpdateOptions
             });
+
+        $('.subpro-options.cart #delivery-periods')
+            .off('change')
+            .on('change', function (event) {
+                showMinimumFrequencyWarning(this);
+                $('body').trigger('cartOptionsUpdate', { event: event, page: 'cart' });
+            });
+
+        showMinimumFrequencyWarning($('.subpro-options.cart #delivery-periods'));
     },
 
     variantInit: function () {
@@ -85,13 +94,7 @@ var subscriptionOptions = {
         $('.subpro-options.pdp #delivery-periods')
             .off('change')
             .on('change', function (event) {
-                $(this).siblings('.error').empty();
-                var enteredVal = parseInt($(this).val());
-                var minAllowed = parseInt($('.subpro-options.pdp #delivery-periods').attr('min'));
-                if (enteredVal < minAllowed) {
-                    var plural = enteredVal !== 1;
-                    $(this).siblings('.error').append('<p>You have selected to receive this product every ' + enteredVal + ' day' + (plural ? 's' : '') + '. If this is not correct, please update your Auto-Ship frequency.</p>');
-                }
+                showMinimumFrequencyWarning(this);
                 $('body').trigger('pdpOptionsUpdate', { event: event, page: 'pdp' });
             });
     },
@@ -167,6 +170,19 @@ function ajaxUpdateOptions(target, page) {
             }
         }
     });
+}
+
+/**
+ * @param {DOMElement} context
+ */
+function showMinimumFrequencyWarning(context) {
+    $(context).siblings('.error').empty();
+    var enteredVal = parseInt($(context).val());
+    var minAllowed = parseInt($(context).attr('min'));
+    if (enteredVal < minAllowed) {
+        var plural = enteredVal !== 1;
+        $(context).siblings('.error').append('<p>You have selected to receive this product every ' + enteredVal + ' day' + (plural ? 's' : '') + '. If this is not correct, please update your Auto-Ship frequency.</p>');
+    }
 }
 
 module.exports = subscriptionOptions;
