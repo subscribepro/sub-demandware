@@ -61,7 +61,7 @@ server.get('Cart', function (req, res, next) {
         var spproduct = response.result.products.pop();
         var sfccProduct = ProductMgr.getProduct(params.sku.stringValue);
 
-        selectedInterval = params.selectedInterval.stringValue || null;
+        selectedInterval = pli.custom.subproSubscriptionInterval || null;
 
         var schedulingHelper = require('/int_subscribe_pro_sfra/cartridge/scripts/subpro/helpers/schedulingHelper.js');
         var productSchedule = schedulingHelper.getAvailableScheduleData(spproduct, selectedInterval);
@@ -173,6 +173,12 @@ server.post('UpdateOptions', function (req, res, next) {
 
         if (!pli || pli == 'null' || pli == 'undefined') {
             res.json({ success: 'false', errorMessage: 'pli is undefined' });
+            return next();
+        }
+
+        var product = pli.getProduct();
+        var Logger = require('dw/system/Logger');
+        if (!product.custom.subproSubscriptionEnabled) {
             return next();
         }
 

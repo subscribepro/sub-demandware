@@ -54,5 +54,4 @@
         <input type="hidden" name="subproSubscriptionOptionsUrl" value="${pdict.subprooptionsurl}" />
         <input type="hidden" name="subproSubscriptionProductId" value="${pdict.subproduct.sku}" />
     </div>
-    </div>
 </isif>

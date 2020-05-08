@@ -351,7 +351,7 @@ var SubscribeProLib = {
         var instruments = cart.object.paymentInstruments;
         var hasCreditCard = false;
 
-        for (var i = 0, count = instruments.length; i < count; i + 1) {
+        for (var i = 0, count = instruments.length; i < count; i += 1) {
             if (instruments[i].paymentMethod === 'CREDIT_CARD') {
                 hasCreditCard = true;
                 break;
@@ -376,7 +376,7 @@ var SubscribeProLib = {
             return false;
         }
 
-        for (var i = 0, il = plis.length; i < il; i + 1) {
+        for (var i = 0, il = plis.length; i < il; i += 1) {
             try {
                 isSubpro = plis[i].custom.subproSubscriptionSelectedOptionMode === 'regular';
                 if (isSubpro) break;
