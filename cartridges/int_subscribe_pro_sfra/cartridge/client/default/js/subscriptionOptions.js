@@ -33,6 +33,19 @@ function serializeURLParams(obj, prefix) {
     return str.join('&');
 }
 
+/**
+ * @param {DOMElement} context DOM context to use
+ */
+function showMinimumFrequencyWarning(context) {
+    $(context).siblings('.error').empty();
+    var enteredVal = parseInt($(context).val());
+    var minAllowed = parseInt($(context).attr('min'));
+    if (enteredVal < minAllowed) {
+        var plural = enteredVal !== 1;
+        $(context).siblings('.error').append('<p>You have selected to receive this product every ' + enteredVal + ' day' + (plural ? 's' : '') + '. If this is not correct, please update your Auto-Ship frequency.</p>');
+    }
+}
+
 var subscriptionOptions = {
     cartInit: function () {
         if (!$('body').find('.subpro-options.cart').length) {
@@ -170,19 +183,6 @@ function ajaxUpdateOptions(target, page) {
             }
         }
     });
-}
-
-/**
- * @param {DOMElement} context
- */
-function showMinimumFrequencyWarning(context) {
-    $(context).siblings('.error').empty();
-    var enteredVal = parseInt($(context).val());
-    var minAllowed = parseInt($(context).attr('min'));
-    if (enteredVal < minAllowed) {
-        var plural = enteredVal !== 1;
-        $(context).siblings('.error').append('<p>You have selected to receive this product every ' + enteredVal + ' day' + (plural ? 's' : '') + '. If this is not correct, please update your Auto-Ship frequency.</p>');
-    }
 }
 
 module.exports = subscriptionOptions;
