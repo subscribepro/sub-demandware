@@ -41,9 +41,9 @@ var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/SubscribeProLib');
 /**
  * Subscribe Pro Object Helpers, used to help map Commerce Cloud Modules to Subscribe Pro Modules
  */
-var AddressHelper = require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/AddressHelper');
-var CustomerHelper = require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/CustomerHelper');
-var PaymentsHelper = require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/PaymentsHelper');
+var AddressHelper = require('/int_subscribe_pro_sg/cartridge/scripts/subpro/helpers/AddressHelper');
+var CustomerHelper = require('/int_subscribe_pro_sg/cartridge/scripts/subpro/helpers/CustomerHelper');
+var PaymentsHelper = require('/int_subscribe_pro_sg/cartridge/scripts/subpro/helpers/PaymentsHelper');
 
 /**
  * Current Site, used to reference site preferences

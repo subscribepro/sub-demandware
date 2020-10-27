@@ -33,6 +33,19 @@ function serializeURLParams(obj, prefix) {
     return str.join('&');
 }
 
+/**
+ * @param {DOMElement} context DOM context to use
+ */
+function showMinimumFrequencyWarning(context) {
+    $(context).siblings('.error').empty();
+    var enteredVal = parseInt($(context).val());
+    var minAllowed = parseInt($(context).attr('min'));
+    if (enteredVal < minAllowed) {
+        var plural = enteredVal !== 1;
+        $(context).siblings('.error').append('<p>You have selected to receive this product every ' + enteredVal + ' day' + (plural ? 's' : '') + '. If this is not correct, please update your Auto-Ship frequency.</p>');
+    }
+}
+
 var subscriptionOptions = {
     cartInit: function () {
         if (!$('body').find('.subpro-options.cart').length) {
@@ -58,6 +71,15 @@ var subscriptionOptions = {
                 $('body').trigger('cartOptionsUpdate', { event: event, page: 'cart' });
                 // page is reloaded upon success in AJAX ajaxUpdateOptions
             });
+
+        $('.subpro-options.cart #delivery-periods')
+            .off('change')
+            .on('change', function (event) {
+                showMinimumFrequencyWarning(this);
+                $('body').trigger('cartOptionsUpdate', { event: event, page: 'cart' });
+            });
+
+        showMinimumFrequencyWarning($('.subpro-options.cart #delivery-periods'));
     },
 
     variantInit: function () {
@@ -82,6 +104,12 @@ var subscriptionOptions = {
             .on('change', function (event) {
                 $('body').trigger('pdpOptionsUpdate', { event: event, page: 'pdp' });
             });
+        $('.subpro-options.pdp #delivery-periods')
+            .off('change')
+            .on('change', function (event) {
+                showMinimumFrequencyWarning(this);
+                $('body').trigger('pdpOptionsUpdate', { event: event, page: 'pdp' });
+            });
     },
 
     getOptionsState: function (target, page) {
@@ -94,17 +122,18 @@ var subscriptionOptions = {
         parent = target.closest('.subpro-options.' + page);
 
         if (page === 'pdp') {
-            pliUUID = parent.find('input[name=subproSubscriptionProductId]').val();
+            pliUUID = parent.siblings('input[name=subproSubscriptionProductId]').val();
         } else {
             pliUUID = parent.closest('.product-info').find('button.remove-product').data('pid');
         }
 
         return {
             pliUUID: pliUUID,
-            subscriptionMode: parent.find('input[name^=subproSubscriptionOptionMode]:checked').val(),
+            subscriptionMode: $(document).find('input[name^=subproSubscriptionOptionMode]:checked').val(),
             deliveryInteval: parent.find('#delivery-interval').val(),
-            discount: parent.find('input[name=subproSubscriptionDiscount]').val(),
-            isDiscountPercentage: parent.find('input[name=subproSubscriptionIsDiscountPercentage]').val()
+            deliveryNumPeriods: parent.find('#delivery-periods').val(),
+            discount: parent.siblings('input[name=subproSubscriptionDiscount]').val(),
+            isDiscountPercentage: parent.siblings('input[name=subproSubscriptionIsDiscountPercentage]').val()
         };
     },
 
@@ -114,6 +143,7 @@ var subscriptionOptions = {
             data.pliUUID = subOptions.pliUUID;
             data.subscriptionMode = subOptions.subscriptionMode;
             data.deliveryInteval = subOptions.deliveryInteval;
+            data.deliveryNumPeriods = subOptions.deliveryNumPeriods;
             data.discount = subOptions.discount;
             data.isDiscountPercentage = subOptions.isDiscountPercentage;
         });

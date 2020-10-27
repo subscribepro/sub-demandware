@@ -18,7 +18,7 @@ var Status = require('dw/system/Status');
  * @return {Order} Order object
  */
 exports.createOrder = function (basket) {
-    var isSubPro = require('/int_subscribe_pro/cartridge/scripts/subpro/lib/SubscribeProLib.js').isSubPro();
+    var isSubPro = require('/int_subscribe_pro_sg/cartridge/scripts/subpro/lib/SubscribeProLib.js').isSubPro();
 
     /**
      * If this basket has a subscription,

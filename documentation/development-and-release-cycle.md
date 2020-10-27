@@ -35,18 +35,17 @@ The following links are resources provided by SFCC and the LINK team, with lots 
 5. Change into the `link_subscribepro` directory and run npm install to set up dependencies.
 6. Create a file called `dw.json` in the link_subscribepro folder and enter the following JSON object, changing the details to connect to your sandbox. This is primarily used for uploading your cartridges:
 
-```json
-    {
-        "hostname": "subscribepro-tech-prtnr-na01-dw.demandware.net",
-        "username": "BM User Name",
-        "password": "BM User Pass",
-        "code-version": "version1"
-    }
-```
+    ```json
+        {
+            "hostname": "subscribepro-tech-prtnr-na01-dw.demandware.net",
+            "username": "BM User Name",
+            "password": "BM User Pass",
+            "code-version": "version1"
+        }
+    ```
 
 7. Make sure the `sgmf-scripts` dependency was installed correctly; if not, install it directly.
 8. Now, in VS Code (or your preferred IDE) open the outer folder, and you will have access to both the Subscribe Pro and SFCC cartridges.
-
 
 ### Development Process
 
@@ -82,13 +81,12 @@ Before these prerequisites are run, please make sure you have completed the **Lo
 
 #### Step 4 - Lifecycle Test
 
-* A [full subscription life cycle test]() should be run to make sure all core functionality is working as expected.
+* A [full subscription life cycle test](https://docs.subscribepro.com/users/testing/full-subscription-life-cycle-testing/) should be run to make sure all core functionality is working as expected.
 
 ## Versioning
 
 When significant bug fixes and/or features have been tested and confirmed, a new version may be released.
 
 * Every release of the cartridge should be designated by a build number, starting from 1, and a GitHub release.
-* Each release of our cartridge should be assigned a build number, starting at 1.
 * When the SFCC LINK team certifies a build, they will assign an official version number to it, which will be visible from the XChange Marketplace.
 * Information about how the official certified version is selected is available in the [LINK Integration Guidelines & Best Practices](https://partners.salesforce.com/0693A000007avARQAY) guide in the **LINK Resources** section.

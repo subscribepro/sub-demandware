@@ -224,7 +224,6 @@ function start() {
                             product_sku: pli.productID,
                             qty: pli.quantityValue,
                             use_fixed_price: false,
-                            interval: pli.custom.subproSubscriptionInterval,
                             next_order_date: dw.util.StringUtils.formatCalendar(new dw.util.Calendar(orderCreationDate), 'yyy-MM-dd'),
                             first_order_already_created: true,
                             send_customer_notification_email: true,
@@ -234,6 +233,19 @@ function start() {
                                 }
                             }
                         };
+
+                        var response = SubscribeProLib.getProduct(pli.productID);
+                        if (response.error || !response.result.products.length) {
+                            return;
+                        }
+                        var spproduct = response.result.products.pop();
+                        var schedulingHelper = require('/int_subscribe_pro_sfra/cartridge/scripts/subpro/helpers/schedulingHelper.js');
+                        var scheduleType = schedulingHelper.getProductScheduleType(spproduct);
+                        if (scheduleType != 'interval') {
+                            subscription.scheduling_rule_params = schedulingHelper.getScheduleParamsFromPli(pli, scheduleType);
+                        } else {
+                            subscription.interval = pli.custom.subproSubscriptionInterval;
+                        }
 
                         var productOptions = pli.optionProductLineItems;
 

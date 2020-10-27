@@ -28,14 +28,14 @@ server.get('PDP', function (req, res, next) {
             spproduct.selected_option_mode = (spproduct.subscription_option_mode === 'subscription_only' || spproduct.default_subscription_option === 'subscription') ? 'regular' : 'onetime';
         }
 
-        if (params.selectedInterval.stringValue) {
-            spproduct.selected_interval = params.selectedInterval.stringValue;
-        } else {
-            spproduct.selected_interval = spproduct.default_interval;
-        }
+        selectedInterval = params.selectedInterval.stringValue || null;
+
+        var schedulingHelper = require('/int_subscribe_pro_sfra/cartridge/scripts/subpro/helpers/schedulingHelper.js');
+        var productSchedule = schedulingHelper.getAvailableScheduleData(spproduct, selectedInterval);
 
         res.render('subpro/product/subprooptions', {
             subproduct: spproduct,
+            productSchedule: productSchedule,
             sfccproduct: product,
             subprooptionsurl: URLUtils.url('SubPro-UpdateOptions').toString(),
             page: 'pdp'
@@ -61,17 +61,25 @@ server.get('Cart', function (req, res, next) {
         var spproduct = response.result.products.pop();
         var sfccProduct = ProductMgr.getProduct(params.sku.stringValue);
 
+        selectedInterval = pli.custom.subproSubscriptionInterval || null;
+
+        var schedulingHelper = require('/int_subscribe_pro_sfra/cartridge/scripts/subpro/helpers/schedulingHelper.js');
+        var productSchedule = schedulingHelper.getAvailableScheduleData(spproduct, selectedInterval);
+        pliScheduleData = schedulingHelper.getScheduleParamsFromPli(pli, schedulingHelper.getProductScheduleType(spproduct));
+        for (var i in pliScheduleData) {
+            productSchedule[i] = pliScheduleData[i];
+        }
+
         var productData = {
             ID: pli.getProductID(),
             subscription_option_mode: spproduct.subscription_option_mode,
             selected_option_mode: pli.custom.subproSubscriptionSelectedOptionMode,
-            selected_interval: pli.custom.subproSubscriptionInterval,
-            intervals: spproduct.intervals.toString().split(','),
             is_discount_percentage: pli.custom.subproSubscriptionIsDiscountPercentage,
             discount: pli.custom.subproSubscriptionDiscount
         };
         res.render('subpro/product/subprooptions', {
             subproduct: productData,
+            productSchedule: productSchedule,
             sfccproduct: sfccProduct,
             subprooptionsurl: URLUtils.url('SubPro-UpdateOptions').toString(),
             page: 'cart'
@@ -93,9 +101,21 @@ server.get('OrderSummary', function (req, res, next) {
             selected_option_mode: pli.custom.subproSubscriptionSelectedOptionMode,
             selected_interval: pli.custom.subproSubscriptionInterval
         };
+        var response = SubscribeProLib.getProduct(params.sku.stringValue);
+        if (response.error || !response.result.products.length) {
+            return;
+        }
+        var spproduct = response.result.products.pop();
+        var schedulingHelper = require('/int_subscribe_pro_sfra/cartridge/scripts/subpro/helpers/schedulingHelper.js');
+        var productSchedule = schedulingHelper.getAvailableScheduleData(spproduct, product.selected_interval);
+        pliScheduleData = schedulingHelper.getScheduleParamsFromPli(pli, schedulingHelper.getProductScheduleType(spproduct));
+        for (var i in pliScheduleData) {
+            productSchedule[i] = pliScheduleData[i];
+        }
 
         res.render('subpro/cart/subprooptions', {
             product: product,
+            productSchedule: productSchedule,
             page: 'order-summary'
         });
     }
@@ -121,9 +141,21 @@ server.get('OrderConfirmation', function (req, res, next) {
                         selected_option_mode: pli.custom.subproSubscriptionSelectedOptionMode,
                         selected_interval: pli.custom.subproSubscriptionInterval
                     };
+                    var response = SubscribeProLib.getProduct(params.sku.stringValue);
+                    if (response.error || !response.result.products.length) {
+                        return;
+                    }
+                    var spproduct = response.result.products.pop();
+                    var schedulingHelper = require('/int_subscribe_pro_sfra/cartridge/scripts/subpro/helpers/schedulingHelper.js');
+                    var productSchedule = schedulingHelper.getAvailableScheduleData(spproduct, product.selected_interval);
+                    pliScheduleData = schedulingHelper.getScheduleParamsFromPli(pli, schedulingHelper.getProductScheduleType(spproduct));
+                    for (var k in pliScheduleData) {
+                        productSchedule[k] = pliScheduleData[k];
+                    }
 
                     res.render('subpro/cart/subprooptions', {
                         product: product,
+                        productSchedule: productSchedule,
                         page: 'order-confirmation'
                     });
                 }
@@ -144,10 +176,16 @@ server.post('UpdateOptions', function (req, res, next) {
             return next();
         }
 
+        var product = pli.getProduct();
+        var Logger = require('dw/system/Logger');
+        if (!product.custom.subproSubscriptionEnabled) {
+            return next();
+        }
+
         require('dw/system/Transaction').wrap(function () {
             pli.custom.subproSubscriptionSelectedOptionMode = params.subscriptionMode;
             pli.custom.subproSubscriptionInterval = params.deliveryInteval;
-
+            pli.custom.subproSubscriptionNumPeriods = parseInt(params.deliveryNumPeriods);
             var discountValue = parseFloat(params.discount);
             var discountToApply = params.isDiscountPercentage.getBooleanValue() === true
                 ? new dw.campaign.PercentageDiscount(discountValue * 100)
