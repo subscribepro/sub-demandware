@@ -16,7 +16,7 @@
     <!-- Pass configuration and init the Subscribe Pro widget -->
     <script>
         // Setup config for Subscribe Pro
-        var widgetConfig = "<isprint value="${JSON.stringify(require('/int_subscribe_pro/cartridge/scripts/subpro/helpers/WidgetsHelper').getWidgetConfig(customer.profile.custom.subproCustomerID, 'client_credentials', 'widget', 'sp-my-subscriptions'))}" encoding="jsblock" />";
+        var widgetConfig = "<isprint value="${JSON.stringify(require('/int_subscribe_pro_sg/cartridge/scripts/subpro/helpers/WidgetsHelper').getWidgetConfig(customer.profile.custom.subproCustomerID, 'client_credentials', 'widget', 'sp-my-subscriptions'))}" encoding="jsblock" />";
         MySubscriptions.init(JSON.parse(widgetConfig));
     </script>
 
