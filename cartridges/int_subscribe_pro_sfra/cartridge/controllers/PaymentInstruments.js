@@ -103,13 +103,13 @@ server.append('List', userLoggedIn.validateLoggedIn, consentTracking.consent, fu
     if (subproEnabled) {
         var viewData = res.getViewData();
 
-        var newCard = session.privacy.newCard ? session.privacy.newCard : null;
-        var deletedCard = session.privacy.deletedCard ? session.privacy.deletedCard : null;
+        var newCard = session.privacy.newCard ? JSON.parse(session.privacy.newCard) : null;
+        var deletedCard = session.privacy.deletedCard ? JSON.parse(session.privacy.deletedCard) : null;
 
         session.privacy.newCard = null;
         session.privacy.deletedCard = null;
 
-        var newCardSfccId = newCard ? newCard.sfcc.getUUID() : null;
+        var newCardSfccId = newCard ? newCard.sfcc : null;
         var newCardPayload = newCard ? { payment_profile: newCard.sp } : null;
         var deletedCardPayload = deletedCard ? { payment_profile: deletedCard.sp } : null;
 
@@ -168,10 +168,10 @@ server.append('SavePayment', csrfProtection.validateAjaxRequest, function (req, 
             return next();
         }
 
-        session.privacy.newCard = {
+        session.privacy.newCard = JSON.stringify({
             sp: paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, savedCard, {}, false),
-            sfcc: savedCard
-        };
+            sfcc: savedCard.getUUID()
+        });
     });
     return next();
 });
@@ -190,10 +190,10 @@ server.prepend('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req
     var payment = array.find(paymentInstruments, function (item) {
         return UUID === item.UUID;
     });
-    session.privacy.deletedCard = {
+    session.privacy.deletedCard = JSON.stringify({
         sp: paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, payment.raw, {}, true),
-        sfcc: payment
-    };
+        sfcc: payment.UUID
+    });
 
     return next();
 });
