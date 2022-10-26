@@ -7,7 +7,7 @@
     "node": ">=4.0"
   },
   "paths": {
-    "base": "../storefront-reference-architecture/cartridges/app_storefront_base/"
+    "base": "./storefront-reference-architecture/cartridges/app_storefront_base/"
   },
   "repository": {
     "type": "git",

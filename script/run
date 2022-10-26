@@ -1,0 +1,5 @@
+#!/bin/sh
+
+script/build-image
+
+docker run --rm sub-demandware-builder:latest $@
