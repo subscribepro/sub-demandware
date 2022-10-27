@@ -3,4 +3,3 @@ cartridges/app_storefront_core/
 cartridges/app_storefront_controllers/
 dw*.json
 node_modules/
-package-lock.json
