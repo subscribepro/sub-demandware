@@ -2,12 +2,12 @@
 
 var server = require('server');
 var BasketMgr = require('dw/order/BasketMgr');
-var subproEnabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproEnabled');
 var page = module.superModule;
 
 server.extend(page);
 
-server.append('Login', function (req, res, next) {
+server.append('Begin', function (req, res, next) {
+    var subproEnabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproEnabled');
     var viewData = res.getViewData();
     var basket = BasketMgr.getCurrentOrNewBasket();
     if (subproEnabled) {
