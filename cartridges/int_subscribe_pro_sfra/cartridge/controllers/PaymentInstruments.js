@@ -10,8 +10,7 @@ var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 var paymentsHelper = require('~/cartridge/scripts/subpro/helpers/paymentsHelper');
 var subproEnabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproEnabled');
 
-var page = module.superModule;
-server.extend(page);
+server.extend(module.superModule);
 
 /**
  * Checks if a credit card is valid or not
@@ -28,7 +27,7 @@ function verifyCard(card, form) {
     var paymentCard = PaymentMgr.getPaymentCard(card.cardType);
     var error = false;
     var cardNumber = card.cardNumber;
-    var creditCardStatus;
+    var creditCardStatus = null;
     var formCardNumber = form.cardNumber;
 
     if (paymentCard) {

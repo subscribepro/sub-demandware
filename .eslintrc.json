@@ -1,47 +1,68 @@
 {
     "root": true,
     "extends": "airbnb-base/legacy",
+    "globals": {
+        "empty": true,
+        "XML": true,
+        "request": true,
+        "response": true,
+        "session": true,
+        "customer": true,
+        "dw": true
+    },
     "rules": {
-        "import/no-unresolved": "off",
-        "indent": ["error", 4, { "SwitchCase": 1, "VariableDeclarator": 1 }],
+        "indent": [
+            "error",
+            4,
+            {
+                "SwitchCase": 1,
+                "VariableDeclarator": 1
+            }
+        ],
         "func-names": "off",
         "require-jsdoc": "error",
-        "valid-jsdoc": ["error", { "preferType": { "Boolean": "boolean", "Number": "number", "object": "Object", "String": "string" }, "requireReturn": false}],
+        "valid-jsdoc": [
+            "error",
+            {
+                "preferType": {
+                    "Boolean": "boolean",
+                    "Number": "number",
+                    "object": "Object",
+                    "String": "string"
+                },
+                "requireReturn": false,
+                "requireParamDescription": false,
+                "requireReturnDescription": false
+            }
+        ],
         "vars-on-top": "off",
-        "no-undef": "off",
+        "no-undef": 2,
         "global-require": "off",
-        "no-shadow": ["error", { "allow": ["err", "callback"]}],
-        "max-len": "off",
+        "no-shadow": ["error", { "allow": ["err", "callback"] }],
+        "max-len": ["error", { "code": 250 }],
         "eqeqeq": "off",
         "consistent-return": "off",
         "no-plusplus": "off",
-        "no-unused-vars": "off",
         "no-param-reassign": "off",
         "no-empty": "off",
-        "no-restricted-syntax": [
-            0,
-            "ForInStatement",
-            "ForOfStatement",
-            "LabeledStatement",
-            "WithStatement"
-        ],
+        "no-restricted-syntax": [0, "ForInStatement", "ForOfStatement", "LabeledStatement", "WithStatement"],
         "dot-notation": [
             "error",
             {
                 "allowKeywords": true
             }
         ],
-        "no-unused-expressions": [
-            0,
-            {
-                "allowShortCircuit": false,
-                "allowTernary": false
-            }
-        ],
+        "no-unused-expressions": ["error", { "allowTernary": true }],
         "radix": 0,
         "no-prototype-builtins": 0,
         "guard-for-in": 0,
-        "no-unreachable": "error"
+        "no-unreachable": "error",
+
+        "comma-dangle": ["error", "never"],
+        "linebreak-style": "off",
+        "operator-linebreak": "off",
+        "no-use-before-define": 0,
+        "init-declarations": "error"
     },
     "plugins": ["sitegenesis"]
 }

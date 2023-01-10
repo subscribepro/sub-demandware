@@ -5,8 +5,7 @@ var server = require('server');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 var CustomerHelper = require('~/cartridge/scripts/subpro/helpers/customerHelper');
 
-var page = module.superModule;
-server.extend(page);
+server.extend(module.superModule);
 
 server.append('SaveProfile',
     server.middleware.https,

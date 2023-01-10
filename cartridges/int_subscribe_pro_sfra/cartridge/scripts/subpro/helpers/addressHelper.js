@@ -21,7 +21,7 @@ var AddressHelper = {
             return;
         }
 
-        var subproCustomerID;
+        var subproCustomerID = null;
         var firstName = profile.firstName;
         var lastName = profile.lastName;
 
