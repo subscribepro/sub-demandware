@@ -33,7 +33,7 @@ var SubscribeProLib = {
      */
     handleResponse: function (result) {
         if (!result.object && result.errorMessage) {
-            var jsonObject;
+            var jsonObject = null;
 
             try {
                 jsonObject = JSON.parse(result.errorMessage);
@@ -276,11 +276,13 @@ var SubscribeProLib = {
 
         var service = SubscribeProLib.getService('subpro.http.get.token');
 
-        return SubscribeProLib.handleResponse(service.call({
-            customer_id: customerID,
-            grant_type: grantType,
-            scope: scope
-        }));
+        return SubscribeProLib.handleResponse(
+            service.call({
+                customer_id: customerID,
+                grant_type: grantType,
+                scope: scope
+            })
+        );
     },
 
     /**
@@ -366,9 +368,12 @@ var SubscribeProLib = {
      *
      * @returns {boolean} True if cart has items SubPro subscription; otherwise, false
      */
-    isSubPro: function () {
+    isBasketHasSubscriptionItem: function () {
         var BasketMgr = require('dw/order/BasketMgr');
-        var basket = BasketMgr.getCurrentOrNewBasket();
+        var basket = BasketMgr.getCurrentBasket();
+        if (empty(basket)) {
+            return false;
+        }
         var plis = basket.getAllProductLineItems();
         var isSubpro = false;
 

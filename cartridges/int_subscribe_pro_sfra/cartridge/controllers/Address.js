@@ -8,8 +8,7 @@ var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 var addressHelper = require('~/cartridge/scripts/subpro/helpers/addressHelper');
 var subproEnabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproEnabled');
 
-var page = module.superModule;
-server.extend(page);
+server.extend(module.superModule);
 
 server.append('List', userLoggedIn.validateLoggedIn, consentTracking.consent, function (req, res, next) {
     if (subproEnabled) {

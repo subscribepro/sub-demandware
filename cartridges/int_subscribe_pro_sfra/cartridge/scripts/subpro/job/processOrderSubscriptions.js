@@ -50,7 +50,7 @@ var errors = [];
  * Current Order Number
  * This will be used to help clarify the error logs
  */
-var currentOrderNo;
+var currentOrderNo = null;
 
 /**
  * Log error and add it to errors array so it will be send via emeil.
@@ -192,7 +192,7 @@ function start() {
 
                         var subproAddress = AddressHelper.getSubproAddress(shippingAddress, customerProfile, false, false);
                         var shippingResponse = SubscribeProLib.findCreateAddress(subproAddress);
-                        var subproShippingAddressID;
+                        var subproShippingAddressID = null;
 
                         /**
                          * If there wasn't an error, save the Subscribe Pro Address ID

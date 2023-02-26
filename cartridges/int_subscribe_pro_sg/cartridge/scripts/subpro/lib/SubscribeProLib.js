@@ -386,7 +386,7 @@ var SubscribeProLib = {
    *
    * @return {boolean} if cart has items SubPro subscription
    */
-    isSubPro: function () {
+    isBasketHasSubscriptionItem: function () {
         var app = require('/app_storefront_controllers/cartridge/scripts/app');
         var cart = app.getModel('Cart').get();
         var plis = cart.getProductLineItems();
