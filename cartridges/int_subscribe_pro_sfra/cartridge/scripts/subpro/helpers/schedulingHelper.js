@@ -1,8 +1,6 @@
 'use strict';
 
-var Transaction = require('dw/system/Transaction');
 var Logger = require('dw/system/Logger');
-var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/subscribeProLib');
 
 var schedulingHelper = {
 
@@ -35,7 +33,7 @@ var schedulingHelper = {
     },
 
     getScheduleParamsFromPli: function (pli, type) {
-        params = {};
+        var params = {};
         switch (type) {
             case 'every_n_periods':
                 params.num_periods = pli.custom.subproSubscriptionNumPeriods;
@@ -56,7 +54,7 @@ var schedulingHelper = {
             productSchedule.selectedInterval = selectedInterval || productData.default_interval;
             productSchedule.intervals = productData.intervals.toString().split(',');
         } else if (productSchedule.type == 'every_n_periods') {
-            productScheduleData = schedulingHelper.getProductScheduleData(productData);
+            var productScheduleData = schedulingHelper.getProductScheduleData(productData);
             productSchedule.period = productScheduleData.period;
         }
 

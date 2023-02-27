@@ -20,8 +20,8 @@ var PaymentsHelper = {
      * @returns {Object|undefined} SubPro payment profile object with relevant fields or undefined
      */
     getSubscriptionPaymentProfile: function (profile, card, billingAddress, includeSpId) {
-        var customerID; var
-            subProCardType;
+        var customerID = null;
+        var subProCardType = null;
 
         /**
          * Try to get the Customer Subscribe Pro ID

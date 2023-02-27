@@ -1,28 +1,16 @@
 'use strict';
 
 var server = require('server');
-var BasketMgr = require('dw/order/BasketMgr');
-var page = module.superModule;
 
-server.extend(page);
+server.extend(module.superModule);
 
 server.append('Begin', function (req, res, next) {
     var subproEnabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproEnabled');
+    var SubscribeProLib = require('*/cartridge/scripts/subpro/lib/subscribeProLib.js');
+
     var viewData = res.getViewData();
-    var basket = BasketMgr.getCurrentOrNewBasket();
     if (subproEnabled) {
-        var lineItems = basket.getAllProductLineItems();
-
-        var subscriptionInCart = false;
-        for (var i in lineItems) {
-            var li = lineItems[i];
-            if (li.custom.subproSubscriptionSelectedOptionMode === 'regular') {
-                subscriptionInCart = true;
-                break;
-            }
-        }
-
-        viewData.subscriptionInCart = subscriptionInCart;
+        viewData.isSubscriptionItemInCart = SubscribeProLib.isBasketHasSubscriptionItem();
     }
     res.setViewData(viewData);
     next();

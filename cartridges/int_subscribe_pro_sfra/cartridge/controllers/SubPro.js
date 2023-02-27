@@ -24,7 +24,7 @@ server.get('PDP', function (req, res, next) {
         if (params.selectedOptionMode.stringValue) {
             spproduct.selected_option_mode = params.selectedOptionMode.stringValue;
         } else {
-            spproduct.selected_option_mode = (spproduct.subscription_option_mode === 'subscription_only' || spproduct.default_subscription_option === 'subscription') ? 'regular' : 'onetime';
+            spproduct.selected_option_mode = spproduct.subscription_option_mode === 'subscription_only' || spproduct.default_subscription_option === 'subscription' ? 'regular' : 'onetime';
         }
 
         var selectedInterval = params.selectedInterval.stringValue || null;
@@ -66,7 +66,7 @@ server.get('Cart', function (req, res, next) {
 
         var schedulingHelper = require('/int_subscribe_pro_sfra/cartridge/scripts/subpro/helpers/schedulingHelper.js');
         var productSchedule = schedulingHelper.getAvailableScheduleData(spproduct, selectedInterval);
-        pliScheduleData = schedulingHelper.getScheduleParamsFromPli(pli, schedulingHelper.getProductScheduleType(spproduct));
+        var pliScheduleData = schedulingHelper.getScheduleParamsFromPli(pli, schedulingHelper.getProductScheduleType(spproduct));
         for (var i in pliScheduleData) {
             productSchedule[i] = pliScheduleData[i];
         }
@@ -110,7 +110,7 @@ server.get('OrderSummary', function (req, res, next) {
         var spproduct = response.result.products.pop();
         var schedulingHelper = require('/int_subscribe_pro_sfra/cartridge/scripts/subpro/helpers/schedulingHelper.js');
         var productSchedule = schedulingHelper.getAvailableScheduleData(spproduct, product.selected_interval);
-        pliScheduleData = schedulingHelper.getScheduleParamsFromPli(pli, schedulingHelper.getProductScheduleType(spproduct));
+        var pliScheduleData = schedulingHelper.getScheduleParamsFromPli(pli, schedulingHelper.getProductScheduleType(spproduct));
         for (var i in pliScheduleData) {
             productSchedule[i] = pliScheduleData[i];
         }
@@ -129,6 +129,7 @@ server.get('OrderConfirmation', function (req, res, next) {
         var params = request.httpParameterMap;
         var order = require('dw/order/OrderMgr').getOrder(params.orderNumber.stringValue);
         var productID = params.sku.stringValue;
+        var pliScheduleData = null;
 
         if (!order) {
             return;
@@ -170,6 +171,8 @@ server.get('OrderConfirmation', function (req, res, next) {
 
 server.post('UpdateOptions', function (req, res, next) {
     if (subproEnabled) {
+        var PercentageDiscount = require('dw/campaign/PercentageDiscount');
+        var AmountDiscount = require('dw/campaign/AmountDiscount');
         var params = request.httpParameterMap;
         var basket = BasketMgr.getCurrentOrNewBasket();
         var CartModel = require('*/cartridge/models/cart');
@@ -181,7 +184,6 @@ server.post('UpdateOptions', function (req, res, next) {
         }
 
         var product = pli.getProduct();
-        var Logger = require('dw/system/Logger');
         if (!product.custom.subproSubscriptionEnabled) {
             return next();
         }
@@ -191,9 +193,7 @@ server.post('UpdateOptions', function (req, res, next) {
             pli.custom.subproSubscriptionInterval = params.deliveryInteval;
             pli.custom.subproSubscriptionNumPeriods = parseInt(params.deliveryNumPeriods);
             var discountValue = parseFloat(params.discount);
-            var discountToApply = params.isDiscountPercentage.getBooleanValue() === true
-                ? new dw.campaign.PercentageDiscount(discountValue * 100)
-                : new dw.campaign.AmountDiscount(discountValue);
+            var discountToApply = params.isDiscountPercentage.getBooleanValue() === true ? new PercentageDiscount(discountValue * 100) : new AmountDiscount(discountValue);
 
             pli.custom.subproSubscriptionIsDiscountPercentage = params.isDiscountPercentage.getBooleanValue();
             pli.custom.subproSubscriptionDiscount = discountValue;
@@ -227,6 +227,5 @@ server.post('UpdateOptions', function (req, res, next) {
     }
     next();
 });
-
 
 module.exports = server.exports();

@@ -18,15 +18,15 @@ var Status = require('dw/system/Status');
  * @return {Order} Order object
  */
 exports.createOrder = function (basket) {
-    var isSubPro = require('/int_subscribe_pro_sg/cartridge/scripts/subpro/lib/SubscribeProLib.js').isSubPro();
+    var isBasketHasSubscriptionItem = require('/int_subscribe_pro_sg/cartridge/scripts/subpro/lib/SubscribeProLib.js').isBasketHasSubscriptionItem();
 
     /**
      * If this basket has a subscription,
      * update details on the basket that will carry over to the order
      */
-    if (isSubPro) {
+    if (isBasketHasSubscriptionItem) {
         Transaction.wrap(function () {
-            basket.custom.subproContainsSubscriptions = isSubPro;
+            basket.custom.subproContainsSubscriptions = isBasketHasSubscriptionItem;
             basket.custom.subproSubscriptionsToBeProcessed = true;
         });
     }

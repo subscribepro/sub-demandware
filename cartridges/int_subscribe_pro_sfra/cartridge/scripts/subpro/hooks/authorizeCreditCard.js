@@ -6,7 +6,7 @@ var OrderMgr = require('dw/order/OrderMgr');
  * authorizing credit card payment instrument
  * Hook: dw.ocapi.shop.order.authorizeCreditCard
  * */
-exports.authorizeCreditCard = function (order, paymentDetails, cvn) {
+exports.authorizeCreditCard = function (order, paymentDetails, cvn) { // eslint-disable-line
     // Attempt to process the transaction
 
     // If it fails, fail the order
