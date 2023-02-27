@@ -10,6 +10,12 @@
         "customer": true,
         "dw": true
     },
+    "env": {
+        "es6": true
+    },
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
     "rules": {
         "indent": [
             "error",
