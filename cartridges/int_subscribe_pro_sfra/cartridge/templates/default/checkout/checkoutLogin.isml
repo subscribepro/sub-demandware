@@ -22,7 +22,7 @@
         <div class="row justify-content-center">
             <div class="col-md-6 col-sm-8">
                 <!-- Hide guest checkout when a subscription item is in the cart -->
-                <isif condition="${!pdict.subscriptionInCart}">
+                <isif condition="${!pdict.isSubscriptionItemInCart}">
                     <div class="card">
                         <div class="card-header">
                             <h4>${Resource.msg('heading.guest.checkout', 'checkout', null)}</h4>
