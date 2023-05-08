@@ -8,7 +8,6 @@ var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/subscribeProLib');
  * Provides an interface to handle Subscribe Pro payment objects.
  */
 var PaymentsHelper = {
-
     /**
      * Maps data from order to payment profile object which will be send to SubPro
      *
@@ -74,7 +73,7 @@ var PaymentsHelper = {
                 city: billingAddress.city,
                 region: billingAddress.stateCode,
                 postcode: billingAddress.postalCode,
-                country: (billingAddress.getCountryCode() ? billingAddress.getCountryCode().toString().toUpperCase() : ''),
+                country: billingAddress.getCountryCode() ? billingAddress.getCountryCode().toString().toUpperCase() : '',
                 phone: billingAddress.phone || ''
             };
         } else {
@@ -115,11 +114,13 @@ var PaymentsHelper = {
      * @returns {boolean} if two given payment instruments are equal
      */
     comparePaymentInstruments: function (instrument1, instrument2) {
-        return instrument1.paymentMethod === instrument2.paymentMethod
-            && instrument1.creditCardNumber === instrument2.creditCardNumber
-            && instrument1.creditCardHolder === instrument2.creditCardHolder
-            && instrument1.creditCardExpirationYear === instrument2.creditCardExpirationYear
-            && instrument1.creditCardExpirationMonth === instrument2.creditCardExpirationMonth;
+        return (
+            instrument1.paymentMethod === instrument2.paymentMethod &&
+            instrument1.creditCardNumber === instrument2.creditCardNumber &&
+            instrument1.creditCardHolder === instrument2.creditCardHolder &&
+            instrument1.creditCardExpirationYear === instrument2.creditCardExpirationYear &&
+            instrument1.creditCardExpirationMonth === instrument2.creditCardExpirationMonth
+        );
     },
 
     /**
@@ -152,10 +153,7 @@ var PaymentsHelper = {
      * @return {int|null} Payment profile ID
      */
     findOrCreatePaymentProfile: function (paymentInstrument, customerPaymentInstrument, customerProfile, billingAddress) {
-        var paymentProfileID = (
-            customerPaymentInstrument
-            && ('subproPaymentProfileID' in customerPaymentInstrument.custom)
-        ) ? customerPaymentInstrument.custom.subproPaymentProfileID : false;
+        var paymentProfileID = customerPaymentInstrument && 'subproPaymentProfileID' in customerPaymentInstrument.custom ? customerPaymentInstrument.custom.subproPaymentProfileID : false;
 
         /**
          * If Payment Profile already exists,
@@ -170,9 +168,9 @@ var PaymentsHelper = {
              */
             if (response.error && response.result.code === 404) {
                 paymentProfileID = PaymentsHelper.createSubproPaymentProfile(customerProfile, customerPaymentInstrument, billingAddress);
-            /**
-             * Some other error occurred, error out
-             */
+                /**
+                 * Some other error occurred, error out
+                 */
             } else if (response.error) {
                 return null; // eslint-disable-line no-continue
             }
@@ -203,6 +201,29 @@ var PaymentsHelper = {
         }
 
         return null;
+    },
+
+    /**
+     * Verifies if specified payment instrument already has transactions
+     * @param {dw.order.OrderPaymentInstrument} payment - payment details
+     * @returns {boolean} returns `true` if transaction exists, returns `false` otherwise
+     */
+    checkIfHasTransaction: function (payment) {
+        let transaction = payment.getPaymentTransaction();
+        let hasTransaction = transaction && transaction.getTransactionID() && transaction.getAmount();
+        return !!hasTransaction;
+    },
+
+    /**
+     * Check if Authorized amount bigger than order total
+     * @param {dw.order.Order} order - API Order object
+     * @param {dw.order.OrderPaymentInstrument} paymentInstrument - API payment instrument object
+     * @returns {boolean} - true of false
+     */
+    doesAuthorizedAmountBiggerOrderTotal: function (order, paymentInstrument) {
+        let totalGrossPrice = order.getTotalGrossPrice().getValue();
+        let transactionAmount = paymentInstrument.getPaymentTransaction().getAmount().getValue();
+        return transactionAmount > totalGrossPrice;
     }
 };
 

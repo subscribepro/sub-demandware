@@ -1,5 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
+    <type-extension type-id="PaymentTransaction">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="transactionStatus">
+                <display-name xml:lang="x-default">Transaction Status</display-name>
+                <description xml:lang="x-default">Transaction Status</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="transactionsRetry">
+                <display-name xml:lang="x-default">Transactions Retry</display-name>
+                <description xml:lang="x-default">Transactions Retry</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </custom-attribute-definitions>
+    </type-extension>
+
     <type-extension type-id="Product">
         <custom-attribute-definitions>
             <attribute-definition attribute-id="subproSubscriptionEnabled">
@@ -129,6 +150,22 @@
 
     <type-extension type-id="Order">
         <custom-attribute-definitions>
+            <attribute-definition attribute-id="ocapiError">
+                <display-name xml:lang="x-default">OCAPI Error</display-name>
+                <description xml:lang="x-default">OCAPI Error</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="paymentCancellationStatus">
+                <display-name xml:lang="x-default">Payment Cancellation Status</display-name>
+                <description xml:lang="x-default">Payment Cancellation Status</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
             <attribute-definition attribute-id="subproContainsSubscriptions">
                 <display-name xml:lang="x-default">Contains Subscriptions</display-name>
                 <type>boolean</type>
