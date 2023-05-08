@@ -1,0 +1,13 @@
+{
+    "subproSubscriptionsWidgetConfig": {
+        "version": 2,
+        "themeName": "sfcc-demo",
+        "sections": {
+            "productInfo": {
+                "price": {
+                    "show": true
+                }
+            }
+        }
+    }
+}
