@@ -2,7 +2,7 @@
 
 /* API includes */
 var SubscribeProLib = require('*/cartridge/scripts/subpro/lib/subscribeProLib');
-var defaultValues = require('*/cartridge/config/defaultValues');
+var defaultWidgetConfigs = require('*/cartridge/config/defaultWidgetConfigs');
 
 /**
  * Provides an interface for configuring Subscribe Pro widgets.
@@ -61,7 +61,7 @@ var WidgetsHelper = {
             customerId: session.privacy.widgetCustomerId
         };
 
-        var customWidgetConfig = JSON.parse(require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproSubscriptionsWidgetConfig') || defaultValues.subproSubscriptionsWidgetConfig);
+        var customWidgetConfig = JSON.parse(require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproSubscriptionsWidgetConfig') || defaultWidgetConfigs.subproSubscriptionsWidgetConfig);
 
         var widgetConfig = {};
         var key = null;
