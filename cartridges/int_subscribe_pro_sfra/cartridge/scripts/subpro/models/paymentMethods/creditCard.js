@@ -3,11 +3,11 @@
 /* eslint-disable no-else-return */
 /* eslint-disable no-param-reassign */
 
-const Status = require('dw/system/Status');
-const HookMgr = require('dw/system/HookMgr');
-const constants = require('*/cartridge/scripts/subpro/util/constants');
+var Status = require('dw/system/Status');
+var HookMgr = require('dw/system/HookMgr');
+var constants = require('*/cartridge/scripts/subpro/util/constants');
 
-const getAuthorizationResult = (pProcessor, orderNo, pInstrument) => {
+var getAuthorizationResult = (pProcessor, orderNo, pInstrument) => {
     if (pInstrument.getCreditCardNumber() === constants.failedCard) {
         var status = new Status(Status.ERROR, 'payment_error', 'There was an error processing the payment.');
 
@@ -19,8 +19,8 @@ const getAuthorizationResult = (pProcessor, orderNo, pInstrument) => {
         return status;
     }
 
-    const hookName = 'app.payment.processor.' + pProcessor.ID.toLowerCase();
-    const customAuthorizeHook = () => HookMgr.callHook(hookName, 'Authorize', orderNo, pInstrument, pProcessor);
+    var hookName = 'app.payment.processor.' + pProcessor.ID.toLowerCase();
+    var customAuthorizeHook = () => HookMgr.callHook(hookName, 'Authorize', orderNo, pInstrument, pProcessor);
 
     return HookMgr.hasHook(hookName) ? customAuthorizeHook() : HookMgr.callHook('app.payment.processor.default', 'Authorize');
 };
@@ -37,15 +37,15 @@ function CreditCard() {}
  * @returns {dw.system.Status} authorization status (Status.OK or Status.ERROR)
  */
 CreditCard.prototype.authorize = function (order, paymentInstrument) {
-    const OrderMgr = require('dw/order/OrderMgr');
-    const PaymentMgr = require('dw/order/PaymentMgr');
-    const paymentHelper = require('~/cartridge/scripts/subpro/helpers/paymentsHelper');
+    var OrderMgr = require('dw/order/OrderMgr');
+    var PaymentMgr = require('dw/order/PaymentMgr');
+    var paymentHelper = require('~/cartridge/scripts/subpro/helpers/paymentsHelper');
 
-    const ocapiHelper = require('~/cartridge/scripts/subpro/helpers/ocapiHelper');
+    var ocapiHelper = require('~/cartridge/scripts/subpro/helpers/ocapiHelper');
 
     if (paymentHelper.checkIfHasTransaction(paymentInstrument)) {
-        let orderFailStatus = OrderMgr.failOrder(order, !order.custom.subproSubscriptionsToBeProcessed);
-        let errObj = ocapiHelper.errorResponse({
+        var orderFailStatus = OrderMgr.failOrder(order, false);
+        var errObj = ocapiHelper.errorResponse({
             status: 'AUTHORIZATION_FAILED',
             message: 'Transaction has already been taken'
         });
@@ -55,11 +55,11 @@ CreditCard.prototype.authorize = function (order, paymentInstrument) {
         return new Status(Status.ERROR, errObj.status, JSON.stringify(errObj));
     }
 
-    let authorizationResult = null;
+    var authorizationResult = null;
 
     if (paymentHelper.doesAuthorizedAmountBiggerOrderTotal(order, paymentInstrument)) {
-        let orderFailStatus = OrderMgr.failOrder(order, !order.custom.subproSubscriptionsToBeProcessed);
-        let errObj = ocapiHelper.errorResponse({
+        var orderFailStatus = OrderMgr.failOrder(order, false);
+        var errObj = ocapiHelper.errorResponse({
             status: 'AUTHORIZATION_ERROR',
             message: 'Authorization amount is bigger than order total'
         });
@@ -69,14 +69,14 @@ CreditCard.prototype.authorize = function (order, paymentInstrument) {
         return new Status(Status.ERROR, errObj.status, JSON.stringify(errObj));
     }
 
-    const { paymentProcessor } = PaymentMgr.getPaymentMethod(paymentInstrument.paymentMethod);
+    var { paymentProcessor } = PaymentMgr.getPaymentMethod(paymentInstrument.paymentMethod);
 
     if (paymentProcessor) {
         authorizationResult = getAuthorizationResult(paymentProcessor, order.orderNo, paymentInstrument);
 
         if (authorizationResult.error) {
-            let orderFailStatus = OrderMgr.failOrder(order, !order.custom.subproSubscriptionsToBeProcessed);
-            let errObj = ocapiHelper.errorResponse({
+            var orderFailStatus = OrderMgr.failOrder(order, false);
+            var errObj = ocapiHelper.errorResponse({
                 status: 'AUTHORIZATION_FAILED',
                 message: 'The payment you submitted is not valid. Please re-enter payment information.',
                 details: authorizationResult
@@ -91,8 +91,8 @@ CreditCard.prototype.authorize = function (order, paymentInstrument) {
 
         return new Status(Status.OK, 'AUTHORIZATION_SUCCESS', JSON.stringify(authorizationResult));
     } else {
-        let orderFailStatus = OrderMgr.failOrder(order, !order.custom.subproSubscriptionsToBeProcessed);
-        let errObj = ocapiHelper.errorResponse({
+        var orderFailStatus = OrderMgr.failOrder(order, false);
+        var errObj = ocapiHelper.errorResponse({
             status: 'AUTHORIZATION_FAILED',
             message: 'Payment Processor is empty for provided payment method'
         });

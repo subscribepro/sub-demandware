@@ -28,11 +28,11 @@ function setProperty(response, propertyName) {
  * @returns {Object} returns parsed error response for payment requests
  */
 function errorResponse(response) {
-    let status = setProperty(response, 'status') || 'APPLICATION_EXCEPTION';
-    let errors = [];
+    var status = setProperty(response, 'status') || 'APPLICATION_EXCEPTION';
+    var errors = [];
 
     // Base error body
-    let errObj = {
+    var errObj = {
         error: {
             message: setProperty(response, 'message'),
             details: setProperty(response, 'details')

@@ -1,8 +1,8 @@
 'use strict';
 
-const Status = require('dw/system/Status');
-const OrderMgr = require('dw/order/OrderMgr');
-const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+var Status = require('dw/system/Status');
+var OrderMgr = require('dw/order/OrderMgr');
+var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
 /**
  * authorizePayment
@@ -12,11 +12,12 @@ const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
  * @returns {dw.system.Status} status (Status.OK or status.ERROR).
  */
 function authorizePayment(order, PaymentMethodModel, paymentDetails) {
-    const paymentAuthResult = PaymentMethodModel.authorize(order, paymentDetails);
+    var paymentAuthResult = PaymentMethodModel.authorize(order, paymentDetails);
 
-    if (paymentAuthResult.error) {
-        COHelpers.cancelAllPaidTransactions(order);
-    }
+    // If you need, you can add your own additional steps here.
+    // if (paymentAuthResult.error) {
+    //     COHelpers.cancelAllPaidTransactions(order);
+    // }
 
     return paymentAuthResult;
 }
@@ -28,15 +29,15 @@ function authorizePayment(order, PaymentMethodModel, paymentDetails) {
  * @returns {dw.system.Status} authorization status (Status.OK or status.ERROR)
  */
 function performPaymentAuthorize(order, paymentDetails) {
-    const paymentMethodsFactory = require('~/cartridge/scripts/subpro/factories/paymentMethodsFactory');
-    const ocapiHelper = require('~/cartridge/scripts/subpro/helpers/ocapiHelper');
+    var paymentMethodsFactory = require('~/cartridge/scripts/subpro/factories/paymentMethodsFactory');
+    var ocapiHelper = require('~/cartridge/scripts/subpro/helpers/ocapiHelper');
 
-    const paymentMethod = paymentDetails.getPaymentMethod();
-    const PaymentMethodModel = paymentMethodsFactory[paymentMethod];
+    var paymentMethod = paymentDetails.getPaymentMethod();
+    var PaymentMethodModel = paymentMethodsFactory[paymentMethod];
 
     if (empty(PaymentMethodModel)) {
-        let orderFailStatus = OrderMgr.failOrder(order, !order.custom.subproSubscriptionsToBeProcessed);
-        let errObj = ocapiHelper.errorResponse({
+        var orderFailStatus = OrderMgr.failOrder(order, false);
+        var errObj = ocapiHelper.errorResponse({
             status: 'UNSUPPORTED_PAYMENT_TYPE',
             message: 'Unexpected payment type'
         });
@@ -45,7 +46,7 @@ function performPaymentAuthorize(order, paymentDetails) {
         return new Status(Status.ERROR, errObj.status, JSON.stringify(errObj));
     }
 
-    let paymentAuthResult = new Status(Status.OK);
+    var paymentAuthResult = new Status(Status.OK);
 
     paymentAuthResult = authorizePayment(order, PaymentMethodModel, paymentDetails);
 
@@ -60,7 +61,7 @@ function performPaymentAuthorize(order, paymentDetails) {
  * @param {dw.order.OrderPaymentInstrument} paymentDetails - OrderPaymentInstrument
  * @returns {dw.system.Status} authorization status (Status.OK or status.ERROR)
  */
-const authorize = function (order, paymentDetails) {
+var authorize = function (order, paymentDetails) {
     return performPaymentAuthorize(order, paymentDetails);
 };
 

@@ -3,6 +3,7 @@
 var Transaction = require('dw/system/Transaction');
 var Logger = require('dw/system/Logger');
 var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/subscribeProLib');
+var Money = require('dw/value/Money');
 
 /**
  * Provides an interface to handle Subscribe Pro payment objects.
@@ -209,8 +210,8 @@ var PaymentsHelper = {
      * @returns {boolean} returns `true` if transaction exists, returns `false` otherwise
      */
     checkIfHasTransaction: function (payment) {
-        let transaction = payment.getPaymentTransaction();
-        let hasTransaction = transaction && transaction.getTransactionID() && transaction.getAmount();
+        var transaction = payment.getPaymentTransaction();
+        var hasTransaction = transaction && transaction.getTransactionID() && transaction.getAmount();
         return !!hasTransaction;
     },
 
@@ -221,9 +222,50 @@ var PaymentsHelper = {
      * @returns {boolean} - true of false
      */
     doesAuthorizedAmountBiggerOrderTotal: function (order, paymentInstrument) {
-        let totalGrossPrice = order.getTotalGrossPrice().getValue();
-        let transactionAmount = paymentInstrument.getPaymentTransaction().getAmount().getValue();
+        var totalGrossPrice = order.getTotalGrossPrice().getValue();
+        var transactionAmount = paymentInstrument.getPaymentTransaction().getAmount().getValue();
         return transactionAmount > totalGrossPrice;
+    },
+
+    /**
+     * @description Calculates sum of payments in context of specified order
+     * @param {dw.order.Order} order specified order
+     * @param {boolean} paidOnly determines if only paid transactions should be calculated
+     * @returns {dw.value.Money} sum of all payments
+     */
+    calculatePaymentsAmount: function (order, paidOnly) {
+        var currencyCode = order.getCurrencyCode();
+        var amountPaid = new Money(0, currencyCode);
+        var paymentInstrumentsIterator = order.getPaymentInstruments().iterator();
+        while (paymentInstrumentsIterator.hasNext()) {
+            var currentPaymentInstrument = paymentInstrumentsIterator.next();
+            var paymentTransaction = currentPaymentInstrument.getPaymentTransaction();
+            if (paidOnly && !empty(paymentTransaction) && order.getPaymentStatus() === order.PAYMENT_STATUS_PAID) {
+                continue;
+            }
+            if (paymentTransaction) {
+                amountPaid = amountPaid.add(paymentTransaction.getAmount());
+            }
+        }
+        return amountPaid;
+    },
+
+    /**
+     * @description Calculates sum of all payments in context of specified order
+     * @param {dw.order.Order} order specified order
+     * @returns {dw.value.Money} sum of all payments
+     */
+    calculateAllPaymentsAmount: function (order) {
+        return this.calculatePaymentsAmount(order, false);
+    },
+
+    /**
+     * @description Calculates sum of only processed payments in context of specified order
+     * @param {dw.order.Order} order specified order
+     * @returns {dw.value.Money} sum of all processed payments
+     */
+    calculateProcessedPaymentsAmount: function (order) {
+        return this.calculatePaymentsAmount(order, true);
     }
 };
 
