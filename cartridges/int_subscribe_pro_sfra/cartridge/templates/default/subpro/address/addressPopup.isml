@@ -1,0 +1,19 @@
+<div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog" aria-labelledby="addAddressModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header delete-confirmation-header">
+                <h2 class="modal-title" id="addAddressModal"
+                    aria-label="${Resource.msg('label.addressbook.addnewaddress', 'account', null)}">
+                    ${Resource.msg('label.addressbook.addnewaddress', 'account', null)}</h2>
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-label="${Resource.msg('label.close.dialog.button', 'common', null)}"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body delete-confirmation-body">
+                <div class="card-body">
+                    <isinclude template="account/addressForm" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
