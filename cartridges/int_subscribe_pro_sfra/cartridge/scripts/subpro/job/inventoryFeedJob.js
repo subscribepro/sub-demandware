@@ -7,6 +7,7 @@
 var ProductSearchModel = require('dw/catalog/ProductSearchModel');
 
 var productSPJobModel = require('*/cartridge/models/productSPJobModel');
+var productHelper = require('*/cartridge/scripts/helpers/productHelpers');
 
 var Logger = require('dw/system/Logger');
 
@@ -38,6 +39,9 @@ function read(parameters, stepExecution) {
     while (productSearchHits.hasNext()) {
         var productSearchHit = productSearchHits.next();
         var product = productSearchHit.getProduct();
+        var productType = productHelper.getProductType(product);
+
+        if (productType === 'variationGroup' || productType === 'set' || productType === 'optionProduct') continue;
 
         if (parameters.SynchronizeProducts === 'subscriptionEnabledProducts' && product.custom.subproSubscriptionEnabled) {
             return product;
