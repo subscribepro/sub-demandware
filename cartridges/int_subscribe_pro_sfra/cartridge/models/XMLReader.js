@@ -38,33 +38,41 @@ function getValueByPath(path, xml) {
  * @param {dw.io.File | string} file
  * @param {boolean} [removeFile=false] whether file should be removed at close event
  */
-function XMLReader(file, removeFile) {
+
+function XMLReader(folderPath, removeFile) {
     var FileReader = require('dw/io/FileReader');
     var XMLStreamReader = require('dw/io/XMLStreamReader');
+    var File = require('dw/io/File');
 
-    if (typeof file === 'string') {
-        var File = require('dw/io/File');
+    var folder = new File(folderPath);
 
-        file = new File(file);
+    if (!folder.exists()) {
+        folder.mkdirs();
     }
 
-    /** @access private */
-    this._removeFile = typeof removeFile === 'undefined' ? false : removeFile;
+    var files = folder.listFiles().iterator();
 
-    /** @access private */
-    this._file = file;
+    while (files.hasNext()) {
+        var file = files.next();
 
-    if (file.exists()) {
         /** @access private */
-        this._fileReader = new FileReader(file);
+        this._removeFile = typeof removeFile === 'undefined' ? false : removeFile;
+
         /** @access private */
-        this._stream = new XMLStreamReader(this._fileReader);
-    } else {
-        require('dw/system/Logger').info('File with path "{0}" does not exist.', file.fullPath);
+        this._file = file;
+
+        if (file.exists()) {
+            /** @access private */
+            this._fileReader = new FileReader(file);
+            /** @access private */
+            this._stream = new XMLStreamReader(this._fileReader);
+        } else {
+            require('dw/system/Logger').info('File with path "{0}" does not exist.', file.fullPath);
+        }
+
+        /** @readonly */
+        this.isClosed = !file.exists();
     }
-
-    /** @readonly */
-    this.isClosed = !file.exists();
 }
 
 /**
@@ -93,9 +101,6 @@ XMLReader.prototype.getNode = function (nodeName) {
 
     throw StopIteration;
 };
-
-
-
 
 /**
  * @param {boolean} [removeFile]
