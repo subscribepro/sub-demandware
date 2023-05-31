@@ -1,4 +1,5 @@
 var HttpServices = require('~/cartridge/scripts/subpro/init/httpServiceInit.js');
+var Encoding = require('dw/crypto/Encoding');
 
 /**
  * SubscribeProLib
@@ -50,6 +51,26 @@ var SubscribeProLib = {
             error: false,
             result: result.object
         };
+    },
+
+    /**
+     * Fetches object definition from Custom Object, creating it if not exists
+     * @param {string} customObjectName
+     * @param {string} objectID
+     * @param {boolean} [createIfNotExists]
+     * @returns {dw.object.CustomAttributes}
+     */
+    getCustomObject: function (customObjectName, objectID, createIfNotExists) {
+        var CustomObjectMgr = require('dw/object/CustomObjectMgr'),
+            objectDefinition = CustomObjectMgr.getCustomObject(customObjectName, objectID);
+        if (empty(objectDefinition) && createIfNotExists === true) {
+            require('dw/system/Transaction').wrap(function () {
+                objectDefinition = CustomObjectMgr.createCustomObject(customObjectName, objectID);
+            });
+        }
+        if (!empty(objectDefinition)) {
+            return objectDefinition.getCustom();
+        }
     },
 
     /**
@@ -192,6 +213,70 @@ var SubscribeProLib = {
     },
 
     /**
+     * Get all products
+     * API Endpoint: GET /services/v2/products.{_format}
+     *
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    getProducts: function () {
+        // var service = SubscribeProLib.getService('subpro.http.get.products');
+        // return this.handleResponse(service.call({ sku: '' }));
+        var service = HttpServices.SubproHttpService();
+        // var config = { accessToken: session.privacy.subProAccessToken, actionId: 'services.v2.product{id}', dynamicAction: { ID: '555' }, method: 'GET', parameters: 'QueryString', payload: 'Object' };
+        var config = { accessToken: this.getOrUpdateAccessToken(), actionId: 'services.v2.products', method: 'GET' };
+        return this.handleResponse(service.call(config));
+        // return this.handleResponse(service.call({ sku: sku, accessToken: accessToken }));
+    },
+
+    /**
+     * Get all products
+     * API Endpoint: GET /services/v2/products.{_format}
+     *
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    getFilteredProducts: function (sku) {
+        if (empty(sku)) {
+            return {
+                error: true,
+                result: 'filteringString is required for the getFilteredProducts method'
+            };
+        }
+        // var service = SubscribeProLib.getService('subpro.http.get.filtered.products');
+        var service = HttpServices.SubproHttpService();
+        var config = { accessToken: this.getOrUpdateAccessToken(), actionId: 'services.v3.products', method: 'GET', parameters: sku };
+
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
+     * Post all products
+     * API Endpoint: POST /services/v2/products.{_format}
+     *
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    postProducts: function (products) {
+        var service = SubscribeProLib.getService('subpro.http.post.products');
+        // return SubscribeProLib.handleResponse(service.call({ customer: customer }));
+        var service = HttpServices.SubproHttpService();
+        var config = { accessToken: this.getOrUpdateAccessToken(), actionId: 'services.v2.products', method: 'POST', payload: { products: products } };
+
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
+     * Patch all products
+     * API Endpoint: PATCH /services/v2/products.{_format}
+     *
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    patchProducts: function (listFields) {
+        var service = HttpServices.SubproHttpService();
+        var config = { accessToken: this.getOrUpdateAccessToken(), actionId: 'services.v2.products', method: 'PATCH', payload: listFields };
+
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
      * Get customer information based on ID
      *
      * API Endpoint: GET /services/v2/customers/{id}.{_format}
@@ -267,22 +352,47 @@ var SubscribeProLib = {
      * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
     getToken: function (customerID, grantType, scope) {
-        if (!customerID || !grantType || !scope) {
+        if (!grantType || !scope) {
             return {
                 error: true,
-                result: 'customerID or grantType or scope parameter is missing'
+                result: 'grantType or scope parameter is missing'
             };
         }
 
-        var service = SubscribeProLib.getService('subpro.http.get.token');
+        var service = HttpServices.SubproHttpService();
 
-        return SubscribeProLib.handleResponse(
-            service.call({
-                customer_id: customerID,
-                grant_type: grantType,
-                scope: scope
-            })
-        );
+        var config = {
+            actionId: 'oauth.v2.token',
+            method: 'GET',
+            parameters: 'grant_type=' + grantType + '&scope=' + scope + '&customer_id=' + Encoding.toURI(customerID)
+        };
+        return this.handleResponse(service.call(config));
+
+        return SubscribeProLib.handleResponse(service.call(config));
+    },
+
+    /**
+     * getOrUpdateAccessToken
+     * @returns {string} token
+     */
+
+    getOrUpdateAccessToken() {
+        var subProAccessToken = this.getCustomObject('subProAccessToken', 'token', true);
+
+        if (subProAccessToken && (!subProAccessToken.expiresOn || !subProAccessToken.token || Date.now() >= subProAccessToken.expiresOn)) {
+            var response = SubscribeProLib.getToken('', 'client_credentials', 'client');
+            require('dw/system/Transaction').wrap(function () {
+                if (response.error) {
+                    delete subProAccessToken.token;
+                    delete subProAccessToken.expiresOn;
+                } else {
+                    var expirationTime = new Date().setTime(Date.now() + response.result.expires_in * 100);
+                    subProAccessToken.token = response.result.access_token;
+                    subProAccessToken.expiresOn = expirationTime;
+                }
+            });
+        }
+        return subProAccessToken.token;
     },
 
     /**

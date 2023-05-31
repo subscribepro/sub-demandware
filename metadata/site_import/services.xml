@@ -25,13 +25,24 @@
 
 	<service-profile service-profile-id="subpro.http.prof.post">
 		<timeout-millis>5000</timeout-millis>
-		<rate-limit-enabled>false</rate-limit-enabled>
-		<rate-limit-calls>0</rate-limit-calls>
-		<rate-limit-millis>0</rate-limit-millis>
-		<cb-enabled>false</cb-enabled>
-		<cb-calls>0</cb-calls>
-		<cb-millis>1000</cb-millis>
+        <rate-limit-enabled>true</rate-limit-enabled>
+        <rate-limit-calls>600</rate-limit-calls>
+        <rate-limit-millis>60000</rate-limit-millis>
+        <cb-enabled>true</cb-enabled>
+        <cb-calls>10</cb-calls>
+        <cb-millis>10000</cb-millis>
 	</service-profile>
+
+	<service service-id="subpro.http.universal">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>subpro-get-products</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <force-prd-enabled>true</force-prd-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>subpro.http.prof.post</profile-id>
+        <credential-id/>
+    </service>
 
 	<service service-id="subpro.http.get.config">
 		<service-type>HTTP</service-type>

@@ -7,7 +7,10 @@
 var ProductSearchModel = require('dw/catalog/ProductSearchModel');
 
 var productSPJobModel = require('*/cartridge/models/productSPJobModel');
+var patchProductModel = require('*/cartridge/models/patchProductModel');
 var productHelper = require('*/cartridge/scripts/helpers/productHelpers');
+var SubProProductHelper = require('*/cartridge/scripts/subpro/helpers/productHelper');
+var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/subscribeProLib');
 
 var Logger = require('dw/system/Logger');
 
@@ -75,36 +78,24 @@ function process(product, parameters, stepExecution) {
  * @param {dw.job.JobStepExecution} stepExecution - stepExecution
  */
 function write(lines, parameters, stepExecution) {
-    var jsonFeed = JSON.stringify(lines.toArray());
+    var patchProductfields = [];
+    var filteredProducts = SubProProductHelper.checkProductsWithSkuExistence(lines);
 
-    Logger.error('write: {0}', jsonFeed);
-}
+    if (filteredProducts.nonExistedProducts.length) {
+        var response = SubscribeProLib.postProducts(filteredProducts.nonExistedProducts);
+    }
 
-/**
- * @function getTotalCount
- * @param {Array} parameters - parameters
- * @param {dw.job.JobStepExecution} stepExecution - stepExecution
- * @returns {number} Returns the total number of products to process for the current job-run.
- */
-function getTotalCount(parameters, stepExecution) {
-    // return productSearchHits.getCount();
-}
-
-/**
- * @function afterStep
- * @param {boolean} success - success
- * @param {Array} parameters - parameters
- * @param {dw.job.JobStepExecution} stepExecution - stepExecution
- */
-function afterStep(success, parameters, stepExecution) {
-    var a = 5;
+    if (filteredProducts.existedProducts.length) {
+        filteredProducts.existedProducts.forEach(function (product) {
+            patchProductModel(product, 'replace', patchProductfields);
+        });
+        var response = SubscribeProLib.patchProducts(patchProductfields);
+    }
 }
 
 module.exports = {
     beforeStep: beforeStep,
-    getTotalCount: getTotalCount,
     read: read,
     process: process,
-    write: write,
-    afterStep: afterStep
+    write: write
 };

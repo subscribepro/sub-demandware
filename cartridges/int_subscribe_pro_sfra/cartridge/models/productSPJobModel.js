@@ -63,10 +63,9 @@ function getPricing(product) {
             priceBook = priceBook.parentPriceBook ? priceBook.parentPriceBook : priceBook;
         }
 
-        pricing.msrp = (priceModel.priceInfo && priceModel.priceInfo.price && priceModel.priceInfo.price.value) || '';
-
         pricing.standard = priceModel.getPriceBookPrice(priceBook.ID);
     }
+    pricing.msrp = priceModel.priceInfo && priceModel.priceInfo.price ? priceModel.priceInfo.price.value : '';
     pricing.displayPrice = getListPrice(priceModel);
     pricing.isSale = isSale(priceModel);
 
@@ -99,19 +98,20 @@ function getQtyInStock(product) {
 
 function productSPJobModel(product) {
     var pricing = getPricing(product);
+    var qty_in_stock = getQtyInStock(product);
 
     if (product) {
         this.sku = product.ID;
         this.name = product.name;
-        this.short_description = (product.shortDescription && product.shortDescription.markup) || '';
-        this.long_description = (product.longDescription && product.longDescription.markup) || '';
-        this.thumbnail_url = product.thumbnail || '';
-        this.price = (pricing.displayPrice && pricing.displayPrice.value) || '';
-        this.msrp = pricing.msrp;
-        this.sale_price = pricing.sale < pricing.standard ? pricing.sale.value : '';
-        this.is_on_sale = pricing.isSale;
-        this.qty_in_stock = getQtyInStock(product);
-        this.is_in_stock = product.availabilityModel.inStock;
+        this.price = (pricing.displayPrice && pricing.displayPrice.value && pricing.displayPrice.value.toString()) || '0';
+        if (product.shortDescription && product.shortDescription.markup) this.short_description = product.shortDescription.markup;
+        if (product.longDescription && product.longDescription.markup) this.long_description = product.longDescription.markup;
+        if (product.thumbnail) this.thumbnail_url = product.thumbnail || '';
+        if (pricing.msrp) this.msrp = pricing.msrp.toString();
+        if (pricing.sale < pricing.standard) this.sale_price = pricing.sale.value.toString();
+        if (pricing.isSale) this.is_on_sale = pricing.isSale;
+        if (qty_in_stock) this.qty_in_stock = qty_in_stock.toString();
+        if (product.availabilityModel.inStock) this.is_in_stock = product.availabilityModel.inStock;
     }
 }
 
