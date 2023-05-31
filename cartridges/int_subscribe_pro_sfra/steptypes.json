@@ -9,13 +9,11 @@
                 "description": "Find product inventory and export as SP API call",
                 "module": "int_subscribe_pro_sfra/cartridge/scripts/subpro/job/inventoryFeedJob.js",
                 "before-step-function": "beforeStep",
-                "total-count-function": "getTotalCount",
                 "before-chunk-function": "",
                 "read-function": "read",
                 "process-function": "process",
                 "write-function": "write",
                 "after-chunk-function": "",
-                "after-step-function": "afterStep",
                 "chunk-size": 100,
                 "transactional": "true",
                 "parameters": {
