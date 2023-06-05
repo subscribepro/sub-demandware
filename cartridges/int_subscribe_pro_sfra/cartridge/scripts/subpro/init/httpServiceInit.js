@@ -13,8 +13,9 @@ var Encoding = require('dw/crypto/Encoding');
  * @param {string} endpoint API Endpoint to call on the service
  * @param {string} parameters GET URL parameters to append to the URL
  * @param {string} credPrefix Prefix for credential ID
+ * @param {string} apiVersion Version of SubPro API
  */
-function setURL(svc, endpoint, parameters, credPrefix) {
+function setURL(svc, endpoint, parameters, credPrefix, apiVersion) {
     /**
      * Current Site, used to reference site preferences
      */
@@ -28,6 +29,9 @@ function setURL(svc, endpoint, parameters, credPrefix) {
     var url = svc.getURL();
     url = url.replace('{ENDPOINT}', endpoint);
     url = url.replace('{PARAMS}', parameters);
+    if (apiVersion === 'v1') {
+        url = url.replace('v2', 'v1');
+    }
 
     /**
      * Save the newly constructed url
@@ -456,8 +460,12 @@ module.exports.SubproHttpGetToken = LocalServiceRegistry.createService('subpro.h
      */
     createRequest: function (svc, args) {
         svc.setRequestMethod('GET');
-        setURL(svc, 'token', 'grant_type=' + args.grant_type
-            + '&scope=' + args.scope + '&customer_id=' + Encoding.toURI(args.customer_id), 'subpro.http.cred.oauth.');
+        setURL(
+            svc,
+            'token',
+            'grant_type=' + args.grant_type + '&scope=' + args.scope + '&customer_id=' + Encoding.toURI(args.customer_id),
+            'subpro.http.cred.oauth.'
+        );
     },
 
     /**
@@ -542,6 +550,48 @@ module.exports.SubproHttpPostPaymentprofileVault = LocalServiceRegistry.createSe
         if (args) {
             return JSON.stringify({ payment_profile: args.paymentProfile });
         }
+    },
+
+    /**
+     * JSON parse the response text and return it
+     * @param {HTTPService} svc Service Object
+     * @param {HTTPClient} client Client object
+     * @return {Object} Response object
+     */
+    parseResponse: function (svc, client) {
+        return JSON.parse(client.text);
+    },
+
+    /**
+     * Filter Log messages for this request
+     * @param {string} msg Original message
+     * @return {string} Filtered message
+     */
+    filterLogMessage: function (msg) {
+        return msg;
+    }
+});
+
+/**
+ * Service: subpro.http.delete.paymentprofile
+ * Create a new payment profile at Subscribe Pro
+ */
+module.exports.SubproHttpDeletePaymentprofileVault = LocalServiceRegistry.createService('subpro.http.delete.paymentprofile.vault', {
+    /**
+     * Create the service request
+     * @param {HTTPFormService} svc Form service
+     * @param {Object} args Arguments
+     * @return {string|null} JSON string of parameters POSTed.
+     */
+    createRequest: function (svc, args) {
+        svc.setRequestMethod('PUT');
+        if (args.paymentprofile_id) {
+            setURL(svc, 'vault/paymentprofiles/' + Encoding.toURI(args.paymentprofile_id) + '/redact.json', '', '', 'v1');
+        } else {
+            throw new Error('subpro.http.delete.paymentprofile.vault requires a paymentprofile_id');
+        }
+
+        return JSON.stringify({});
     },
 
     /**

@@ -162,4 +162,14 @@
 		<profile-id>subpro.http.prof.post</profile-id>
 		<credential-id></credential-id>
 	</service>
+
+	<service service-id="subpro.http.delete.paymentprofile.vault">
+		<service-type>HTTP</service-type>
+		<enabled>true</enabled>
+		<log-prefix>subpro-delete-payprof-vault</log-prefix>
+		<comm-log-enabled>true</comm-log-enabled>
+		<mock-mode-enabled>false</mock-mode-enabled>
+		<profile-id>subpro.http.prof.post</profile-id>
+		<credential-id></credential-id>
+	</service>
 </services>

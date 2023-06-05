@@ -63,6 +63,8 @@ var PaymentsHelper = {
             returnObject.payment_profile_id = card.custom.subproPaymentProfileID;
         }
 
+        var defaultCustomerAddress = profile.getAddressBook().getPreferredAddress();
+
         if (typeof billingAddress.getCountryCode === 'function') {
             returnObject.billing_address = {
                 first_name: billingAddress.firstName,
@@ -77,13 +79,30 @@ var PaymentsHelper = {
                 country: billingAddress.getCountryCode() ? billingAddress.getCountryCode().toString().toUpperCase() : '',
                 phone: billingAddress.phone || ''
             };
+        } else if (defaultCustomerAddress) {
+            var nameParts = card.creditCardHolder.split(' ');
+            var lastName = nameParts.pop();
+            var firstName = nameParts.join(' ');
+            returnObject.billing_address = {
+                last_name: lastName,
+                first_name: firstName,
+                middle_name: '',
+                company: defaultCustomerAddress.companyName || '',
+                street1: defaultCustomerAddress.address1,
+                street2: defaultCustomerAddress.address2 || '',
+                city: defaultCustomerAddress.city,
+                region: defaultCustomerAddress.stateCode,
+                postcode: defaultCustomerAddress.postalCode,
+                country: defaultCustomerAddress.getCountryCode() ? defaultCustomerAddress.getCountryCode().toString().toUpperCase() : '',
+                phone: defaultCustomerAddress.phone || ''
+            };
         } else {
             var nameParts = card.creditCardHolder.split(' ');
             var lastName = nameParts.pop();
             var firstName = nameParts.join(' ');
             returnObject.billing_address = {
-                first_name: firstName,
-                last_name: lastName
+                last_name: lastName,
+                first_name: firstName
             };
         }
 
@@ -154,7 +173,10 @@ var PaymentsHelper = {
      * @return {int|null} Payment profile ID
      */
     findOrCreatePaymentProfile: function (paymentInstrument, customerPaymentInstrument, customerProfile, billingAddress) {
-        var paymentProfileID = customerPaymentInstrument && 'subproPaymentProfileID' in customerPaymentInstrument.custom ? customerPaymentInstrument.custom.subproPaymentProfileID : false;
+        var paymentProfileID =
+            customerPaymentInstrument && 'subproPaymentProfileID' in customerPaymentInstrument.custom
+                ? customerPaymentInstrument.custom.subproPaymentProfileID
+                : false;
 
         /**
          * If Payment Profile already exists,
@@ -168,7 +190,7 @@ var PaymentsHelper = {
              * Otherwise create the payment profile
              */
             if (response.error && response.result.code === 404) {
-                paymentProfileID = PaymentsHelper.createSubproPaymentProfile(customerProfile, customerPaymentInstrument, billingAddress);
+                paymentProfileID = this.createSubproPaymentProfile(customerProfile, customerPaymentInstrument, billingAddress);
                 /**
                  * Some other error occurred, error out
                  */
@@ -176,7 +198,7 @@ var PaymentsHelper = {
                 return null; // eslint-disable-line no-continue
             }
         } else {
-            paymentProfileID = PaymentsHelper.createSubproPaymentProfile(customerProfile, customerPaymentInstrument, billingAddress);
+            paymentProfileID = this.createSubproPaymentProfile(customerProfile, customerPaymentInstrument, billingAddress);
         }
 
         return paymentProfileID;
@@ -191,12 +213,14 @@ var PaymentsHelper = {
      * @return {number|undefined} id unique identifier of created payment profile or undefined
      */
     createSubproPaymentProfile: function (customerProfile, paymentInstrument, billingAddress) {
-        var response = SubscribeProLib.createPaymentProfile(PaymentsHelper.getSubscriptionPaymentProfile(customerProfile, paymentInstrument, billingAddress, false));
+        var response = SubscribeProLib.createPaymentProfile(
+            this.getSubscriptionPaymentProfile(customerProfile, paymentInstrument, billingAddress, false)
+        );
 
         if (!response.error) {
             // Payment profile creates successfully. Save Subscribe Pro Payment Profile ID to the Commerce Cloud Order Payment Instrument
             var paymentProfileID = response.result.payment_profile.id;
-            PaymentsHelper.setSubproPaymentProfileID(paymentInstrument, paymentProfileID);
+            this.setSubproPaymentProfileID(paymentInstrument, paymentProfileID);
 
             return paymentProfileID;
         }
@@ -266,6 +290,15 @@ var PaymentsHelper = {
      */
     calculateProcessedPaymentsAmount: function (order) {
         return this.calculatePaymentsAmount(order, true);
+    },
+
+    /**
+     * Call service to delete payment profile.
+     *
+     * @param {string} subproPaymentProfileID Subscribe Pro Payment Profile ID
+     */
+    deletePaymentProfile: function (subproPaymentProfileID) {
+        SubscribeProLib.deletePaymentProfile(subproPaymentProfileID);
     }
 };
 
