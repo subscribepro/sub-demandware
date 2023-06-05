@@ -48,4 +48,46 @@
         </triggers>
     </job>
 
+    <job job-id="ExportInventoryFeedSP" priority="0">
+        <description/>
+        <parameters/>
+        <flow>
+            <context site-id="RefArchGlobal"/>
+            <step step-id="InventoryFeed" type="custom.InventoryFeedJob" enforce-restart="false">
+                <description/>
+                <parameters>
+                    <parameter name="SynchronizeProducts">subscriptionEnabledProducts</parameter>
+                </parameters>
+                <rules>
+                    <on-exit status="OK">
+                        <stop-job/>
+                    </on-exit>
+                </rules>
+            </step>
+        </flow>
+        <rules>
+            <on-running runtime-threshold="60m" enabled="false">
+                <mark-job-as-hanging/>
+            </on-running>
+        </rules>
+        <triggers>
+            <run-recurring enabled="true">
+                <recurrence>
+                    <date-from>2023-05-31Z</date-from>
+                    <start-time>21:03:00.000Z</start-time>
+                    <interval>1d</interval>
+                    <day-of-week>
+                        <weekday>Sunday</weekday>
+                        <weekday>Thursday</weekday>
+                        <weekday>Friday</weekday>
+                        <weekday>Wednesday</weekday>
+                        <weekday>Monday</weekday>
+                        <weekday>Saturday</weekday>
+                        <weekday>Tuesday</weekday>
+                    </day-of-week>
+                </recurrence>
+            </run-recurring>
+        </triggers>
+    </job>
+
 </jobs>
