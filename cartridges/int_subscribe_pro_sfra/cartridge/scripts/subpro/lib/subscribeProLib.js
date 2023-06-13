@@ -1,5 +1,6 @@
 var HttpServices = require('~/cartridge/scripts/subpro/init/httpServiceInit.js');
 var Encoding = require('dw/crypto/Encoding');
+var Logger = require('dw/system/Logger');
 
 /**
  * SubscribeProLib
@@ -277,6 +278,19 @@ var SubscribeProLib = {
     },
 
     /**
+     * Retrieve a batch status.
+     * API Endpoint: GET /services/v2/batch/{batchId}.{_format}
+     *
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    getBatchStatus: function (batchId) {
+        var service = HttpServices.SubproHttpService();
+        var config = { accessToken: this.getOrUpdateAccessToken(), actionId: 'services.v2.batch{batchId}', dynamicAction: { batchId: batchId }, method: 'GET' };
+
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
      * Get customer information based on ID
      *
      * API Endpoint: GET /services/v2/customers/{id}.{_format}
@@ -367,8 +381,6 @@ var SubscribeProLib = {
             parameters: 'grant_type=' + grantType + '&scope=' + scope + '&customer_id=' + Encoding.toURI(customerID)
         };
         return this.handleResponse(service.call(config));
-
-        return SubscribeProLib.handleResponse(service.call(config));
     },
 
     /**
@@ -380,17 +392,21 @@ var SubscribeProLib = {
         var subProAccessToken = this.getCustomObject('subProAccessToken', 'token', true);
 
         if (subProAccessToken && (!subProAccessToken.expiresOn || !subProAccessToken.token || Date.now() >= subProAccessToken.expiresOn)) {
-            var response = SubscribeProLib.getToken('', 'client_credentials', 'client');
-            require('dw/system/Transaction').wrap(function () {
-                if (response.error) {
-                    delete subProAccessToken.token;
-                    delete subProAccessToken.expiresOn;
-                } else {
-                    var expirationTime = new Date().setTime(Date.now() + response.result.expires_in * 100);
-                    subProAccessToken.token = response.result.access_token;
-                    subProAccessToken.expiresOn = expirationTime;
-                }
-            });
+            var response = this.getToken('', 'client_credentials', 'client');
+            try {
+                require('dw/system/Transaction').wrap(function () {
+                    if (response.error) {
+                        delete subProAccessToken.token;
+                        delete subProAccessToken.expiresOn;
+                    } else {
+                        var expirationTime = new Date().setTime(Date.now() + response.result.expires_in * 100);
+                        subProAccessToken.token = response.result.access_token;
+                        subProAccessToken.expiresOn = expirationTime;
+                    }
+                });
+            } catch (e) {
+                Logger.error('subProAccessToken has not saved. error: ', e);
+            }
         }
         return subProAccessToken.token;
     },
@@ -501,6 +517,126 @@ var SubscribeProLib = {
         }
 
         return !!isSubpro;
+    },
+
+    /**
+     * Retrieve a collection of all inventory locations.
+     *
+     * API Endpoint: GET /services/v2/inventory-locations.{_format}
+     *
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    getInventoryLocations: function () {
+        var service = HttpServices.SubproHttpService();
+        var config = { accessToken: this.getOrUpdateAccessToken(), actionId: 'services.v2.inventory-locations', method: 'GET' };
+
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
+     * Create a new inventory location.
+     *
+     * API Endpoint: POST /services/v2/inventory-locations.{_format}
+     *
+     * @param {Object} listID id of the inventory list on SFCC side
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    postInventoryLocation: function (listID) {
+        var service = HttpServices.SubproHttpService();
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.inventory-location',
+            method: 'POST',
+            payload: {
+                inventory_location: {
+                    name: listID,
+                    location_code: listID
+                }
+            }
+        };
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
+     * Update a new inventory location.
+     *
+     * API Endpoint: POST /services/v2/inventory-locations/{id}.{_format}
+     *
+     * @param {Object} listID id of the inventory list on SFCC side
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    updateInventoryLocation: function (listID) {
+        var service = HttpServices.SubproHttpService();
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.inventory-location{ID}',
+            method: 'POST',
+            dynamicAction: { ID: listID },
+            payload: {
+                inventory_location: {
+                    name: listID,
+                    location_code: listID
+                }
+            }
+        };
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
+     * Create a new inventory entry.
+     *
+     * API Endpoint: POST /services/v2/inventory.{_format}
+     *
+     * @param {Object} data An object containing all configs and request fields
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    postInventoryRecord: function (data) {
+        var service = HttpServices.SubproHttpService();
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.inventory',
+            method: 'POST',
+            payload: {
+                inventory: {
+                    product_id: data.product_id,
+                    inventory_location_id: data.inventory_location_id,
+                    qty_in_stock: data.qty_in_stock,
+                    qty_available: data.qty_available,
+                    qty_reserved: data.qty_reserved,
+                    is_in_stock: data.is_in_stock
+                }
+            }
+        };
+
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
+     * Update a single inventory entry.
+     *
+     * API Endpoint: POST /services/v2/locations/{id}.{_format}
+     *
+     * @param {Object} data An object containing all configs and request fields
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    updateInventoryRecord: function (data) {
+        var service = HttpServices.SubproHttpService();
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.inventory{id}',
+            method: 'POST',
+            dynamicAction: { ID: data.SPInventoryEntryID },
+            payload: {
+                inventory: {
+                    qty_in_stock: data.qty_in_stock,
+                    qty_available: data.qty_available,
+                    qty_reserved: data.qty_reserved,
+                    is_in_stock: data.is_in_stock
+                }
+            }
+        };
+
+        return this.handleResponse(service.call(config));
     }
 };
 

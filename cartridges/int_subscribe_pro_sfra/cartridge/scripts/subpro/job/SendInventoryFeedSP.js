@@ -1,5 +1,10 @@
 'use strict';
-var ProductMgr = require('dw/catalog/ProductMgr');
+
+var ProductSearchModel = require('dw/catalog/ProductSearchModel');
+var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/subscribeProLib');
+var ArrayList = require('dw/util/ArrayList');
+var ProductInventoryMgr = require('dw/catalog/ProductInventoryMgr');
+var SubProProductHelper = require('*/cartridge/scripts/subpro/helpers/productHelper');
 
 /**
  * @type {import('../models/XMLReader')}
@@ -9,6 +14,27 @@ var xmlReader;
  * @type {Generator<XML, XML, unknown>}
  */
 var getNodeGenerator;
+var productSearchModel;
+var productSearchHits;
+
+function postOrUpdate(product, data, SPInventoryEntryID) {
+    if (SPInventoryEntryID) {
+        data.SPInventoryEntryID = SPInventoryEntryID;
+        var updateInventoryRecordResponce = SubscribeProLib.updateInventoryRecord(data);
+
+        if (updateInventoryRecordResponce.result.code === 404) {
+            var postInventoryRecordResponce = SubscribeProLib.postInventoryRecord(data);
+            if (!postInventoryRecordResponce.error) {
+                product.availabilityModel.inventoryRecord.custom.SPInventoryEntryID = postInventoryRecordResponce.result.inventory.id;
+            }
+        }
+    } else {
+        var postInventoryRecordResponce = SubscribeProLib.postInventoryRecord(data);
+        if (!postInventoryRecordResponce.error) {
+            product.availabilityModel.inventoryRecord.custom.SPInventoryEntryID = postInventoryRecordResponce.result.inventory.id;
+        }
+    }
+}
 
 function beforeStep(params) {
     xmlReader = new (require('*/cartridge/models/XMLReader'))(params.InventoryFile, true);
@@ -23,27 +49,18 @@ function beforeStep(params) {
 // eslint-disable-next-line consistent-return
 function read() {
     try {
-        // if (getNodeGenerator.next()) {
         var node = getNodeGenerator.next();
         var schema = {
-            allocation: 'allocation',
-            allocationTimestamp: '["allocation-timestamp"]',
-            perpetual: 'perpetual',
-            preorderBackorderHandling: '["preorder-backorder-handling"]',
-            inStockDatetime: '["in-stock-datetime"]',
-            inStockDate: '["in-stock-date"]',
-            ats: 'ats',
-            onOrder: '["on-order"]',
-            turnover: '["turnover"]'
+            qty_in_stock: 'allocation',
+            qty_available: 'ats',
+            qty_reserved: '["on-order"]'
         };
 
-        // if (node.value) {
         var data = xmlReader.parseXMLNode(schema, node.value);
+        data.sku = xmlReader.productID;
+        data.list_id = xmlReader.listId;
+        data.is_in_stock = data.qty_in_stock !== '0';
         return data;
-        // } else {
-        // continue;
-        // }
-        // }
     } catch (e) {
         if (e instanceof StopIteration) {
             return undefined;
@@ -55,17 +72,58 @@ function read() {
  * @param {XML} productNode
  */
 function process(data) {
+    var product = null;
+    productSearchModel = new ProductSearchModel();
+    productSearchModel.setCategoryID('root');
+    productSearchModel.setEnableTrackingEmptySearches(false);
+    productSearchModel.setRecursiveCategorySearch(true);
+    productSearchModel.setProductIDs(new ArrayList([data.sku]));
+    productSearchModel.search();
+    productSearchHits = productSearchModel.getProductSearchHits();
+    if (productSearchHits.hasNext()) {
+        var productSearchHit = productSearchHits.next();
+        product = productSearchHit.getFirstRepresentedProduct();
+        data.product_id = product.getCustom().SPProductID;
+    } else {
+        data.product_id = '';
+    }
+
+    if (data.product_id && product.availabilityModel.inventoryRecord) {
+        var inventoryList = ProductInventoryMgr.getInventoryList(data.list_id);
+        var SPListId = inventoryList.custom.SPListId;
+        var SPInventoryEntryID = product.availabilityModel && product.availabilityModel.inventoryRecord && product.availabilityModel.inventoryRecord.custom.SPInventoryEntryID;
+
+        if (SPListId) {
+            data.inventory_location_id = SPListId;
+
+            postOrUpdate(product, data, SPInventoryEntryID);
+        } else {
+            var locationsResponce = SubscribeProLib.postInventoryLocation(data.list_id);
+
+            if (!locationsResponce.error) {
+                data.inventory_location_id = locationsResponce.result.inventory_location.id;
+                inventoryList.custom.SPListId = locationsResponce.result.inventory_location.id;
+                postOrUpdate(product, data, SPInventoryEntryID);
+            } else if (locationsResponce.result.code === 409) {
+                var updateInventoryLocationResponce = SubscribeProLib.getInventoryLocations();
+                if (!updateInventoryLocationResponce.error) {
+                    SPListId = SubProProductHelper.findIdByName(updateInventoryLocationResponce.result.inventory_locations, data.list_id);
+                    data.inventory_location_id = SPListId;
+                    inventoryList.custom.SPListId = SPListId;
+
+                    postOrUpdate(product, data, SPInventoryEntryID);
+                }
+            }
+        }
+    }
+
     return data;
 }
 
 /**
  * @param {dw.util.List<string>} productIDs
  */
-function write(lines, parameters, stepExecution) {
-    require('dw/system/Logger').error('SendInventoryFeedSP Job has results "{0}"', JSON.stringify(lines.toArray()));
-}
-
-function afterChunk() {}
+function write(lines, parameters, stepExecution) {}
 
 function afterStep() {
     xmlReader && xmlReader.closeReader();
@@ -73,43 +131,8 @@ function afterStep() {
 
 module.exports = {
     beforeStep: beforeStep,
-    afterChunk: afterChunk,
     read: read,
     process: process,
     write: write,
     afterStep: afterStep
 };
-
-// var productID = inventoryNode.toString()
-// var productID = inventoryNode.value.attribute('product-id').toString();
-// var ee = inventoryNode.value.node('allocation').toString();
-// var value = inventoryNode.value.getAttributeValue(null, 'allocation').toString();
-// var r = xmlReader;
-// var data = inventoryNode.value.child({ perpetual: 'perpetual' });
-// var data1 = inventoryNode.value.attributes();
-// var data2 = inventoryNode.value.childIndex();
-// var data3 = inventoryNode.value.children();
-// var data4 = inventoryNode.value.records;
-// var order = (
-//     <order>
-//         <item quantity="1">Apple</item>
-//         <item quantity="2">Peach</item>
-//     </order>
-// );
-
-// var items = order.item;
-// var item = order.item[0];
-// var quantity = order.item[0].@quantity;
-// var singleItem = order.item.(@quantity == 1);
-
-// var record = (
-//     <record xmlns="http://www.demandware.com/xml/impex/inventory/2007-05-31" product-id="883360352015M">
-//         <allocation>3</allocation>
-//         <allocation-timestamp>2022-07-28T21:01:47.000Z</allocation-timestamp>
-//         <perpetual>false</perpetual>
-//         <preorder-backorder-handling>none</preorder-backorder-handling>
-//         <ats>3</ats>
-//         <on-order>0</on-order>
-//         <turnover>0</turnover>
-//     </record>
-// );

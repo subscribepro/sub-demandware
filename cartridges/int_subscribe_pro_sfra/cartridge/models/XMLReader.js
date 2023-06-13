@@ -92,6 +92,12 @@ XMLReader.prototype.getNode = function (nodeName) {
             throw StopIteration;
         } else if (next === XMLStreamConstants.START_ELEMENT) {
             var xmlStreamNodeName = this._stream.getLocalName();
+            if( xmlStreamNodeName ==='record') {
+                this.productID = this._stream.getAttributeValue(null, 'product-id');
+            }
+            if( xmlStreamNodeName ==='header') {
+                this.listId = this._stream.getAttributeValue(null, 'list-id');
+            }
 
             if (xmlStreamNodeName === nodeName) {
                 yield this._stream.readXMLObject();

@@ -10,10 +10,84 @@
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
         </custom-attribute-definitions>
+        <attribute-definition attribute-id="SPProductID">
+                <display-name xml:lang="x-default">Subscribe Pro Product ID</display-name>
+                <description xml:lang="x-default">The field will be recorded when the ExportInventoryFeedSP job will be executed</description>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <site-specific-flag>false</site-specific-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <visible-flag>false</visible-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <order-required-flag>false</order-required-flag>
+                <externally-defined-flag>false</externally-defined-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
         <group-definitions>
             <attribute-group group-id="subscribe-pro">
                 <display-name xml:lang="x-default">Subscribe Pro</display-name>
                 <attribute attribute-id="subproSubscriptionEnabled"/>
+                <attribute attribute-id="SPProductID"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
+    <type-extension type-id="ProductInventoryList">
+        <system-attribute-definitions>
+            <attribute-definition attribute-id="ID">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="UUID">
+                <min-length>0</min-length>
+                <field-length>28</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="creationDate"/>
+            <attribute-definition attribute-id="description">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="lastModified"/>
+        </system-attribute-definitions>
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="SPListId">
+                <display-name xml:lang="x-default">Subscribe Pro List ID</display-name>
+                <description xml:lang="x-default">The field will be recorded when Subscribe Pro gets this inventory list</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="subscribePro">
+                <display-name xml:lang="x-default">Subscribe Pro</display-name>
+                <attribute attribute-id="SPListId"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
+    <type-extension type-id="ProductInventoryRecord">
+        <system-attribute-definitions>
+            <attribute-definition attribute-id="UUID">
+                <min-length>0</min-length>
+                <field-length>28</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="creationDate"/>
+            <attribute-definition attribute-id="lastModified"/>
+        </system-attribute-definitions>
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="SPInventoryEntryID">
+                <display-name xml:lang="x-default">Subscribe Pro Inventory entry ID</display-name>
+                <description xml:lang="x-default">Subscribe Pro Unique ID of inventory entry</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="subscribePro">
+                <display-name xml:lang="x-default">Subscribe Pro</display-name>
+                <attribute attribute-id="SPInventoryEntryID"/>
             </attribute-group>
         </group-definitions>
     </type-extension>

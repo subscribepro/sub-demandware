@@ -4,18 +4,15 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-loop-func */
 
-var ProductSearchModel = require('dw/catalog/ProductSearchModel');
-
 var productSPJobModel = require('*/cartridge/models/productSPJobModel');
 var patchProductModel = require('*/cartridge/models/patchProductModel');
 var productHelper = require('*/cartridge/scripts/helpers/productHelpers');
 var SubProProductHelper = require('*/cartridge/scripts/subpro/helpers/productHelper');
 var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/subscribeProLib');
+var ProductMgr = require('dw/catalog/ProductMgr');
 
-var Logger = require('dw/system/Logger');
-
-var productSearchHits;
-var productSearchModel;
+var products;
+var batchIdList = '';
 
 /**
  * @function beforeStep
@@ -23,13 +20,7 @@ var productSearchModel;
  * @param {dw.job.JobStepExecution} stepExecution - stepExecution
  */
 function beforeStep(parameters, stepExecution) {
-    /** Get all products for this site */
-    productSearchModel = new ProductSearchModel();
-    productSearchModel.setCategoryID('root');
-    productSearchModel.setRecursiveCategorySearch(true);
-    productSearchModel.setOrderableProductsOnly(false);
-    productSearchModel.search();
-    productSearchHits = productSearchModel.getProductSearchHits();
+    products = ProductMgr.queryAllSiteProducts();
 }
 
 /**
@@ -39,9 +30,8 @@ function beforeStep(parameters, stepExecution) {
  * @returns {dw.order.Product} product
  */
 function read(parameters, stepExecution) {
-    while (productSearchHits.hasNext()) {
-        var productSearchHit = productSearchHits.next();
-        var product = productSearchHit.getProduct();
+    while (products.hasNext()) {
+        var product = products.next();
         var productType = productHelper.getProductType(product);
 
         if (productType === 'variationGroup' || productType === 'set' || productType === 'optionProduct') continue;
@@ -52,8 +42,6 @@ function read(parameters, stepExecution) {
         if (parameters.SynchronizeProducts === 'allProducts') {
             return product;
         }
-
-        continue;
     }
 }
 
@@ -79,10 +67,12 @@ function process(product, parameters, stepExecution) {
  */
 function write(lines, parameters, stepExecution) {
     var patchProductfields = [];
-    var filteredProducts = SubProProductHelper.checkProductsWithSkuExistence(lines);
+    var filteredProducts = SubProProductHelper.checkProductsWithSkuExistence(lines.toArray());
 
     if (filteredProducts.nonExistedProducts.length) {
-        var response = SubscribeProLib.postProducts(filteredProducts.nonExistedProducts);
+        var postProductsResponse = SubscribeProLib.postProducts(filteredProducts.nonExistedProducts);
+        var batchId = !postProductsResponse.error && postProductsResponse.result.batchId;
+        batchIdList = batchIdList ? batchIdList + ',' + batchId : batchId;
     }
 
     if (filteredProducts.existedProducts.length) {
@@ -93,9 +83,20 @@ function write(lines, parameters, stepExecution) {
     }
 }
 
+function afterChunk() {}
+
+function afterStep() {
+    var subProBatchIdList = SubscribeProLib.getCustomObject('subProBatchIdList', 'batchIdList', true);
+    require('dw/system/Transaction').wrap(function () {
+        subProBatchIdList.batchIdList = batchIdList;
+    });
+}
+
 module.exports = {
     beforeStep: beforeStep,
     read: read,
     process: process,
-    write: write
+    write: write,
+    afterChunk: afterChunk,
+    afterStep: afterStep
 };
