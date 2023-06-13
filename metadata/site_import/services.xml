@@ -15,8 +15,8 @@
 
 	<service-credential service-credential-id="subpro.http.creds.siteName">
         <url>https://api.subscribepro.com</url>
-        <user-id>4148_34tmv045m1a8gk404kkcg8w0kksg448s0g4o0kkkccc000cwo0</user-id>
-        <password encrypted="true" encryption-type="common.export">pGwqxINcfCYhuViJOnzSdYkcyCJ9zF1qxMtn69yGzq9eMlJFSqlmAFjMht/APGR46KXmT2TjiPBJ8CYDYwZ9MOTR5br5ft1lcr9NVO0/7xE=</password>
+        <user-id>XXXXXXXX</user-id>
+        <password encrypted="true" encryption-type="common.export">********</password>
     </service-credential>
 
 	<service-profile service-profile-id="subpro.http.prof.get">
