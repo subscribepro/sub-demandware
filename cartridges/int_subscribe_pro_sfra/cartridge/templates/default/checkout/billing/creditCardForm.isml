@@ -103,16 +103,17 @@
         <isif condition="${pdict.customer.registeredUser}">
             <div class="save-credit-card custom-control custom-checkbox ">
                 <isif condition="${pdict.isSubscriptionItemInCart}">
-                    <input type="checkbox" class="custom-control-input" id="saveCreditCard"
-                        name="${creditFields.saveCard.htmlName}" value="true" disabled="disabled" checked/>
+                    <isif condition="${pdict.isSubscriptionItemInCart}">
+                        ${Resource.msg('saveCard.subscription', 'checkout', null)}
+                    </isif>
+                    <input type="hidden" name="${creditFields.saveCard.htmlName}" value="true"/>
                 <iselse/>
-                        <input type="checkbox" class="custom-control-input" id="saveCreditCard"
-                            name="${creditFields.saveCard.htmlName}" value="true" checked/>
+                    <input type="checkbox" class="custom-control-input" id="saveCreditCard"
+                        name="${creditFields.saveCard.htmlName}" value="true" checked/>
+                    <label class="custom-control-label" for="saveCreditCard">
+                        ${creditFields.saveCard.label} 
+                    </label>
                 </isif>
-                <label class="custom-control-label" for="saveCreditCard">
-                    ${creditFields.saveCard.label} (<isif condition="${pdict.isSubscriptionItemInCart}">
-                        ${Resource.msg('saveCard.subscription', 'checkout', null)}</isif>)
-                </label>
             </div>
         </isif>
     </div>

@@ -3,6 +3,22 @@
         {
             "name": "dw.order.payment.authorizeCreditCard",
             "script": "./hooks/authorizeCreditCard"
+        },
+        {
+            "name": "dw.ocapi.shop.order.payment_instrument.afterPATCH",
+            "script": "./hooks/payment_instrument.js"
+        },
+        {
+            "name": "dw.ocapi.shop.order.afterPatchPaymentInstrument",
+            "script": "./hooks/payment_instrument.js"
+        },
+        {
+            "name": "dw.ocapi.shop.basket.payment_instrument.beforePOST",
+            "script": "./hooks/payment_instrument.js"
+        },
+        {
+            "name": "dw.ocapi.shop.order.validateOrder",
+            "script": "./hooks/order.js"
         }
     ]
 }

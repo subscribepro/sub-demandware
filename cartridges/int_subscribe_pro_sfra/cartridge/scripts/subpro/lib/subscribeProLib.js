@@ -520,6 +520,21 @@ var SubscribeProLib = {
     },
 
     /**
+     * Call service to delete payment profile.
+     *
+     * @param {string} subproPaymentProfileID Subscribe Pro Payment Profile ID
+     */
+    deletePaymentProfile: function (paymentProfileID) {
+        var service = SubscribeProLib.getService('subpro.http.delete.paymentprofile.vault');
+        var params = {};
+        if (paymentProfileID) {
+            params = { paymentprofile_id: paymentProfileID };
+        }
+
+        return this.handleResponse(service.call(params), { serviceId: service.getConfiguration().getID() });
+    },
+
+    /**
      * Retrieve a collection of all inventory locations.
      *
      * API Endpoint: GET /services/v2/inventory-locations.{_format}

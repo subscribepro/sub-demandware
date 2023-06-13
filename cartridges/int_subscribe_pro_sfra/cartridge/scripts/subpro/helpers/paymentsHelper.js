@@ -3,12 +3,12 @@
 var Transaction = require('dw/system/Transaction');
 var Logger = require('dw/system/Logger');
 var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/subscribeProLib');
+var Money = require('dw/value/Money');
 
 /**
  * Provides an interface to handle Subscribe Pro payment objects.
  */
 var PaymentsHelper = {
-
     /**
      * Maps data from order to payment profile object which will be send to SubPro
      *
@@ -63,6 +63,8 @@ var PaymentsHelper = {
             returnObject.payment_profile_id = card.custom.subproPaymentProfileID;
         }
 
+        var defaultCustomerAddress = profile.getAddressBook().getPreferredAddress();
+
         if (typeof billingAddress.getCountryCode === 'function') {
             returnObject.billing_address = {
                 first_name: billingAddress.firstName,
@@ -74,16 +76,33 @@ var PaymentsHelper = {
                 city: billingAddress.city,
                 region: billingAddress.stateCode,
                 postcode: billingAddress.postalCode,
-                country: (billingAddress.getCountryCode() ? billingAddress.getCountryCode().toString().toUpperCase() : ''),
+                country: billingAddress.getCountryCode() ? billingAddress.getCountryCode().toString().toUpperCase() : '',
                 phone: billingAddress.phone || ''
+            };
+        } else if (defaultCustomerAddress) {
+            var nameParts = card.creditCardHolder.split(' ');
+            var lastName = nameParts.pop();
+            var firstName = nameParts.join(' ');
+            returnObject.billing_address = {
+                last_name: lastName,
+                first_name: firstName,
+                middle_name: '',
+                company: defaultCustomerAddress.companyName || '',
+                street1: defaultCustomerAddress.address1,
+                street2: defaultCustomerAddress.address2 || '',
+                city: defaultCustomerAddress.city,
+                region: defaultCustomerAddress.stateCode,
+                postcode: defaultCustomerAddress.postalCode,
+                country: defaultCustomerAddress.getCountryCode() ? defaultCustomerAddress.getCountryCode().toString().toUpperCase() : '',
+                phone: defaultCustomerAddress.phone || ''
             };
         } else {
             var nameParts = card.creditCardHolder.split(' ');
             var lastName = nameParts.pop();
             var firstName = nameParts.join(' ');
             returnObject.billing_address = {
-                first_name: firstName,
-                last_name: lastName
+                last_name: lastName,
+                first_name: firstName
             };
         }
 
@@ -115,11 +134,13 @@ var PaymentsHelper = {
      * @returns {boolean} if two given payment instruments are equal
      */
     comparePaymentInstruments: function (instrument1, instrument2) {
-        return instrument1.paymentMethod === instrument2.paymentMethod
-            && instrument1.creditCardNumber === instrument2.creditCardNumber
-            && instrument1.creditCardHolder === instrument2.creditCardHolder
-            && instrument1.creditCardExpirationYear === instrument2.creditCardExpirationYear
-            && instrument1.creditCardExpirationMonth === instrument2.creditCardExpirationMonth;
+        return (
+            instrument1.paymentMethod === instrument2.paymentMethod &&
+            instrument1.creditCardNumber === instrument2.creditCardNumber &&
+            instrument1.creditCardHolder === instrument2.creditCardHolder &&
+            instrument1.creditCardExpirationYear === instrument2.creditCardExpirationYear &&
+            instrument1.creditCardExpirationMonth === instrument2.creditCardExpirationMonth
+        );
     },
 
     /**
@@ -152,10 +173,10 @@ var PaymentsHelper = {
      * @return {int|null} Payment profile ID
      */
     findOrCreatePaymentProfile: function (paymentInstrument, customerPaymentInstrument, customerProfile, billingAddress) {
-        var paymentProfileID = (
-            customerPaymentInstrument
-            && ('subproPaymentProfileID' in customerPaymentInstrument.custom)
-        ) ? customerPaymentInstrument.custom.subproPaymentProfileID : false;
+        var paymentProfileID =
+            customerPaymentInstrument && 'subproPaymentProfileID' in customerPaymentInstrument.custom
+                ? customerPaymentInstrument.custom.subproPaymentProfileID
+                : false;
 
         /**
          * If Payment Profile already exists,
@@ -169,15 +190,15 @@ var PaymentsHelper = {
              * Otherwise create the payment profile
              */
             if (response.error && response.result.code === 404) {
-                paymentProfileID = PaymentsHelper.createSubproPaymentProfile(customerProfile, customerPaymentInstrument, billingAddress);
-            /**
-             * Some other error occurred, error out
-             */
+                paymentProfileID = this.createSubproPaymentProfile(customerProfile, customerPaymentInstrument, billingAddress);
+                /**
+                 * Some other error occurred, error out
+                 */
             } else if (response.error) {
                 return null; // eslint-disable-line no-continue
             }
         } else {
-            paymentProfileID = PaymentsHelper.createSubproPaymentProfile(customerProfile, customerPaymentInstrument, billingAddress);
+            paymentProfileID = this.createSubproPaymentProfile(customerProfile, customerPaymentInstrument, billingAddress);
         }
 
         return paymentProfileID;
@@ -192,17 +213,92 @@ var PaymentsHelper = {
      * @return {number|undefined} id unique identifier of created payment profile or undefined
      */
     createSubproPaymentProfile: function (customerProfile, paymentInstrument, billingAddress) {
-        var response = SubscribeProLib.createPaymentProfile(PaymentsHelper.getSubscriptionPaymentProfile(customerProfile, paymentInstrument, billingAddress, false));
+        var response = SubscribeProLib.createPaymentProfile(
+            this.getSubscriptionPaymentProfile(customerProfile, paymentInstrument, billingAddress, false)
+        );
 
         if (!response.error) {
             // Payment profile creates successfully. Save Subscribe Pro Payment Profile ID to the Commerce Cloud Order Payment Instrument
             var paymentProfileID = response.result.payment_profile.id;
-            PaymentsHelper.setSubproPaymentProfileID(paymentInstrument, paymentProfileID);
+            this.setSubproPaymentProfileID(paymentInstrument, paymentProfileID);
 
             return paymentProfileID;
         }
 
         return null;
+    },
+
+    /**
+     * Verifies if specified payment instrument already has transactions
+     * @param {dw.order.OrderPaymentInstrument} payment - payment details
+     * @returns {boolean} returns `true` if transaction exists, returns `false` otherwise
+     */
+    checkIfHasTransaction: function (payment) {
+        var transaction = payment.getPaymentTransaction();
+        var hasTransaction = transaction && transaction.getTransactionID() && transaction.getAmount();
+        return !!hasTransaction;
+    },
+
+    /**
+     * Check if Authorized amount bigger than order total
+     * @param {dw.order.Order} order - API Order object
+     * @param {dw.order.OrderPaymentInstrument} paymentInstrument - API payment instrument object
+     * @returns {boolean} - true of false
+     */
+    doesAuthorizedAmountBiggerOrderTotal: function (order, paymentInstrument) {
+        var totalGrossPrice = order.getTotalGrossPrice().getValue();
+        var transactionAmount = paymentInstrument.getPaymentTransaction().getAmount().getValue();
+        return transactionAmount > totalGrossPrice;
+    },
+
+    /**
+     * @description Calculates sum of payments in context of specified order
+     * @param {dw.order.Order} order specified order
+     * @param {boolean} paidOnly determines if only paid transactions should be calculated
+     * @returns {dw.value.Money} sum of all payments
+     */
+    calculatePaymentsAmount: function (order, paidOnly) {
+        var currencyCode = order.getCurrencyCode();
+        var amountPaid = new Money(0, currencyCode);
+        var paymentInstrumentsIterator = order.getPaymentInstruments().iterator();
+        while (paymentInstrumentsIterator.hasNext()) {
+            var currentPaymentInstrument = paymentInstrumentsIterator.next();
+            var paymentTransaction = currentPaymentInstrument.getPaymentTransaction();
+            if (paidOnly && !empty(paymentTransaction) && order.getPaymentStatus() === order.PAYMENT_STATUS_PAID) {
+                continue;
+            }
+            if (paymentTransaction) {
+                amountPaid = amountPaid.add(paymentTransaction.getAmount());
+            }
+        }
+        return amountPaid;
+    },
+
+    /**
+     * @description Calculates sum of all payments in context of specified order
+     * @param {dw.order.Order} order specified order
+     * @returns {dw.value.Money} sum of all payments
+     */
+    calculateAllPaymentsAmount: function (order) {
+        return this.calculatePaymentsAmount(order, false);
+    },
+
+    /**
+     * @description Calculates sum of only processed payments in context of specified order
+     * @param {dw.order.Order} order specified order
+     * @returns {dw.value.Money} sum of all processed payments
+     */
+    calculateProcessedPaymentsAmount: function (order) {
+        return this.calculatePaymentsAmount(order, true);
+    },
+
+    /**
+     * Call service to delete payment profile.
+     *
+     * @param {string} subproPaymentProfileID Subscribe Pro Payment Profile ID
+     */
+    deletePaymentProfile: function (subproPaymentProfileID) {
+        SubscribeProLib.deletePaymentProfile(subproPaymentProfileID);
     }
 };
 
