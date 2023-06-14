@@ -256,10 +256,23 @@ var SubscribeProLib = {
      * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
     postProducts: function (products) {
-        var service = SubscribeProLib.getService('subpro.http.post.products');
         // return SubscribeProLib.handleResponse(service.call({ customer: customer }));
         var service = HttpServices.SubproHttpService();
         var config = { accessToken: this.getOrUpdateAccessToken(), actionId: 'services.v2.products', method: 'POST', payload: { products: products } };
+
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
+     * Post a single product
+     * API Endpoint: POST /services/v2/product{_format}
+     *
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    postProduct: function (product) {
+        // return SubscribeProLib.handleResponse(service.call({ customer: customer }));
+        var service = HttpServices.SubproHttpService();
+        var config = { accessToken: this.getOrUpdateAccessToken(), actionId: 'services.v2.product', method: 'POST', payload: { product: product } };
 
         return this.handleResponse(service.call(config));
     },

@@ -34,30 +34,4 @@
             </attribute-group>
         </group-definitions>
     </custom-type>
-
-    <custom-type type-id="subProBatchIdList">
-        <display-name xml:lang="x-default">Sub Pro BatchID List</display-name>
-        <description xml:lang="x-default">The list of batchId which are returned when ExportInventoryFeedSP job create a new product on the subPro side</description>
-        <staging-mode>no-staging</staging-mode>
-        <storage-scope>site</storage-scope>
-        <key-definition attribute-id="subProBatchIds">
-            <type>string</type>
-            <min-length>0</min-length>
-        </key-definition>
-        <attribute-definitions>
-            <attribute-definition attribute-id="batchIdList">
-                <display-name xml:lang="x-default">batchIdList</display-name>
-                <type>text</type>
-                <localizable-flag>false</localizable-flag>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
-        </attribute-definitions>
-        <group-definitions>
-            <attribute-group group-id="subscribePro">
-                <attribute attribute-id="batchIdList"/>
-            </attribute-group>
-        </group-definitions>
-    </custom-type>
-
 </metadata>

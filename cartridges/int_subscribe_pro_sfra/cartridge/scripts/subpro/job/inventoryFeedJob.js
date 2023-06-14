@@ -12,7 +12,6 @@ var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/subscribeProLib');
 var ProductMgr = require('dw/catalog/ProductMgr');
 
 var products;
-var batchIdList = '';
 
 /**
  * @function beforeStep
@@ -31,16 +30,17 @@ function beforeStep(parameters, stepExecution) {
  */
 function read(parameters, stepExecution) {
     while (products.hasNext()) {
-        var product = products.next();
-        var productType = productHelper.getProductType(product);
+        var apiProduct = products.next();
+        var productType = productHelper.getProductType(apiProduct);
 
         if (productType === 'variationGroup' || productType === 'set' || productType === 'optionProduct') continue;
 
-        if (parameters.SynchronizeProducts === 'subscriptionEnabledProducts' && product.custom.subproSubscriptionEnabled) {
-            return product;
+        if (parameters.SynchronizeProducts === 'subscriptionEnabledProducts' && apiProduct.custom.subproSubscriptionEnabled) {
+            return apiProduct;
         }
+
         if (parameters.SynchronizeProducts === 'allProducts') {
-            return product;
+            return apiProduct;
         }
     }
 }
@@ -70,9 +70,13 @@ function write(lines, parameters, stepExecution) {
     var filteredProducts = SubProProductHelper.checkProductsWithSkuExistence(lines.toArray());
 
     if (filteredProducts.nonExistedProducts.length) {
-        var postProductsResponse = SubscribeProLib.postProducts(filteredProducts.nonExistedProducts);
-        var batchId = !postProductsResponse.error && postProductsResponse.result.batchId;
-        batchIdList = batchIdList ? batchIdList + ',' + batchId : batchId;
+        filteredProducts.nonExistedProducts.forEach(function (SPProduct) {
+            var postProductResponse = SubscribeProLib.postProduct(SPProduct);
+            if (!postProductResponse.error) {
+                var apiProduct = ProductMgr.getProduct(SPProduct.sku);
+                apiProduct.custom.SPProductID = postProductResponse.result.product.id;
+            }
+        });
     }
 
     if (filteredProducts.existedProducts.length) {
@@ -83,20 +87,9 @@ function write(lines, parameters, stepExecution) {
     }
 }
 
-function afterChunk() {}
-
-function afterStep() {
-    var subProBatchIdList = SubscribeProLib.getCustomObject('subProBatchIdList', 'batchIdList', true);
-    require('dw/system/Transaction').wrap(function () {
-        subProBatchIdList.batchIdList = batchIdList;
-    });
-}
-
 module.exports = {
     beforeStep: beforeStep,
     read: read,
     process: process,
-    write: write,
-    afterChunk: afterChunk,
-    afterStep: afterStep
+    write: write
 };

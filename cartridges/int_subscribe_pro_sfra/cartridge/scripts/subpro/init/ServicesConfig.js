@@ -4,7 +4,7 @@ var ServicesConfig = {
         v1: {},
         v2: {
             products: '/services/v2/products.json',
-            product: '/services/v2/products.json',
+            product: '/services/v2/product.json',
             'product{id}': '/services/v2/products/{ID}.json',
             'batch{batchId}': '/services/v2/batch/{batchId}.json',
             'inventory-locations': '/services/v2/inventory-locations.json',
