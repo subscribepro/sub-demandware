@@ -4,18 +4,14 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-loop-func */
 
-var ProductSearchModel = require('dw/catalog/ProductSearchModel');
-
 var productSPJobModel = require('*/cartridge/models/productSPJobModel');
 var patchProductModel = require('*/cartridge/models/patchProductModel');
 var productHelper = require('*/cartridge/scripts/helpers/productHelpers');
 var SubProProductHelper = require('*/cartridge/scripts/subpro/helpers/productHelper');
 var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/subscribeProLib');
+var ProductMgr = require('dw/catalog/ProductMgr');
 
-var Logger = require('dw/system/Logger');
-
-var productSearchHits;
-var productSearchModel;
+var products;
 
 /**
  * @function beforeStep
@@ -23,13 +19,7 @@ var productSearchModel;
  * @param {dw.job.JobStepExecution} stepExecution - stepExecution
  */
 function beforeStep(parameters, stepExecution) {
-    /** Get all products for this site */
-    productSearchModel = new ProductSearchModel();
-    productSearchModel.setCategoryID('root');
-    productSearchModel.setRecursiveCategorySearch(true);
-    productSearchModel.setOrderableProductsOnly(false);
-    productSearchModel.search();
-    productSearchHits = productSearchModel.getProductSearchHits();
+    products = ProductMgr.queryAllSiteProducts();
 }
 
 /**
@@ -39,21 +29,19 @@ function beforeStep(parameters, stepExecution) {
  * @returns {dw.order.Product} product
  */
 function read(parameters, stepExecution) {
-    while (productSearchHits.hasNext()) {
-        var productSearchHit = productSearchHits.next();
-        var product = productSearchHit.getProduct();
-        var productType = productHelper.getProductType(product);
+    while (products.hasNext()) {
+        var apiProduct = products.next();
+        var productType = productHelper.getProductType(apiProduct);
 
         if (productType === 'variationGroup' || productType === 'set' || productType === 'optionProduct') continue;
 
-        if (parameters.SynchronizeProducts === 'subscriptionEnabledProducts' && product.custom.subproSubscriptionEnabled) {
-            return product;
-        }
-        if (parameters.SynchronizeProducts === 'allProducts') {
-            return product;
+        if (parameters.SynchronizeProducts === 'subscriptionEnabledProducts' && apiProduct.custom.subproSubscriptionEnabled) {
+            return apiProduct;
         }
 
-        continue;
+        if (parameters.SynchronizeProducts === 'allProducts') {
+            return apiProduct;
+        }
     }
 }
 
@@ -79,10 +67,16 @@ function process(product, parameters, stepExecution) {
  */
 function write(lines, parameters, stepExecution) {
     var patchProductfields = [];
-    var filteredProducts = SubProProductHelper.checkProductsWithSkuExistence(lines);
+    var filteredProducts = SubProProductHelper.checkProductsWithSkuExistence(lines.toArray());
 
     if (filteredProducts.nonExistedProducts.length) {
-        var response = SubscribeProLib.postProducts(filteredProducts.nonExistedProducts);
+        filteredProducts.nonExistedProducts.forEach(function (SPProduct) {
+            var postProductResponse = SubscribeProLib.postProduct(SPProduct);
+            if (!postProductResponse.error) {
+                var apiProduct = ProductMgr.getProduct(SPProduct.sku);
+                apiProduct.custom.SPProductID = postProductResponse.result.product.id;
+            }
+        });
     }
 
     if (filteredProducts.existedProducts.length) {

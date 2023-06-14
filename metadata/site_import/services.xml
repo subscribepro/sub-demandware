@@ -13,6 +13,12 @@
 		<password masked="true">********</password>
 	</service-credential>
 
+	<service-credential service-credential-id="subpro.http.creds.siteName">
+        <url>https://api.subscribepro.com</url>
+        <user-id>XXXXXXXX</user-id>
+        <password encrypted="true" encryption-type="common.export">********</password>
+    </service-credential>
+
 	<service-profile service-profile-id="subpro.http.prof.get">
 		<timeout-millis>5000</timeout-millis>
 		<rate-limit-enabled>false</rate-limit-enabled>

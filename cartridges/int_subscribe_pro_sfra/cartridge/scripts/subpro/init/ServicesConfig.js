@@ -2,7 +2,17 @@ var ServicesConfig = {
     oauth: { v1: {}, v2: { token: '/oauth/v2/token' }, v3: {} },
     services: {
         v1: {},
-        v2: { products: '/services/v2/products.json', product: '/services/v2/products.json', 'product{id}': '/services/v2/products/{ID}.json' },
+        v2: {
+            products: '/services/v2/products.json',
+            product: '/services/v2/product.json',
+            'product{id}': '/services/v2/products/{ID}.json',
+            'batch{batchId}': '/services/v2/batch/{batchId}.json',
+            'inventory-locations': '/services/v2/inventory-locations.json',
+            'inventory-location': '/services/v2/inventory-location.json',
+            'inventory-location{ID}': '/services/v2/inventory-locations/{id}.json',
+            inventory: '/services/v2/inventory.json',
+            'inventory{id}': '/services/v2/inventory/{ID}.json'
+        },
         v3: { products: '/products.json' }
     },
 

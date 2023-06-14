@@ -80,7 +80,7 @@ function createAndSetURL(svc, args) {
  * Service: subpro.http.universal
  * Retrieve the Subscribe Pro product using the supplied sku
  * var config = { accessToken: session.privacy.subProAccessToken, actionId: 'services.v2.product{id}', dynamicAction: { ID: '555' }, method: 'POST', parameters: 'QueryString', payload: 'Object' };
- * 
+ *
  */
 module.exports.SubproHttpService = function () {
     var service = LocalServiceRegistry.createService('subpro.http.universal', {
@@ -91,9 +91,9 @@ module.exports.SubproHttpService = function () {
          */
         createRequest: function (svc, args) {
             svc.setRequestMethod(args.method);
+            svc.setAuthentication('BASIC');
 
             if (args.actionId !== 'oauth.v2.token') {
-                svc.setAuthentication('NONE');
                 svc.addHeader('Authorization', 'Bearer ' + args.accessToken);
             }
             if (args.actionId === 'oauth.v2.token') {

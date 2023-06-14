@@ -5,7 +5,7 @@ var URLUtils = require('dw/web/URL');
 var schedulingHelper = {
     /**
      * checkProductsWithSkuExistence
-     * @param {Array<string>} productIds - array of products id`s
+     * @param {Array<string>} products - array of products id`s
      * @returns {Object} result of check call with array of non existed products
      */
     checkProductsWithSkuExistence: function (products) {
@@ -14,9 +14,12 @@ var schedulingHelper = {
 
         if (!empty(products)) {
             var filteringString = '';
-            for (var i = 0; i < products.length; i++) {
-                filteringString = filteringString + (i ? '&' : '') + 'sku[]=' + products[i].sku;
-            }
+
+            products.forEach(function (product, i) {
+                filteringString = filteringString + (i ? '&' : '') + 'sku[]=' + product.sku;
+            });
+
+            filteringString = filteringString + '&itemsPerPage=' + products.length;
 
             var response = SubscribeProLib.getFilteredProducts(filteringString);
             if (response.error) {
@@ -24,8 +27,7 @@ var schedulingHelper = {
             }
 
             if (!empty(response.result)) {
-                for (var j = 0; j < products.length; j++) {
-                    var product = products[j];
+                products.forEach(function (product) {
                     var matchedTemplateProduct = array.find(response.result, (templateProduct) => templateProduct.sku === product.sku);
                     if (empty(matchedTemplateProduct)) {
                         result.nonExistedProducts.push(product);
@@ -33,12 +35,17 @@ var schedulingHelper = {
                         product.id = matchedTemplateProduct.id;
                         result.existedProducts.push(product);
                     }
-                }
+                });
             } else {
                 result.nonExistedProducts = products;
             }
         }
         return result;
+    },
+
+    findIdByName: function (arr, name) {
+        var foundObject = arr.find((obj) => obj.name === name);
+        return foundObject ? foundObject.id : null;
     }
 };
 

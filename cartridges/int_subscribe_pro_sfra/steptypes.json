@@ -14,8 +14,11 @@
                 "process-function": "process",
                 "write-function": "write",
                 "after-chunk-function": "",
+                "after-step-function": "",
                 "chunk-size": 100,
                 "transactional": "true",
+                "timeout-in-seconds": "100",
+
                 "parameters": {
                     "parameters": [
                         {
@@ -27,6 +30,56 @@
                             "enum-values": {
                                 "value": ["subscriptionEnabledProducts", "allProducts"]
                             }
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when the step failed with an error."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when the step finished successfully."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.subPro.SendInventoryFeedSP",
+                "@supports-parallel-execution": "false",
+                "@supports-site-context": "true",
+                "@supports-organization-context": "true",
+                "description": "Reeding the inventory feed and sending it using SP API calls",
+                "module": "int_subscribe_pro_sfra/cartridge/scripts/subpro/job/SendInventoryFeedSP.js",
+                "before-step-function": "beforeStep",
+                "read-function": "read",
+                "process-function": "process",
+                "write-function": "write",
+                "after-chunk-function": "",
+                "after-step-function": "afterStep",
+                "chunk-size": 100,
+                "transactional": "true",
+                "parameters": {
+                    "parameter": [
+                        {
+                            "@name": "InventoryFile",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true,
+                            "description": "The source"
+                        },
+
+                        {
+                            "@name": "NoFileFoundStatus",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true,
+                            "enum-values": {
+                                "value": ["OK", "ERROR"]
+                            },
+                            "description": "No files found exit code"
                         }
                     ]
                 },
