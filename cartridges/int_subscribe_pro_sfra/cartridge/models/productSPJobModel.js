@@ -93,12 +93,17 @@ function isSale(priceModel) {
  * @param {dw.catalog.Product} product
  */
 function getQtyInStock(product) {
-    return product.availabilityModel && product.availabilityModel.inventoryRecord && product.availabilityModel.inventoryRecord.getStockLevel().value;
+    return (
+        product.availabilityModel &&
+        product.availabilityModel.inventoryRecord &&
+        product.availabilityModel.inventoryRecord.getStockLevel().value
+    );
 }
 
 function productSPJobModel(product) {
     var pricing = getPricing(product);
     var qty_in_stock = getQtyInStock(product);
+    var SPProductID = product.getCustom().SPProductID;
 
     if (product) {
         this.sku = product.ID;
@@ -112,6 +117,7 @@ function productSPJobModel(product) {
         if (pricing.isSale) this.is_on_sale = pricing.isSale;
         if (qty_in_stock) this.qty_in_stock = qty_in_stock.toString();
         if (product.availabilityModel.inStock) this.is_in_stock = product.availabilityModel.inStock;
+        if (SPProductID) this.SPProductID = SPProductID;
     }
 }
 

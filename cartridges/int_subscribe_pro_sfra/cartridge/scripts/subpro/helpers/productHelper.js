@@ -1,4 +1,7 @@
 'use strict';
+
+var ProductMgr = require('dw/catalog/ProductMgr');
+
 var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/subscribeProLib');
 var URLUtils = require('dw/web/URL');
 
@@ -32,6 +35,10 @@ var schedulingHelper = {
                     if (empty(matchedTemplateProduct)) {
                         result.nonExistedProducts.push(product);
                     } else {
+                        if (!product.SPProductID) {
+                            var apiProduct = ProductMgr.getProduct(product.sku);
+                            apiProduct.custom.SPProductID = matchedTemplateProduct.id;
+                        }
                         product.id = matchedTemplateProduct.id;
                         result.existedProducts.push(product);
                     }

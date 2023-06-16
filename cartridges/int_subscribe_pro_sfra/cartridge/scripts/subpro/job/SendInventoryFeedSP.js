@@ -5,6 +5,7 @@ var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/subscribeProLib');
 var ArrayList = require('dw/util/ArrayList');
 var ProductInventoryMgr = require('dw/catalog/ProductInventoryMgr');
 var SubProProductHelper = require('*/cartridge/scripts/subpro/helpers/productHelper');
+var ProductMgr = require('dw/catalog/ProductMgr');
 
 /**
  * @type {import('../models/XMLReader')}
@@ -17,7 +18,7 @@ var getNodeGenerator;
 var productSearchModel;
 var productSearchHits;
 
-function postOrUpdate(product, data, SPInventoryEntryID) {
+function postOrUpdate(inventoryRecord, data, SPInventoryEntryID) {
     if (SPInventoryEntryID) {
         data.SPInventoryEntryID = SPInventoryEntryID;
         var updateInventoryRecordResponce = SubscribeProLib.updateInventoryRecord(data);
@@ -25,13 +26,13 @@ function postOrUpdate(product, data, SPInventoryEntryID) {
         if (updateInventoryRecordResponce.result.code === 404) {
             var postInventoryRecordResponce = SubscribeProLib.postInventoryRecord(data);
             if (!postInventoryRecordResponce.error) {
-                product.availabilityModel.inventoryRecord.custom.SPInventoryEntryID = postInventoryRecordResponce.result.inventory.id;
+                inventoryRecord.custom.SPInventoryEntryID = postInventoryRecordResponce.result.inventory.id;
             }
         }
     } else {
         var postInventoryRecordResponce = SubscribeProLib.postInventoryRecord(data);
         if (!postInventoryRecordResponce.error) {
-            product.availabilityModel.inventoryRecord.custom.SPInventoryEntryID = postInventoryRecordResponce.result.inventory.id;
+            inventoryRecord.custom.SPInventoryEntryID = postInventoryRecordResponce.result.inventory.id;
         }
     }
 }
@@ -50,16 +51,11 @@ function beforeStep(params) {
 function read() {
     try {
         var node = getNodeGenerator.next();
-        var schema = {
-            qty_in_stock: 'allocation',
-            qty_available: 'ats',
-            qty_reserved: '["on-order"]'
-        };
-
+        var schema = {};
         var data = xmlReader.parseXMLNode(schema, node.value);
+
         data.sku = xmlReader.productID;
         data.list_id = xmlReader.listId;
-        data.is_in_stock = data.qty_in_stock !== '0';
         return data;
     } catch (e) {
         if (e instanceof StopIteration) {
@@ -72,38 +68,41 @@ function read() {
  * @param {XML} productNode
  */
 function process(data) {
-    var product = null;
-    productSearchModel = new ProductSearchModel();
-    productSearchModel.setCategoryID('root');
-    productSearchModel.setEnableTrackingEmptySearches(false);
-    productSearchModel.setRecursiveCategorySearch(true);
-    productSearchModel.setProductIDs(new ArrayList([data.sku]));
-    productSearchModel.search();
-    productSearchHits = productSearchModel.getProductSearchHits();
-    if (productSearchHits.hasNext()) {
-        var productSearchHit = productSearchHits.next();
-        product = productSearchHit.getFirstRepresentedProduct();
+    var product = ProductMgr.getProduct(data.sku);
+    if (!empty(product)) {
         data.product_id = product.getCustom().SPProductID;
     } else {
         data.product_id = '';
     }
 
-    if (data.product_id && product.availabilityModel.inventoryRecord) {
+    if (data.product_id) {
         var inventoryList = ProductInventoryMgr.getInventoryList(data.list_id);
         var SPListId = inventoryList.custom.SPListId;
-        var SPInventoryEntryID = product.availabilityModel && product.availabilityModel.inventoryRecord && product.availabilityModel.inventoryRecord.custom.SPInventoryEntryID;
+        var inventoryRecord = inventoryList.getRecord(data.sku);
+        var SPInventoryEntryID = inventoryRecord && inventoryRecord.custom.SPInventoryEntryID;
+
+        if (!empty(inventoryRecord)) {
+            data.qty_in_stock = inventoryRecord.getStockLevel().value;
+            data.is_in_stock = inventoryRecord.getStockLevel().available;
+            data.qty_available = inventoryRecord.getATS().value;
+            data.qty_reserved = inventoryRecord.getReserved().value;
+        } else {
+            data.qty_in_stock = 0;
+            data.is_in_stock = false;
+            data.qty_available = 0;
+            data.qty_reserved = 0;
+        }
 
         if (SPListId) {
             data.inventory_location_id = SPListId;
-
-            postOrUpdate(product, data, SPInventoryEntryID);
+            postOrUpdate(inventoryRecord, data, SPInventoryEntryID);
         } else {
             var locationsResponce = SubscribeProLib.postInventoryLocation(data.list_id);
 
             if (!locationsResponce.error) {
                 data.inventory_location_id = locationsResponce.result.inventory_location.id;
                 inventoryList.custom.SPListId = locationsResponce.result.inventory_location.id;
-                postOrUpdate(product, data, SPInventoryEntryID);
+                postOrUpdate(inventoryRecord, data, SPInventoryEntryID);
             } else if (locationsResponce.result.code === 409) {
                 var updateInventoryLocationResponce = SubscribeProLib.getInventoryLocations();
                 if (!updateInventoryLocationResponce.error) {
@@ -111,7 +110,7 @@ function process(data) {
                     data.inventory_location_id = SPListId;
                     inventoryList.custom.SPListId = SPListId;
 
-                    postOrUpdate(product, data, SPInventoryEntryID);
+                    postOrUpdate(inventoryRecord, data, SPInventoryEntryID);
                 }
             }
         }
