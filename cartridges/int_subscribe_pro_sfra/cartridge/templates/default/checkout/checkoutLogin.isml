@@ -24,27 +24,27 @@
                 <!-- Hide guest checkout when a subscription item is in the cart -->
                 <isif condition="${!pdict.isSubscriptionItemInCart}">
                     <div class="card">
-                        <div class="card-header">
-                            <h4>${Resource.msg('heading.guest.checkout', 'checkout', null)}</h4>
-                        </div>
-                        <div class="card-body">
-                            <p>
-                                ${Resource.msg('msg.guest.checkout1', 'checkout', null)}
-                                ${Resource.msg('msg.guest.checkout2', 'checkout', null)}
-                            </p>
-                            <a
-                                    href="${URLUtils.https('Checkout-Begin')}"
-                                    class="btn btn-block btn-primary checkout-as-guest">
-                                ${Resource.msg('button.checkout.as.guest', 'checkout', null)}
-                            </a>
-                        </div>
+                    <div class="card-header">
+                        <h2 class="card-header-custom">${Resource.msg('heading.guest.checkout', 'checkout', null)}</h2>
                     </div>
+                    <div class="card-body">
+                        <p>
+                            ${Resource.msg('msg.guest.checkout1', 'checkout', null)}
+                            ${Resource.msg('msg.guest.checkout2', 'checkout', null)}
+                        </p>
+                        <a
+                            href="${URLUtils.https('Checkout-Begin')}"
+                            class="btn btn-block btn-primary checkout-as-guest">
+                            ${Resource.msg('button.checkout.as.guest', 'checkout', null)}
+                        </a>
+                    </div>
+                </div>
                     <iselse>
                         ${require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproCheckoutLoginMsg')}
                 </isif>
                 <div class="card">
                     <div class="card-header">
-                        <h4>${Resource.msg('heading.returning.customers', 'checkout', null)}</h4>
+                        <h2>${Resource.msg('heading.returning.customers', 'checkout', null)}</h2>
                     </div>
                     <div class="card-body">
                         <isinclude template="account/components/loginForm" />
@@ -54,7 +54,7 @@
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <h4>${Resource.msg('heading.create.account', 'checkout', null)}</h4>
+                        <h2 class="card-header-custom">${Resource.msg('heading.create.account', 'checkout', null)}</h2>
                     </div>
                     <div class="card-body">
                         <a href="${URLUtils.https('Login-Show', 'action', 'register')}" class="btn btn-block btn-outline-primary">
