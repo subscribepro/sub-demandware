@@ -1,15 +1,16 @@
-<isset name="creditFields" value="${pdict.forms.billingForm.creditCardFields}" scope="page" />
+<isset name="creditFields" value="${pdict.forms.billingForm.creditCardFields}" scope="page"/>
 
 <!--- Hidden input for credit card type --->
-<input type="hidden" class="form-control" id="cardType" name="${creditFields.cardType.htmlName}" value="">
+<input type="hidden" class="form-control" id="cardType"
+       name="${creditFields.cardType.htmlName}"
+       value="">
 
 <div class="row">
     <div class="col-12">
         <div class="form-group
             <isif condition=${creditFields.cardNumber.mandatory === true}>required</isif>
             ${creditFields.cardNumber.htmlName}">
-            <label class="form-control-label"
-                for="cardNumber">${Resource.msg('field.credit.card.number', 'creditCard', null)}</label>
+            <label class="form-control-label" for="cardNumber">${Resource.msg('field.credit.card.number','creditCard',null)}</label>
             <div class="card-number-wrapper">
                 <input type="text" class="form-control cardNumber" id="cardNumber"
                     value="${pdict.order.billing.payment.selectedPaymentInstruments
@@ -33,7 +34,7 @@
             ${creditFields.expirationMonth.htmlName}">
             <label class="form-control-label" for="expirationMonth">${Resource.msg('field.credit.card.expiration.month','creditCard',null)}</label>
             <select class="form-control expirationMonth custom-select" id="expirationMonth"
-                <isprint value=${creditFields.expirationMonth.attributes} encoding="off"/> 
+                <isprint value=${creditFields.expirationMonth.attributes} encoding="off"/>
                 autocomplete="cc-exp-month"
                 aria-describedby="expirationMonthInvalidMessage">
                 <isloop items=${creditFields.expirationMonth.options} var="month">
