@@ -6,7 +6,6 @@ var Transaction = require('dw/system/Transaction');
  * Provides an interface to handle Subscribe Pro address objects and map them to Sales Force Commerce Cloud Customer Address Object.
  */
 var AddressHelper = {
-
     /**
      * Take a Sales Force Commerce Cloud Customer Address Object as a parameter and map any relevant data to Subscribe Pro
      *
@@ -34,7 +33,9 @@ var AddressHelper = {
         }
 
         if (!subproCustomerID || !firstName || !lastName) {
-            require('dw/system/Logger').error('Object cannot be created because one of the required parameters is missing: subproCustomerID or firstName or lastName');
+            require('dw/system/Logger').error(
+                'Object cannot be created because one of the required parameters is missing: subproCustomerID or firstName or lastName'
+            );
 
             return;
         }
@@ -50,13 +51,14 @@ var AddressHelper = {
             city: address.city || '',
             region: address.stateCode || '',
             postcode: address.postalCode || '',
-            country: (address.countryCode ? address.countryCode.toString().toUpperCase() : ''),
+            country: address.countryCode ? address.countryCode.toString().toUpperCase() : '',
             phone: address.phone || ''
         };
 
         if (includeDefaults) {
-            payload.is_default_billing = false;
-            payload.is_default_shipping = false;
+            payload.user_defined_fields = {};
+            payload.user_defined_fields.is_default_billing = false;
+            payload.user_defined_fields.is_default_shipping = false;
         }
 
         if (includeSPAddressId) {
@@ -66,7 +68,6 @@ var AddressHelper = {
                 require('dw/system/Logger').error('No Subscribe Pro address ID found', e);
             }
         }
-
 
         return payload;
     },
@@ -94,13 +95,15 @@ var AddressHelper = {
         if (address1 == {} || address2 == {}) {
             return false;
         }
-        return address1.address1 === address2.address1
-            && address1.address2 === address2.address2
-            && address1.city === address2.city
-            && address1.firstName === address2.firstName
-            && address1.lastName === address2.lastName
-            && address1.phone === address2.phone
-            && address1.postalCode === address2.postalCode;
+        return (
+            address1.address1 === address2.address1 &&
+            address1.address2 === address2.address2 &&
+            address1.city === address2.city &&
+            address1.firstName === address2.firstName &&
+            address1.lastName === address2.lastName &&
+            address1.phone === address2.phone &&
+            address1.postalCode === address2.postalCode
+        );
     },
 
     /**

@@ -223,6 +223,34 @@ var SubscribeProLib = {
     },
 
     /**
+     * Delete an Address
+     *
+     * API Endpoint: GET /services/v2/addresses/{id}
+     *
+     * @param {int} addressID The ID of the address to update
+     * @param {Object} address The new address data
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    deleteAddress: function (addressID) {
+        if (!addressID) {
+            return {
+                error: true,
+                result: 'Address ID is required for the postUpdateAddress method'
+            };
+        }
+
+        var service = HttpServices.SubproHttpService();
+
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.addresses{id}',
+            dynamicAction: { ID: addressID },
+            method: 'DELETE'
+        };
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
      * Get a single product by sku
      *
      * API Endpoint: GET /services/v2/products.{_format}

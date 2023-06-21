@@ -7,6 +7,7 @@ var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 var addressHelper = require('~/cartridge/scripts/subpro/helpers/addressHelper');
 var subproEnabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproEnabled');
+var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/subscribeProLib');
 var URLUtils = require('dw/web/URLUtils');
 var Resource = require('dw/web/Resource');
 
@@ -105,11 +106,20 @@ server.append('SaveAddress', csrfProtection.validateAjaxRequest, function (req, 
 
         var spAddress = addressHelper.getSubproAddress(address, session.customer.profile, false, true);
         if (session.privacy.spUpdateAddress) {
+            delete spAddress.customer_id;
+            var postUpdateAddressResponse = SubscribeProLib.postUpdateAddress(address.custom.subproAddressID, spAddress);
+            if (postUpdateAddressResponse.result.code === 404) {
+                spAddress.customer_id = session.customer.profile.custom.subproCustomerID;
+                var shippingResponse = SubscribeProLib.findCreateAddress(spAddress);
+                !shippingResponse.error && addressHelper.setSubproAddressID(address, shippingResponse.result.address.id);
+            }
             session.privacy.updatedNewAddress = JSON.stringify({
                 sp: spAddress,
                 sfcc: address.ID
             });
         } else {
+            var shippingResponse = SubscribeProLib.findCreateAddress(spAddress);
+            !shippingResponse.error && addressHelper.setSubproAddressID(address, shippingResponse.result.address.id);
             session.privacy.newAddress = JSON.stringify({
                 sp: spAddress,
                 sfcc: address.ID
@@ -135,8 +145,11 @@ server.prepend('DeleteAddress', userLoggedIn.validateLoggedInAjax, function (req
     var addressBook = customer.getProfile().getAddressBook();
     var address = addressBook.getAddress(addressId);
     if (subproEnabled) {
+        var spAddress = addressHelper.getSubproAddress(address, session.customer.profile, true, true);
+        var deleteAddressResponse = SubscribeProLib.deleteAddress(spAddress.address_id);
+
         session.privacy.deletedAddress = JSON.stringify({
-            sp: addressHelper.getSubproAddress(address, session.customer.profile, true, true),
+            sp: spAddress,
             sfcc: address.ID
         });
     }

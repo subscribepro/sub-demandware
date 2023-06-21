@@ -191,6 +191,8 @@ var PaymentsHelper = {
              */
             if (response.error && response.result.code === 404) {
                 paymentProfileID = this.createSubproPaymentProfile(customerProfile, customerPaymentInstrument, billingAddress);
+                this.setSubproPaymentProfileID(customerPaymentInstrument, paymentProfileID);
+
                 /**
                  * Some other error occurred, error out
                  */
@@ -199,6 +201,7 @@ var PaymentsHelper = {
             }
         } else {
             paymentProfileID = this.createSubproPaymentProfile(customerProfile, customerPaymentInstrument, billingAddress);
+            this.setSubproPaymentProfileID(customerPaymentInstrument, paymentProfileID);
         }
 
         return paymentProfileID;
