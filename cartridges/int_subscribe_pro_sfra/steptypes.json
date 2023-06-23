@@ -47,12 +47,12 @@
                 }
             },
             {
-                "@type-id": "custom.subPro.SendInventoryFeedSP",
+                "@type-id": "custom.subPro.storeFeed",
                 "@supports-parallel-execution": "false",
                 "@supports-site-context": "true",
                 "@supports-organization-context": "true",
-                "description": "Reeding the inventory feed and sending it using SP API calls",
-                "module": "int_subscribe_pro_sfra/cartridge/scripts/subpro/job/SendInventoryFeedSP.js",
+                "description": "Reading the inventory assigned to stores and sending it using SP API calls",
+                "module": "int_subscribe_pro_sfra/cartridge/scripts/subpro/job/storeFeedJob.js",
                 "before-step-function": "beforeStep",
                 "read-function": "read",
                 "process-function": "process",
@@ -60,26 +60,18 @@
                 "after-chunk-function": "",
                 "after-step-function": "afterStep",
                 "chunk-size": 100,
-                "transactional": "true",
+                "transactional": "false",
                 "parameters": {
                     "parameter": [
                         {
-                            "@name": "InventoryFile",
+                            "@name": "SynchronizeProducts",
                             "@type": "string",
-                            "@required": true,
-                            "@trim": true,
-                            "description": "The source"
-                        },
-
-                        {
-                            "@name": "NoFileFoundStatus",
-                            "@type": "string",
-                            "@required": true,
-                            "@trim": true,
+                            "@trim": "true",
+                            "@required": "true",
+                            "description": "Synchronize only products in the catalog with Subscription = Enabled from SFCC > SP or Synchronize all products in the catalog from SFCC > SP",
                             "enum-values": {
-                                "value": ["OK", "ERROR"]
-                            },
-                            "description": "No files found exit code"
+                                "value": ["subscriptionEnabledProducts", "allProducts"]
+                            }
                         }
                     ]
                 },

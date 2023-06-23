@@ -684,17 +684,14 @@ var SubscribeProLib = {
      * @param {Object} listID id of the inventory list on SFCC side
      * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
-    postInventoryLocation: function (listID) {
+    postInventoryLocation: function (inventoryLocation) {
         var service = HttpServices.SubproHttpService();
         var config = {
             accessToken: this.getOrUpdateAccessToken(),
             actionId: 'services.v2.inventory-location',
             method: 'POST',
             payload: {
-                inventory_location: {
-                    name: listID,
-                    location_code: listID
-                }
+                inventory_location: inventoryLocation
             }
         };
         return this.handleResponse(service.call(config));
@@ -708,7 +705,7 @@ var SubscribeProLib = {
      * @param {Object} listID id of the inventory list on SFCC side
      * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
-    updateInventoryLocation: function (listID) {
+    updateInventoryLocation: function (listID, inventoryLocation) {
         var service = HttpServices.SubproHttpService();
         var config = {
             accessToken: this.getOrUpdateAccessToken(),
@@ -716,10 +713,7 @@ var SubscribeProLib = {
             method: 'POST',
             dynamicAction: { ID: listID },
             payload: {
-                inventory_location: {
-                    name: listID,
-                    location_code: listID
-                }
+                inventory_location: inventoryLocation
             }
         };
         return this.handleResponse(service.call(config));
@@ -733,21 +727,14 @@ var SubscribeProLib = {
      * @param {Object} data An object containing all configs and request fields
      * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
-    postInventoryRecord: function (data) {
+    postInventoryRecord: function (dataRecord) {
         var service = HttpServices.SubproHttpService();
         var config = {
             accessToken: this.getOrUpdateAccessToken(),
             actionId: 'services.v2.inventory',
             method: 'POST',
             payload: {
-                inventory: {
-                    product_id: data.product_id,
-                    inventory_location_id: data.inventory_location_id,
-                    qty_in_stock: data.qty_in_stock,
-                    qty_available: data.qty_available,
-                    qty_reserved: data.qty_reserved,
-                    is_in_stock: data.is_in_stock
-                }
+                inventory: dataRecord
             }
         };
 
@@ -762,20 +749,15 @@ var SubscribeProLib = {
      * @param {Object} data An object containing all configs and request fields
      * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
-    updateInventoryRecord: function (data) {
+    updateInventoryRecord: function (SPLocationId, dataRecord) {
         var service = HttpServices.SubproHttpService();
         var config = {
             accessToken: this.getOrUpdateAccessToken(),
             actionId: 'services.v2.inventory{id}',
             method: 'POST',
-            dynamicAction: { ID: data.SPInventoryEntryID },
+            dynamicAction: { ID: SPLocationId },
             payload: {
-                inventory: {
-                    qty_in_stock: data.qty_in_stock,
-                    qty_available: data.qty_available,
-                    qty_reserved: data.qty_reserved,
-                    is_in_stock: data.is_in_stock
-                }
+                inventory: dataRecord
             }
         };
 
