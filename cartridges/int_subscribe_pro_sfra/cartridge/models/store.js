@@ -2,6 +2,7 @@
 
 var Transaction = require('dw/system/Transaction');
 var ProductInventoryMgr = require('dw/catalog/ProductInventoryMgr');
+var currentSite = require('dw/system/Site').getCurrent();
 
 /**
  * @constructor
@@ -9,6 +10,16 @@ var ProductInventoryMgr = require('dw/catalog/ProductInventoryMgr');
  * @param {dw.catalog.Store} storeObject - a Store objects
  */
 function Store(storeObject) {
+    this.getSPLocationId = function () {
+        if (storeObject.custom.SPLocationId) {
+            var SPLocationIdObj = JSON.parse(storeObject.custom.SPLocationId);
+            if (typeof SPLocationIdObj === 'object') {
+                return SPLocationIdObj[currentSite.name] ? SPLocationIdObj[currentSite.name].id : null;
+            }
+        }
+        return null;
+    };
+
     if (storeObject) {
         this.ID = storeObject.ID;
         this.name = storeObject.name;
@@ -21,7 +32,7 @@ function Store(storeObject) {
         this.apiStore = storeObject;
 
         if (storeObject.custom.SPLocationId) {
-            this.SPLocationId = storeObject.custom.SPLocationId;
+            this.SPLocationId = this.getSPLocationId();
         }
 
         if (storeObject.phone) {
@@ -56,6 +67,8 @@ function Store(storeObject) {
         this.payload = {};
 
         this.payload.name = storeObject.ID;
+        this.payload.location_code = storeObject.ID;
+
         if (storeObject.address1) {
             this.payload.street1 = storeObject.address1;
         }
@@ -81,14 +94,16 @@ function Store(storeObject) {
             this.payload.country = storeObject.countryCode.value;
         }
 
-        if (storeObject.inventoryListID || storeObject.custom.inventoryListId) {
-            this.payload.location_code = storeObject.inventoryListID ? storeObject.inventoryListID : storeObject.custom.inventoryListId;
-        }
-
         this.updateSPLocationId = function (newSPLocationId) {
+            var curSPLocationId = JSON.parse(storeObject.custom.SPLocationId);
+            if (empty(curSPLocationId)) {
+                curSPLocationId = {};
+            }
+
+            curSPLocationId[currentSite.name] = { id: newSPLocationId };
             try {
                 Transaction.wrap(function () {
-                    storeObject.custom.SPLocationId = newSPLocationId;
+                    storeObject.custom.SPLocationId = JSON.stringify(curSPLocationId);
                 });
             } catch (e) {
                 // Handle any exceptions or errors that occurred during the transaction

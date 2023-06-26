@@ -75,7 +75,7 @@ function write(lines, parameters, stepExecution) {
             var postProductResponse = SubscribeProLib.postProduct(SPProduct);
             if (!postProductResponse.error) {
                 var apiProduct = ProductMgr.getProduct(SPProduct.sku);
-                apiProduct.custom.SPProductID = postProductResponse.result.product.id;
+                SubProProductHelper.updateSPProductID(apiProduct, postProductResponse.result.product.id);
             }
         });
     }

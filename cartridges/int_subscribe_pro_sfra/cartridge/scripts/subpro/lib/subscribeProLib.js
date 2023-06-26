@@ -742,6 +742,37 @@ var SubscribeProLib = {
     },
 
     /**
+     * Get a filtered inventory entry.
+     *
+     * API Endpoint: GET /services/v2/inventory.{_format}
+     *
+     * @param {Object} data An object containing all configs and request fields
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    getInventoryRecord: function (filtersStr) {
+        var service = HttpServices.SubproHttpService();
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.inventory',
+            method: 'GET'
+        };
+
+        if (filtersStr.productId || filtersStr.productId) {
+            config.parameters = '';
+        }
+
+        if (filtersStr.productId) {
+            config.parameters = config.parameters + 'product_id=' + Encoding.toURI(filtersStr.productId);
+            config.parameters = filtersStr.inventoryLocationId && config.parameters + '&';
+        }
+        if (filtersStr.inventoryLocationId) {
+            config.parameters = config.parameters + 'inventory_location_id=' + Encoding.toURI(filtersStr.inventoryLocationId);
+        }
+
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
      * Update a single inventory entry.
      *
      * API Endpoint: POST /services/v2/locations/{id}.{_format}
