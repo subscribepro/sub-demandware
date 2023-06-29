@@ -48,42 +48,28 @@
         </triggers>
     </job>
 
-    <job job-id="MultilocationInventoryFeedSP" priority="0">
-            <description/>
-            <parameters/>
-            <flow>
-                <context site-id="RefArchGlobal"/>
-                <step step-id="ExportInventoryLists" type="ExportInventoryLists" enforce-restart="false">
-                    <description/>
-                    <parameters>
-                        <parameter name="FileNamePrefix">customization/subPro/InventoryList</parameter>
-                        <parameter name="OverwriteExportFile">true</parameter>
-                    </parameters>
-                </step>
-            </flow>
-            <flow>
-                <context site-id="RefArchGlobal"/>
-                <step step-id="SendInventoryToSP" type="custom.subPro.SendInventoryFeedSP" enforce-restart="false">
-                    <description/>
-                    <parameters>
-                        <parameter name="InventoryFile">Impex/src/customization/subPro/</parameter>
-                        <parameter name="NoFileFoundStatus">OK</parameter>
-                    </parameters>
-                </step>
-            </flow>
-            <rules>
-                <on-running runtime-threshold="60m" enabled="false">
-                    <mark-job-as-hanging/>
-                </on-running>
-            </rules>
-            <triggers>
-                <run-once enabled="false">
-                    <date>2023-05-17Z</date>
-                    <time>11:42:00.000Z</time>
-                </run-once>
-            </triggers>
-        </job>
-
+    <job job-id="saveSubProProductID" priority="0">
+        <description/>
+        <parameters/>
+        <flow>
+            <context site-id="RefArchGlobal"/>
+            <step step-id="saveSubProProductID" type="custom.SaveSubProProductID" enforce-restart="false">
+                <description/>
+                <parameters/>
+            </step>
+        </flow>
+        <rules>
+            <on-running runtime-threshold="60m" enabled="false">
+                <mark-job-as-hanging/>
+            </on-running>
+        </rules>
+        <triggers>
+            <run-once enabled="false">
+                <date>2023-06-08Z</date>
+                <time>12:07:00.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
 
     <job job-id="ExportInventoryFeedSP" priority="0">
         <description/>

@@ -71,10 +71,11 @@ function write(lines, parameters, stepExecution) {
 
     if (filteredProducts.nonExistedProducts.length) {
         filteredProducts.nonExistedProducts.forEach(function (SPProduct) {
+            delete SPProduct.SPProductID;
             var postProductResponse = SubscribeProLib.postProduct(SPProduct);
             if (!postProductResponse.error) {
                 var apiProduct = ProductMgr.getProduct(SPProduct.sku);
-                apiProduct.custom.SPProductID = postProductResponse.result.product.id;
+                SubProProductHelper.updateSPProductID(apiProduct, postProductResponse.result.product.id);
             }
         });
     }
