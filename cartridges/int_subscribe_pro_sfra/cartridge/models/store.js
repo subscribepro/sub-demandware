@@ -39,6 +39,10 @@ function Store(storeObject) {
             this.phone = storeObject.phone;
         }
 
+        if (storeObject.email) {
+            this.phone = storeObject.email;
+        }
+
         if (storeObject.stateCode) {
             this.stateCode = storeObject.stateCode;
         }
@@ -84,6 +88,10 @@ function Store(storeObject) {
 
         if (storeObject.phone) {
             this.payload.phone = storeObject.phone;
+        }
+
+        if (storeObject.email) {
+            this.payload.email = storeObject.email;
         }
 
         if (storeObject.stateCode) {
