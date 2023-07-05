@@ -191,7 +191,6 @@ var PaymentsHelper = {
              */
             if (response.error && response.result.code === 404) {
                 paymentProfileID = this.createSubproPaymentProfile(customerProfile, customerPaymentInstrument, billingAddress);
-                this.setSubproPaymentProfileID(customerPaymentInstrument, paymentProfileID);
 
                 /**
                  * Some other error occurred, error out
@@ -201,7 +200,6 @@ var PaymentsHelper = {
             }
         } else {
             paymentProfileID = this.createSubproPaymentProfile(customerProfile, customerPaymentInstrument, billingAddress);
-            this.setSubproPaymentProfileID(customerPaymentInstrument, paymentProfileID);
         }
 
         return paymentProfileID;
@@ -302,6 +300,23 @@ var PaymentsHelper = {
      */
     deletePaymentProfile: function (subproPaymentProfileID) {
         SubscribeProLib.deletePaymentProfile(subproPaymentProfileID);
+    },
+
+    sortByCreationDate: function (arr) {
+        // Compare function for sorting based on creation date
+        function compareByCreationDate(a, b) {
+            // Assuming each object has a 'createdAt' property representing the creation date
+            const dateA = new Date(a.lastModified);
+            const dateB = new Date(b.lastModified);
+
+            return dateB - dateA;
+        }
+
+        // Sort the objects array using the compare function
+        arr.sort(compareByCreationDate);
+
+        // Return the sorted array
+        return arr;
     }
 };
 

@@ -153,12 +153,12 @@ server.append('SavePayment', csrfProtection.validateAjaxRequest, function (req, 
         var wallet = customer.getProfile().getWallet();
         var savedCard = null;
         var savedCards = wallet.getPaymentInstruments('CREDIT_CARD');
-        for (var i = 0; i < savedCards.length; i++) {
-            if (savedCards[i].getCreditCardNumberLastDigits() == last4) {
-                savedCard = savedCards[i];
-                break;
-            }
-        }
+
+        //find the last saved card
+        var sortedSavedCards = paymentsHelper.sortByCreationDate(savedCards.toArray());
+        savedCard = sortedSavedCards[0];
+        //
+
         if (!savedCard) {
             return next();
         }
