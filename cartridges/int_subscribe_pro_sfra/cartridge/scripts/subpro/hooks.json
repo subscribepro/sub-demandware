@@ -5,6 +5,10 @@
             "script": "./hooks/authorizeCreditCard"
         },
         {
+            "name": "app.registration.user.SPUser",
+            "script": "./hooks/registration.js"
+        },
+        {
             "name": "dw.ocapi.shop.order.payment_instrument.afterPATCH",
             "script": "./hooks/payment_instrument.js"
         },
