@@ -34,28 +34,43 @@ describe('paymentsHelper', function () {
     });
 
     it('comparePaymentInstruments should return true if both payment instruments are the same, otherwise false', function () {
-        assert.isTrue(paymentsHelper.comparePaymentInstruments(paymentsMockData.sfccPaymentInstrument, paymentsMockData.sfccPaymentInstrument));
-        assert.isFalse(paymentsHelper.comparePaymentInstruments(paymentsMockData.sfccPaymentInstrument, {
-            paymentMethod: 'CREDIT_CARD',
-            creditCardNumber: '4111111111111116',
-            creditCardHolder: 'Mock Data',
-            creditCardExpirationYear: '2026',
-            creditCardExpirationMonth: '05'
-        }));
+        assert.isTrue(
+            paymentsHelper.comparePaymentInstruments(paymentsMockData.sfccPaymentInstrument, paymentsMockData.sfccPaymentInstrument)
+        );
+        assert.isFalse(
+            paymentsHelper.comparePaymentInstruments(paymentsMockData.sfccPaymentInstrument, {
+                paymentMethod: 'CREDIT_CARD',
+                creditCardNumber: '4111111111111116',
+                creditCardHolder: 'Mock Data',
+                creditCardExpirationYear: '2026',
+                creditCardExpirationMonth: '05'
+            })
+        );
     });
 
     it('getCustomerPaymentInstrument should get the payment instrument object that matches the given object', function () {
-        var selectedPaymentInstrument = paymentsHelper.getCustomerPaymentInstrument(paymentsMockData.wallet, paymentsMockData.sfccPaymentInstrument);
+        var selectedPaymentInstrument = paymentsHelper.getCustomerPaymentInstrument(
+            paymentsMockData.wallet,
+            paymentsMockData.sfccPaymentInstrument
+        );
         assert.isTrue(paymentsHelper.comparePaymentInstruments(selectedPaymentInstrument, paymentsMockData.sfccPaymentInstrument));
     });
 
     it('findOrCreatePaymentProfile should return the ID of the created payment profile in SP', function () {
-        var paymentProfileId = paymentsHelper.findOrCreatePaymentProfile(paymentsMockData.sfccPaymentInstrument, paymentsMockData.sfccPaymentInstrument, customerMockData.sfccCustomer.getProfile(), {});
+        var paymentProfileId = paymentsHelper.findOrCreatePaymentProfile(
+            paymentsMockData.sfccPaymentInstrument,
+            customerMockData.sfccCustomer.getProfile(),
+            {}
+        );
         assert.equal(paymentProfileId, 124365);
     });
 
     it('createSubproPaymentProfile should return a payment profile ID', function () {
-        var paymentProfileId = paymentsHelper.createSubproPaymentProfile(customerMockData.sfccCustomer.getProfile(), paymentsMockData.sfccPaymentInstrument, {});
+        var paymentProfileId = paymentsHelper.createSubproPaymentProfile(
+            customerMockData.sfccCustomer.getProfile(),
+            paymentsMockData.sfccPaymentInstrument,
+            {}
+        );
         assert.equal(paymentProfileId, 54321);
     });
 });

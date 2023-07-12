@@ -116,4 +116,27 @@
         </triggers>
     </job>
 
+    <job job-id="MigrationsSP" priority="0">
+        <description/>
+        <parameters/>
+        <flow>
+            <context site-id="RefArch"/>
+            <step step-id="migrations" type="custom.subPro.migrations" enforce-restart="false">
+                <description/>
+                <parameters/>
+            </step>
+        </flow>
+        <rules>
+            <on-running runtime-threshold="60m" enabled="false">
+                <mark-job-as-hanging/>
+            </on-running>
+        </rules>
+        <triggers>
+            <run-once enabled="false">
+                <date>2023-07-10Z</date>
+                <time>14:50:00.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
 </jobs>

@@ -166,7 +166,7 @@ server.append('SavePayment', csrfProtection.validateAjaxRequest, function (req, 
 
         var subscriptionPaymentProfile = paymentsHelper.getSubscriptionPaymentProfile(customerProfile, savedCard, {}, false);
 
-        PaymentsHelper.findOrCreatePaymentProfile(null, savedCard, customerProfile, subscriptionPaymentProfile.billing_address);
+        PaymentsHelper.findOrCreatePaymentProfile(savedCard, customerProfile, subscriptionPaymentProfile.billing_address);
 
         session.privacy.newCard = JSON.stringify({
             sp: subscriptionPaymentProfile,
