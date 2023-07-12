@@ -87,6 +87,37 @@
                         }
                     ]
                 }
+            },
+            {
+                "@type-id": "custom.subPro.migrations",
+                "@supports-parallel-execution": "false",
+                "@supports-site-context": "true",
+                "@supports-organization-context": "true",
+                "description": "The job do migrations/synchronisation by SP instances using SP API calls",
+                "module": "int_subscribe_pro_sfra/cartridge/scripts/subpro/job/migrationSPUsers.js",
+                "before-step-function": "beforeStep",
+                "read-function": "read",
+                "process-function": "process",
+                "write-function": "write",
+                "after-chunk-function": "",
+                "after-step-function": "afterStep",
+                "chunk-size": 100,
+                "transactional": "false",
+                "parameters": {
+                    "parameter": []
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when the step failed with an error."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when the step finished successfully."
+                        }
+                    ]
+                }
             }
         ]
     }

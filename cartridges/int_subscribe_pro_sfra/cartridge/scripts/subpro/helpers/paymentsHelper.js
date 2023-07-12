@@ -172,7 +172,7 @@ var PaymentsHelper = {
      * @param {Object} billingAddress Billing address object
      * @return {int|null} Payment profile ID
      */
-    findOrCreatePaymentProfile: function (paymentInstrument, customerPaymentInstrument, customerProfile, billingAddress) {
+    findOrCreatePaymentProfile: function (customerPaymentInstrument, customerProfile, billingAddress) {
         var paymentProfileID =
             customerPaymentInstrument && 'subproPaymentProfileID' in customerPaymentInstrument.custom
                 ? customerPaymentInstrument.custom.subproPaymentProfileID

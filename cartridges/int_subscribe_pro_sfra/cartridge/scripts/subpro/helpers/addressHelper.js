@@ -2,6 +2,8 @@
 
 var Transaction = require('dw/system/Transaction');
 
+var subscribeProLib = require('~/cartridge/scripts/subpro/lib/subscribeProLib');
+
 /**
  * Provides an interface to handle Subscribe Pro address objects and map them to Sales Force Commerce Cloud Customer Address Object.
  */
@@ -125,6 +127,19 @@ var AddressHelper = {
         }
 
         return null;
+    },
+    /**
+     * Find or create a Address in Subscribe Pro
+     * @param {Customer} customer Customer object
+     * @param {Address} address Customer's address object
+     * @return {int|null} The customer's address ID in Subscribe Pro
+     */
+    findOrCreateAddress: function (customer, address) {
+        var spAddress = this.getSubproAddress(address, customer.profile, false, false);
+        var addressResponse = subscribeProLib.findCreateAddress(spAddress);
+        this.setSubproAddressID(address, addressResponse.result.address.id);
+
+        return addressResponse.result.address.id;
     }
 };
 
