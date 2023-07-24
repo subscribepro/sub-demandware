@@ -155,7 +155,7 @@ server.append('SavePayment', csrfProtection.validateAjaxRequest, function (req, 
         var savedCards = wallet.getPaymentInstruments('CREDIT_CARD');
 
         //find the last saved card
-        var sortedSavedCards = paymentsHelper.sortByCreationDate(savedCards.toArray());
+        var sortedSavedCards = paymentsHelper.getLatestSavedInstrument(savedCards);
         savedCard = sortedSavedCards[0];
         //
 

@@ -2,8 +2,10 @@
 
 var Transaction = require('dw/system/Transaction');
 var Logger = require('dw/system/Logger');
-var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/subscribeProLib');
 var Money = require('dw/value/Money');
+
+var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/subscribeProLib');
+var collections = require('*/cartridge/scripts/util/collections');
 
 /**
  * Provides an interface to handle Subscribe Pro payment objects.
@@ -317,6 +319,17 @@ var PaymentsHelper = {
 
         // Return the sorted array
         return arr;
+    },
+
+    getLatestSavedInstrument: function (paymentInstruments) {
+        paymentInstruments = paymentInstruments.toArray();
+        return this.sortByCreationDate(paymentInstruments)[0];
+    },
+
+    getPaymentInstrumentById: function (paymentInstruments, storedPaymentUUID) {
+        return collections.find(paymentInstruments, function (paymentInstrument) {
+            return paymentInstrument.UUID === storedPaymentUUID;
+        });
     }
 };
 
