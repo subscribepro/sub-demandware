@@ -156,7 +156,7 @@ server.append('SavePayment', csrfProtection.validateAjaxRequest, function (req, 
 
         //find the last saved card
         var sortedSavedCards = paymentsHelper.getLatestSavedInstrument(savedCards);
-        savedCard = sortedSavedCards[0];
+        savedCard = sortedSavedCards;
         //
 
         if (!savedCard) {
