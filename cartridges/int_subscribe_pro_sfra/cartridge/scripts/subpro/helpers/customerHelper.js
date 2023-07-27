@@ -8,7 +8,6 @@ var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/subscribeProLib');
  * Provides an interface to handle Subscribe Pro customer objects and map them to Sales Force Commerce Cloud Customer Object.
  */
 var CustomerHelper = {
-
     /**
      * Take a Sales Force Commerce Cloud Customer Object as a parameter and map any relevant data to Subscribe Pro
      *
@@ -70,7 +69,8 @@ var CustomerHelper = {
             CustomerHelper.setSubproCustomerID(customer.profile, createCustomerResponse.result.customer.id);
 
             return createCustomerResponse.result.customer.id;
-        } if (createCustomerResponse.error && createCustomerResponse.result.code === 409) {
+        }
+        if (createCustomerResponse.error && createCustomerResponse.result.code === 409) {
             // Customer's email address already exists, get customer by email
             createCustomerResponse = SubscribeProLib.getCustomer(null, customerToPost.email);
             if (!createCustomerResponse.error) {
@@ -102,6 +102,58 @@ var CustomerHelper = {
         } catch (e) {
             Logger.error("Error while updating customer's subproCustomerID attribute", e);
         }
+    },
+    /**
+     * Get qeryString for the Customer Searching
+     *
+     * @param {Object} parameters Object with parameters of the job
+     * @return {string} qeryString for the Customer Searching
+     */
+    getCustomerSearchString: function (parameters) {
+        var { 'User type': userType, 'Additional search string': additionalSearchString } = parameters;
+
+        switch (userType) {
+            case 'Only registered users':
+                var userTypeSearchPhras = 'custom.subproCustomerID!=NULL';
+                break;
+            case 'No registered users':
+                var userTypeSearchPhras = 'custom.subproCustomerID=NULL';
+                break;
+            default:
+                var userTypeSearchPhras = '';
+        }
+        var searchArr = [
+            { userTypeSearchPhras: userTypeSearchPhras },
+            { email: parameters['Email'] },
+            { customerNo: parameters['Customer No'] },
+            { firstName: parameters['First name'] },
+            { lastName: parameters['Last name'] },
+            { creationDate: parameters['Created since'] ? parameters['Created since'].toISOString().split('T')[0] : null }
+        ];
+        var searchPhrase = '';
+
+        if (additionalSearchString) {
+            searchPhrase = additionalSearchString;
+        } else {
+            searchArr.forEach(function (item, i) {
+                if (i === 0) {
+                    searchPhrase = item.userTypeSearchPhras ? item.userTypeSearchPhras : '';
+                } else {
+                    if (item[Object.keys(item)[0]] !== null) {
+                        if (Object.keys(item)[0] === 'creationDate') {
+                            searchPhrase = searchPhrase
+                                ? searchPhrase + ' AND ' + Object.keys(item)[0] + ' >= ' + item[Object.keys(item)[0]]
+                                : Object.keys(item)[0] + ' >= ' + item[Object.keys(item)[0]];
+                        } else {
+                            searchPhrase = searchPhrase
+                                ? searchPhrase + ' AND ' + Object.keys(item)[0] + ' = ' + item[Object.keys(item)[0]]
+                                : Object.keys(item)[0] + " = '" + item[Object.keys(item)[0]] + "'";
+                        }
+                    }
+                }
+            });
+        }
+        return searchPhrase;
     }
 };
 
