@@ -15,7 +15,9 @@ var profiles;
  * @param {dw.job.JobStepExecution} stepExecution - stepExecution
  */
 function beforeStep(parameters, stepExecution) {
-    profiles = CustomerMgr.searchProfiles('custom.subproCustomerID != NULL', 'customerNo DESC');
+    var searchPhrase = customerHelper.getCustomerSearchString(parameters);
+
+    profiles = CustomerMgr.searchProfiles(searchPhrase, 'customerNo DESC');
 }
 
 /**
