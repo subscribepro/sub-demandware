@@ -59,9 +59,7 @@ var currentOrderNo = null;
  * @param {string} [serviceName] serviceName
  */
 function logError(response, serviceName) {
-    var msg = serviceName
-        ? 'Error while calling service ' + serviceName + '.\nResponse: ' + JSON.stringify(response)
-        : response;
+    var msg = serviceName ? 'Error while calling service ' + serviceName + '.\nResponse: ' + JSON.stringify(response) : response;
 
     Logger.error(msg);
 
@@ -80,13 +78,17 @@ function start() {
      * Target Start Time - Use the interval preference, in hours,
      * to calculate what the start time for the search should be
      */
-    var targetStartDateTime = new Date(Date.now() - parseInt(arguments[0].get('ordersProcessInterval'), 10) * 3.6e+6);
+    var targetStartDateTime = new Date(Date.now() - parseInt(arguments[0].get('ordersProcessInterval'), 10) * 3.6e6);
 
     /**
      * Retreive a list of orders to be processed
      */
-    var ordersToProcess = OrderMgr.searchOrders('status != {0} AND creationDate >= {1} AND custom.subproSubscriptionsToBeProcessed = true', 'creationDate desc',
-        require('dw/order/Order').ORDER_STATUS_FAILED, targetStartDateTime);
+    var ordersToProcess = OrderMgr.searchOrders(
+        'status != {0} AND creationDate >= {1} AND custom.subproSubscriptionsToBeProcessed = true',
+        'creationDate desc',
+        require('dw/order/Order').ORDER_STATUS_FAILED,
+        targetStartDateTime
+    );
 
     /**
      * Iterate across the orders
@@ -138,11 +140,7 @@ function start() {
              * payment profile hasn't been created yet, create one
              */
             var paymentProfileID = PaymentsHelper.findOrCreatePaymentProfile(
-                order.paymentInstrument,
-                PaymentsHelper.getCustomerPaymentInstrument(
-                    customerProfile.wallet.paymentInstruments.toArray(),
-                    order.paymentInstrument
-                ),
+                PaymentsHelper.getCustomerPaymentInstrument(customerProfile.wallet.paymentInstruments.toArray(), order.paymentInstrument),
                 customer.profile,
                 order.billingAddress
             );
@@ -172,7 +170,10 @@ function start() {
                          * the Find / Create Subscribe Pro API
                          */
                         var customerAddressBook = customer.addressBook;
-                        var shippingAddress = AddressHelper.getCustomerAddress(customerAddressBook.getAddresses().toArray(), shipment.shippingAddress);
+                        var shippingAddress = AddressHelper.getCustomerAddress(
+                            customerAddressBook.getAddresses().toArray(),
+                            shipment.shippingAddress
+                        );
 
                         if (!shippingAddress) {
                             var profile = order.customer.getProfile();
@@ -297,21 +298,34 @@ function start() {
      */
     if (errors.length) {
         var hooksHelper = require('*/cartridge/scripts/helpers/hooks');
-        hooksHelper('app.customer.email', 'sendEmail', [{
-            to: CurrentSite.getCustomPreferenceValue('subproOrderProcessingErrorMail'),
-            from: CurrentSite.getCustomPreferenceValue('subproOrderProcessingErrorMail'),
-            subject: Resource.msg('order.processing.failureemail.subject', 'order', null)
-        }, 'subpro/mail/orderprocessingerror', {
-            Errors: errors
-        }], function (object, template, context) {
-            var Mail = require('dw/net/Mail');
-            var mail = new Mail();
-            mail.addTo(object.to);
-            mail.setSubject(object.subject);
-            mail.setFrom(object.from);
-            mail.setContent(require('*/cartridge/scripts/renderTemplateHelper').getRenderedHtml(context, template), 'text/html', 'UTF-8');
-            mail.send();
-        });
+        hooksHelper(
+            'app.customer.email',
+            'sendEmail',
+            [
+                {
+                    to: CurrentSite.getCustomPreferenceValue('subproOrderProcessingErrorMail'),
+                    from: CurrentSite.getCustomPreferenceValue('subproOrderProcessingErrorMail'),
+                    subject: Resource.msg('order.processing.failureemail.subject', 'order', null)
+                },
+                'subpro/mail/orderprocessingerror',
+                {
+                    Errors: errors
+                }
+            ],
+            function (object, template, context) {
+                var Mail = require('dw/net/Mail');
+                var mail = new Mail();
+                mail.addTo(object.to);
+                mail.setSubject(object.subject);
+                mail.setFrom(object.from);
+                mail.setContent(
+                    require('*/cartridge/scripts/renderTemplateHelper').getRenderedHtml(context, template),
+                    'text/html',
+                    'UTF-8'
+                );
+                mail.send();
+            }
+        );
     }
 }
 

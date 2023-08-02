@@ -31,11 +31,7 @@ function verifyCard(card, form) {
     var formCardNumber = form.cardNumber;
 
     if (paymentCard) {
-        creditCardStatus = paymentCard.verify(
-            card.expirationMonth,
-            card.expirationYear,
-            cardNumber
-        );
+        creditCardStatus = paymentCard.verify(card.expirationMonth, card.expirationYear, cardNumber);
     } else {
         formCardNumber.valid = false;
         formCardNumber.error = Resource.msg('error.message.creditnumber.invalid', 'forms', null);
@@ -144,31 +140,35 @@ server.get('SetSPPaymentProfileID', function (req, res, next) {
 
 server.append('SavePayment', csrfProtection.validateAjaxRequest, function (req, res, next) {
     var CustomerMgr = require('dw/customer/CustomerMgr');
+    var PaymentsHelper = require('~/cartridge/scripts/subpro/helpers/paymentsHelper');
     if (!subproEnabled) {
         return next();
     }
-    this.on('route:Complete', function (req, res) { // eslint-disable-line no-shadow
+    this.on('route:Complete', function (req, res) {
+        // eslint-disable-line no-shadow
         var viewData = res.getViewData();
         var cardNum = viewData.cardNumber;
         var last4 = cardNum.substring(cardNum.length - 4);
-        var customer = CustomerMgr.getCustomerByCustomerNumber(
-            req.currentCustomer.profile.customerNo
-        );
+        var customer = CustomerMgr.getCustomerByCustomerNumber(req.currentCustomer.profile.customerNo);
         var wallet = customer.getProfile().getWallet();
         var savedCard = null;
         var savedCards = wallet.getPaymentInstruments('CREDIT_CARD');
-        for (var i = 0; i < savedCards.length; i++) {
-            if (savedCards[i].getCreditCardNumberLastDigits() == last4) {
-                savedCard = savedCards[i];
-                break;
-            }
-        }
+
+        //find the last saved card
+        savedCard = paymentsHelper.getLatestSavedInstrument(savedCards);
+        //
+
         if (!savedCard) {
             return next();
         }
+        var customerProfile = session.customer.profile;
+
+        var subscriptionPaymentProfile = paymentsHelper.getSubscriptionPaymentProfile(customerProfile, savedCard, {}, false);
+
+        PaymentsHelper.findOrCreatePaymentProfile(savedCard, customerProfile, subscriptionPaymentProfile.billing_address);
 
         session.privacy.newCard = JSON.stringify({
-            sp: paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, savedCard, {}, false),
+            sp: subscriptionPaymentProfile,
             sfcc: savedCard.getUUID()
         });
     });
@@ -176,6 +176,7 @@ server.append('SavePayment', csrfProtection.validateAjaxRequest, function (req, 
 });
 
 server.prepend('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req, res, next) {
+    var PaymentsHelper = require('~/cartridge/scripts/subpro/helpers/paymentsHelper');
     var array = require('*/cartridge/scripts/util/array');
 
     var data = res.getViewData();
@@ -189,6 +190,9 @@ server.prepend('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req
     var payment = array.find(paymentInstruments, function (item) {
         return UUID === item.UUID;
     });
+
+    PaymentsHelper.deletePaymentProfile(payment.raw.custom.subproPaymentProfileID);
+
     session.privacy.deletedCard = JSON.stringify({
         sp: paymentsHelper.getSubscriptionPaymentProfile(session.customer.profile, payment.raw, {}, true),
         sfcc: payment.UUID

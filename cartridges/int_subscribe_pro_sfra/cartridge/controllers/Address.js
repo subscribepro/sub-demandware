@@ -7,6 +7,9 @@ var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 var addressHelper = require('~/cartridge/scripts/subpro/helpers/addressHelper');
 var subproEnabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproEnabled');
+var SubscribeProLib = require('~/cartridge/scripts/subpro/lib/subscribeProLib');
+var URLUtils = require('dw/web/URLUtils');
+var Resource = require('dw/web/Resource');
 
 server.extend(module.superModule);
 
@@ -26,7 +29,8 @@ server.append('List', userLoggedIn.validateLoggedIn, consentTracking.consent, fu
 
         var newAddressPayload = newAddress ? { address: newAddress.sp } : null;
         var newAddressSfccId = newAddress ? newAddress.sfcc : null;
-        var updatedAddressPayload = updatedOldAddress && updatedNewAddress ? { prev_address: updatedOldAddress, address: updatedNewAddress } : null;
+        var updatedAddressPayload =
+            updatedOldAddress && updatedNewAddress ? { prev_address: updatedOldAddress, address: updatedNewAddress } : null;
         var deletedAddressPayload = deletedAddress ? { address: deletedAddress.sp } : null;
 
         viewData.newAddress = JSON.stringify(newAddressPayload);
@@ -55,9 +59,7 @@ server.prepend('SaveAddress', csrfProtection.validateAjaxRequest, function (req,
     var addressForm = server.forms.getForm('address');
     var addressFormObj = addressForm.toObject();
     addressFormObj.addressForm = addressForm;
-    var customer = CustomerMgr.getCustomerByCustomerNumber(
-        req.currentCustomer.profile.customerNo
-    );
+    var customer = CustomerMgr.getCustomerByCustomerNumber(req.currentCustomer.profile.customerNo);
     var addressBook = customer.getProfile().getAddressBook();
 
     // Make sure our append() function knows whether we're creating or updating
@@ -90,9 +92,7 @@ server.append('SaveAddress', csrfProtection.validateAjaxRequest, function (req, 
         var addressForm = server.forms.getForm('address');
         var addressFormObj = addressForm.toObject();
         addressFormObj.addressForm = addressForm;
-        var customer = CustomerMgr.getCustomerByCustomerNumber(
-            req.currentCustomer.profile.customerNo
-        );
+        var customer = CustomerMgr.getCustomerByCustomerNumber(req.currentCustomer.profile.customerNo);
         var addressBook = customer.getProfile().getAddressBook();
 
         var addressId = req.querystring.addressId ? req.querystring.addressId : addressFormObj.addressId;
@@ -106,11 +106,20 @@ server.append('SaveAddress', csrfProtection.validateAjaxRequest, function (req, 
 
         var spAddress = addressHelper.getSubproAddress(address, session.customer.profile, false, true);
         if (session.privacy.spUpdateAddress) {
+            delete spAddress.customer_id;
+            var postUpdateAddressResponse = SubscribeProLib.postUpdateAddress(address.custom.subproAddressID, spAddress);
+            if (postUpdateAddressResponse.result.code === 404) {
+                spAddress.customer_id = session.customer.profile.custom.subproCustomerID;
+                var shippingResponse = SubscribeProLib.findCreateAddress(spAddress);
+                !shippingResponse.error && addressHelper.setSubproAddressID(address, shippingResponse.result.address.id);
+            }
             session.privacy.updatedNewAddress = JSON.stringify({
                 sp: spAddress,
                 sfcc: address.ID
             });
         } else {
+            var shippingResponse = SubscribeProLib.findCreateAddress(spAddress);
+            !shippingResponse.error && addressHelper.setSubproAddressID(address, shippingResponse.result.address.id);
             session.privacy.newAddress = JSON.stringify({
                 sp: spAddress,
                 sfcc: address.ID
@@ -132,17 +141,49 @@ server.prepend('DeleteAddress', userLoggedIn.validateLoggedInAjax, function (req
     }
 
     var addressId = req.querystring.addressId;
-    var customer = CustomerMgr.getCustomerByCustomerNumber(
-        req.currentCustomer.profile.customerNo
-    );
+    var customer = CustomerMgr.getCustomerByCustomerNumber(req.currentCustomer.profile.customerNo);
     var addressBook = customer.getProfile().getAddressBook();
     var address = addressBook.getAddress(addressId);
     if (subproEnabled) {
+        var spAddress = addressHelper.getSubproAddress(address, session.customer.profile, true, true);
+        var deleteAddressResponse = SubscribeProLib.deleteAddress(spAddress.address_id);
+
         session.privacy.deletedAddress = JSON.stringify({
-            sp: addressHelper.getSubproAddress(address, session.customer.profile, true, true),
+            sp: spAddress,
             sfcc: address.ID
         });
     }
+
+    return next();
+});
+
+server.get('IsExist', csrfProtection.generateToken, function (req, res, next) {
+    var defaultCustomerAddress = customer.getAddressBook().getPreferredAddress();
+
+    if (!empty(defaultCustomerAddress)) {
+        res.json({ success: true, continue: true });
+        return next();
+    }
+
+    var addressForm = server.forms.getForm('address');
+    addressForm.clear();
+    res.render('subpro/address/addressPopup', {
+        addressForm: addressForm,
+        breadcrumbs: [
+            {
+                htmlValue: Resource.msg('global.home', 'common', null),
+                url: URLUtils.home().toString()
+            },
+            {
+                htmlValue: Resource.msg('page.title.myaccount', 'account', null),
+                url: URLUtils.url('Account-Show').toString()
+            },
+            {
+                htmlValue: Resource.msg('label.addressbook', 'account', null),
+                url: URLUtils.url('Address-List').toString()
+            }
+        ]
+    });
 
     return next();
 });

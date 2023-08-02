@@ -1,4 +1,7 @@
 var HttpServices = require('~/cartridge/scripts/subpro/init/httpServiceInit.js');
+var Encoding = require('dw/crypto/Encoding');
+var Logger = require('dw/system/Logger');
+var Encoding = require('dw/crypto/Encoding');
 
 /**
  * SubscribeProLib
@@ -9,20 +12,6 @@ var HttpServices = require('~/cartridge/scripts/subpro/init/httpServiceInit.js')
  * relevant HTTP method (get / post)
  */
 var SubscribeProLib = {
-    /**
-     * Get a Web Service instance for the specified service name
-     * @param {string} serviceName Name of the service to get
-     * @returns {Object} Service
-     */
-    getService: function (serviceName) {
-        var serviceNameParts = serviceName.split('.');
-        Object.keys(serviceNameParts).forEach(function (item) {
-            serviceNameParts[item] = serviceNameParts[item].charAt(0).toUpperCase() + serviceNameParts[item].substr(1);
-        });
-        serviceName = serviceNameParts.join('');
-        return HttpServices[serviceName];
-    },
-
     /**
      * Handle API Responses
      * This method can be used to handle any API responses in a similar fashion.
@@ -53,14 +42,39 @@ var SubscribeProLib = {
     },
 
     /**
+     * Fetches object definition from Custom Object, creating it if not exists
+     * @param {string} customObjectName
+     * @param {string} objectID
+     * @param {boolean} [createIfNotExists]
+     * @returns {dw.object.CustomAttributes}
+     */
+    getCustomObject: function (customObjectName, objectID, createIfNotExists) {
+        var CustomObjectMgr = require('dw/object/CustomObjectMgr'),
+            objectDefinition = CustomObjectMgr.getCustomObject(customObjectName, objectID);
+        if (empty(objectDefinition) && createIfNotExists === true) {
+            require('dw/system/Transaction').wrap(function () {
+                objectDefinition = CustomObjectMgr.createCustomObject(customObjectName, objectID);
+            });
+        }
+        if (!empty(objectDefinition)) {
+            return objectDefinition.getCustom();
+        }
+    },
+
+    /**
      * Request the config object for this applications Subscribe Pro Account
      * API Endpoint: GET /services/v2/config
      *
      * @returns {Object} an object containing if this service returned an error and the results of the API request
      */
     getConfig: function () {
-        var service = SubscribeProLib.getService('subpro.http.get.config');
-        return SubscribeProLib.handleResponse(service.call());
+        var service = HttpServices.SubproHttpService();
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.config',
+            method: 'GET'
+        };
+        return this.handleResponse(service.call(config));
     },
 
     /**
@@ -80,9 +94,15 @@ var SubscribeProLib = {
             };
         }
 
-        var service = SubscribeProLib.getService('subpro.http.get.subscriptions');
+        var service = HttpServices.SubproHttpService();
 
-        return SubscribeProLib.handleResponse(service.call({ customer_id: customerID }));
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.subscriptions',
+            method: 'GET',
+            parameters: 'customer_id=' + Encoding.toURI(customerID)
+        };
+        return this.handleResponse(service.call(config));
     },
 
     /**
@@ -94,9 +114,15 @@ var SubscribeProLib = {
      * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
     postSubscription: function (subscription) {
-        var service = SubscribeProLib.getService('subpro.http.post.subscription');
+        var service = HttpServices.SubproHttpService();
 
-        return SubscribeProLib.handleResponse(service.call({ subscription: subscription }));
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.subscription',
+            method: 'POST',
+            payload: { subscription: subscription }
+        };
+        return this.handleResponse(service.call(config));
     },
 
     /**
@@ -108,9 +134,15 @@ var SubscribeProLib = {
      * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
     postCreateAddress: function (address) {
-        var service = SubscribeProLib.getService('subpro.http.post.addresses');
+        var service = HttpServices.SubproHttpService();
 
-        return SubscribeProLib.handleResponse(service.call({ address: address }));
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.address',
+            method: 'POST',
+            payload: { address: address }
+        };
+        return this.handleResponse(service.call(config));
     },
 
     /**
@@ -130,9 +162,16 @@ var SubscribeProLib = {
             };
         }
 
-        var service = SubscribeProLib.getService('subpro.http.post.addresses');
+        var service = HttpServices.SubproHttpService();
 
-        return SubscribeProLib.handleResponse(service.call({ address_id: addressID, address: address }));
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.addresses{id}',
+            dynamicAction: { ID: addressID },
+            method: 'POST',
+            payload: { address: address }
+        };
+        return this.handleResponse(service.call(config));
     },
 
     /**
@@ -144,8 +183,15 @@ var SubscribeProLib = {
      * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
     findCreateAddress: function (address) {
-        var service = SubscribeProLib.getService('subpro.http.post.addressfindcreate');
-        return SubscribeProLib.handleResponse(service.call({ address: address }));
+        var service = HttpServices.SubproHttpService();
+
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.address-find-or-create',
+            method: 'POST',
+            payload: { address: address }
+        };
+        return this.handleResponse(service.call(config));
     },
 
     /**
@@ -165,9 +211,43 @@ var SubscribeProLib = {
             };
         }
 
-        var service = SubscribeProLib.getService('subpro.http.get.addresses');
+        var service = HttpServices.SubproHttpService();
 
-        return SubscribeProLib.handleResponse(service.call({ customer_id: customerID }));
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.addresses',
+            parameters: 'customer_id=' + Encoding.toURI(customerID),
+            method: 'GET'
+        };
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
+     * Delete an Address
+     *
+     * API Endpoint: GET /services/v2/addresses/{id}
+     *
+     * @param {int} addressID The ID of the address to update
+     * @param {Object} address The new address data
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    deleteAddress: function (addressID) {
+        if (!addressID) {
+            return {
+                error: true,
+                result: 'Address ID is required for the postUpdateAddress method'
+            };
+        }
+
+        var service = HttpServices.SubproHttpService();
+
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.addresses{id}',
+            dynamicAction: { ID: addressID },
+            method: 'DELETE'
+        };
+        return this.handleResponse(service.call(config));
     },
 
     /**
@@ -185,10 +265,114 @@ var SubscribeProLib = {
                 result: 'sku is required for the getProduct method'
             };
         }
+        var service = HttpServices.SubproHttpService();
 
-        var service = SubscribeProLib.getService('subpro.http.get.products');
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.products',
+            parameters: 'sku=' + Encoding.toURI(sku),
+            method: 'GET'
+        };
+        return this.handleResponse(service.call(config));
+    },
 
-        return SubscribeProLib.handleResponse(service.call({ sku: sku }));
+    /**
+     * Get all products
+     * API Endpoint: GET /services/v2/products.{_format}
+     *
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    getProducts: function () {
+        var service = HttpServices.SubproHttpService();
+        var config = { accessToken: this.getOrUpdateAccessToken(), actionId: 'services.v2.products', method: 'GET' };
+
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
+     * Get all products
+     * API Endpoint: GET /services/v3/products.{_format}
+     *
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    getFilteredProducts: function (sku) {
+        if (empty(sku)) {
+            return {
+                error: true,
+                result: 'filteringString is required for the getFilteredProducts method'
+            };
+        }
+        var service = HttpServices.SubproHttpService();
+        var config = { accessToken: this.getOrUpdateAccessToken(), actionId: 'services.v3.products', method: 'GET', parameters: sku };
+
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
+     * Post all products
+     * API Endpoint: POST /services/v2/products.{_format}
+     *
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    postProducts: function (products) {
+        var service = HttpServices.SubproHttpService();
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.products',
+            method: 'POST',
+            payload: { products: products }
+        };
+
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
+     * Post a single product
+     * API Endpoint: POST /services/v2/product{_format}
+     *
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    postProduct: function (product) {
+        var service = HttpServices.SubproHttpService();
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.product',
+            method: 'POST',
+            payload: { product: product }
+        };
+
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
+     * Patch all products
+     * API Endpoint: PATCH /services/v2/products.{_format}
+     *
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    patchProducts: function (listFields) {
+        var service = HttpServices.SubproHttpService();
+        var config = { accessToken: this.getOrUpdateAccessToken(), actionId: 'services.v2.products', method: 'PATCH', payload: listFields };
+
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
+     * Retrieve a batch status.
+     * API Endpoint: GET /services/v2/batch/{batchId}.{_format}
+     *
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    getBatchStatus: function (batchId) {
+        var service = HttpServices.SubproHttpService();
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.batch{batchId}',
+            dynamicAction: { batchId: batchId },
+            method: 'GET'
+        };
+
+        return this.handleResponse(service.call(config));
     },
 
     /**
@@ -208,16 +392,26 @@ var SubscribeProLib = {
             };
         }
 
-        var service = SubscribeProLib.getService('subpro.http.get.customers');
-        var params = {};
+        var service = HttpServices.SubproHttpService();
 
         if (customerID) {
-            params = { customer_id: customerID };
-        } else if (customerEmail) {
-            params = { email: customerEmail };
+            var config = {
+                accessToken: this.getOrUpdateAccessToken(),
+                actionId: 'services.v2.customers{id}',
+                dynamicAction: { ID: customerID },
+                method: 'GET'
+            };
+            return this.handleResponse(service.call(config));
         }
-
-        return SubscribeProLib.handleResponse(service.call(params));
+        if (customerEmail) {
+            var config = {
+                accessToken: this.getOrUpdateAccessToken(),
+                actionId: 'services.v2.customers',
+                parameters: 'email=' + Encoding.toURI(customerEmail),
+                method: 'GET'
+            };
+            return this.handleResponse(service.call(config));
+        }
     },
 
     /**
@@ -229,9 +423,15 @@ var SubscribeProLib = {
      * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
     createCustomer: function (customer) {
-        var service = SubscribeProLib.getService('subpro.http.post.customer');
+        var service = HttpServices.SubproHttpService();
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.customer',
+            method: 'POST',
+            payload: { customer: customer }
+        };
 
-        return SubscribeProLib.handleResponse(service.call({ customer: customer }));
+        return this.handleResponse(service.call(config));
     },
 
     /**
@@ -251,9 +451,16 @@ var SubscribeProLib = {
             };
         }
 
-        var service = SubscribeProLib.getService('subpro.http.post.customers');
+        var service = HttpServices.SubproHttpService();
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.customers{id}',
+            dynamicAction: { ID: customerID },
+            payload: { customer: customer },
+            method: 'POST'
+        };
 
-        return SubscribeProLib.handleResponse(service.call({ customer_id: customerID, customer: customer }));
+        return this.handleResponse(service.call(config));
     },
 
     /**
@@ -267,28 +474,55 @@ var SubscribeProLib = {
      * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
     getToken: function (customerID, grantType, scope) {
-        if (!customerID || !grantType || !scope) {
+        if (!grantType || !scope) {
             return {
                 error: true,
-                result: 'customerID or grantType or scope parameter is missing'
+                result: 'grantType or scope parameter is missing'
             };
         }
 
-        var service = SubscribeProLib.getService('subpro.http.get.token');
+        var service = HttpServices.SubproHttpService();
 
-        return SubscribeProLib.handleResponse(
-            service.call({
-                customer_id: customerID,
-                grant_type: grantType,
-                scope: scope
-            })
-        );
+        var config = {
+            actionId: 'oauth.v2.token',
+            method: 'GET',
+            parameters: 'grant_type=' + grantType + '&scope=' + scope + '&customer_id=' + Encoding.toURI(customerID)
+        };
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
+     * getOrUpdateAccessToken
+     * @returns {string} token
+     */
+
+    getOrUpdateAccessToken() {
+        var subProAccessToken = this.getCustomObject('subProAccessToken', 'token', true);
+
+        if (subProAccessToken && (!subProAccessToken.expiresOn || !subProAccessToken.token || Date.now() >= subProAccessToken.expiresOn)) {
+            var response = this.getToken('', 'client_credentials', 'client');
+            try {
+                require('dw/system/Transaction').wrap(function () {
+                    if (response.error) {
+                        delete subProAccessToken.token;
+                        delete subProAccessToken.expiresOn;
+                    } else {
+                        var expirationTime = new Date().setTime(Date.now() + response.result.expires_in * 100);
+                        subProAccessToken.token = response.result.access_token;
+                        subProAccessToken.expiresOn = expirationTime;
+                    }
+                });
+            } catch (e) {
+                Logger.error('subProAccessToken has not saved. error: ', e);
+            }
+        }
+        return subProAccessToken.token;
     },
 
     /**
      * Retrieve a single payment profile by id
      *
-     * API Endpoint: GET /services/v1/vault/paymentprofiles/{id}.{_format}
+     * API Endpoint: GET /services/v2/vault/paymentprofiles/{id}.{_format}
      *
      * @param {int} paymentProfileID The ID of the payment profile to get
      * @param {int} transactionID The ID of the transaction to use to get a payment profile
@@ -302,16 +536,26 @@ var SubscribeProLib = {
             };
         }
 
-        var service = SubscribeProLib.getService('subpro.http.get.paymentprofile');
-        var params = {};
+        var service = HttpServices.SubproHttpService();
 
         if (paymentProfileID) {
-            params = { paymentprofile_id: paymentProfileID };
-        } else if (transactionID) {
-            params = { transaction_id: transactionID };
+            var config = {
+                accessToken: this.getOrUpdateAccessToken(),
+                actionId: 'services.v2.vaultPaymentprofiles{id}',
+                dynamicAction: { ID: paymentProfileID },
+                method: 'GET'
+            };
+            return this.handleResponse(service.call(config));
         }
-
-        return SubscribeProLib.handleResponse(service.call(params));
+        if (transactionID) {
+            var config = {
+                accessToken: this.getOrUpdateAccessToken(),
+                actionId: 'services.v2.vaultPaymentprofiles',
+                parameters: 'transaction_id=' + Encoding.toURI(transactionID),
+                method: 'GET'
+            };
+            return this.handleResponse(service.call(config));
+        }
     },
 
     /**
@@ -323,9 +567,15 @@ var SubscribeProLib = {
      * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
      */
     createPaymentProfile: function (paymentProfile) {
-        var service = SubscribeProLib.getService('subpro.http.post.paymentprofile.vault');
+        var service = HttpServices.SubproHttpService();
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.vaultPaymentprofileExternal-vault',
+            payload: { payment_profile: paymentProfile },
+            method: 'POST'
+        };
 
-        return SubscribeProLib.handleResponse(service.call({ paymentProfile: paymentProfile }));
+        return this.handleResponse(service.call(config));
     },
 
     /**
@@ -391,6 +641,158 @@ var SubscribeProLib = {
         }
 
         return !!isSubpro;
+    },
+
+    /**
+     * Call service to delete payment profile.
+     *
+     * @param {string} subproPaymentProfileID Subscribe Pro Payment Profile ID
+     */
+    deletePaymentProfile: function (paymentProfileID) {
+        if (paymentProfileID) {
+            var service = HttpServices.SubproHttpService();
+            var config = {
+                accessToken: this.getOrUpdateAccessToken(),
+                actionId: 'services.v1.vaultPaymentprofiles{id}redact',
+                dynamicAction: { ID: paymentProfileID },
+                method: 'PUT'
+            };
+
+            return this.handleResponse(service.call(config));
+        }
+    },
+
+    /**
+     * Retrieve a collection of all inventory locations.
+     *
+     * API Endpoint: GET /services/v2/inventory-locations.{_format}
+     *
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    getInventoryLocations: function () {
+        var service = HttpServices.SubproHttpService();
+        var config = { accessToken: this.getOrUpdateAccessToken(), actionId: 'services.v2.inventory-locations', method: 'GET' };
+
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
+     * Create a new inventory location.
+     *
+     * API Endpoint: POST /services/v2/inventory-locations.{_format}
+     *
+     * @param {Object} listID id of the inventory list on SFCC side
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    postInventoryLocation: function (inventoryLocation) {
+        var service = HttpServices.SubproHttpService();
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.inventory-location',
+            method: 'POST',
+            payload: {
+                inventory_location: inventoryLocation
+            }
+        };
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
+     * Update a new inventory location.
+     *
+     * API Endpoint: POST /services/v2/inventory-locations/{id}.{_format}
+     *
+     * @param {Object} listID id of the inventory list on SFCC side
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    updateInventoryLocation: function (listID, inventoryLocation) {
+        var service = HttpServices.SubproHttpService();
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.inventory-location{id}',
+            method: 'POST',
+            dynamicAction: { ID: listID },
+            payload: {
+                inventory_location: inventoryLocation
+            }
+        };
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
+     * Create a new inventory entry.
+     *
+     * API Endpoint: POST /services/v2/inventory.{_format}
+     *
+     * @param {Object} data An object containing all configs and request fields
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    postInventoryRecord: function (dataRecord) {
+        var service = HttpServices.SubproHttpService();
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.inventory',
+            method: 'POST',
+            payload: {
+                inventory: dataRecord
+            }
+        };
+
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
+     * Get a filtered inventory entry.
+     *
+     * API Endpoint: GET /services/v2/inventory.{_format}
+     *
+     * @param {Object} data An object containing all configs and request fields
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    getInventoryRecord: function (filtersStr) {
+        var service = HttpServices.SubproHttpService();
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.inventory',
+            method: 'GET'
+        };
+
+        if (filtersStr.productId || filtersStr.productId) {
+            config.parameters = '';
+        }
+
+        if (filtersStr.productId) {
+            config.parameters = config.parameters + 'product_id=' + Encoding.toURI(filtersStr.productId);
+            config.parameters = filtersStr.inventoryLocationId && config.parameters + '&';
+        }
+        if (filtersStr.inventoryLocationId) {
+            config.parameters = config.parameters + 'inventory_location_id=' + Encoding.toURI(filtersStr.inventoryLocationId);
+        }
+
+        return this.handleResponse(service.call(config));
+    },
+
+    /**
+     * Update a single inventory entry.
+     *
+     * API Endpoint: POST /services/v2/locations/{id}.{_format}
+     *
+     * @param {Object} data An object containing all configs and request fields
+     * @returns {Object} An object containing whether or not this service returned an error and the results of the API request
+     */
+    updateInventoryRecord: function (SPLocationId, dataRecord) {
+        var service = HttpServices.SubproHttpService();
+        var config = {
+            accessToken: this.getOrUpdateAccessToken(),
+            actionId: 'services.v2.inventory{id}',
+            method: 'POST',
+            dynamicAction: { ID: SPLocationId },
+            payload: {
+                inventory: dataRecord
+            }
+        };
+
+        return this.handleResponse(service.call(config));
     }
 };
 

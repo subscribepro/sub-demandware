@@ -9,11 +9,42 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
+            <attribute-definition attribute-id="SPProductID">
+                <display-name xml:lang="x-default">Subscribe Pro Product ID</display-name>
+                <description xml:lang="x-default">The field will be recorded when the ExportInventoryFeedSP job will be executed</description>
+                <type>text</type>
+                <localizable-flag>false</localizable-flag>
+                <site-specific-flag>false</site-specific-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <visible-flag>false</visible-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <order-required-flag>false</order-required-flag>
+                <externally-defined-flag>false</externally-defined-flag>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="subscribe-pro">
                 <display-name xml:lang="x-default">Subscribe Pro</display-name>
                 <attribute attribute-id="subproSubscriptionEnabled"/>
+                <attribute attribute-id="SPProductID"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
+    <type-extension type-id="ProductInventoryRecord">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="SPInventoryEntryID">
+                <display-name xml:lang="x-default">Subscribe Pro Inventory entry ID</display-name>
+                <description xml:lang="x-default">Subscribe Pro Unique ID of inventory entry</description>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="subscribePro">
+                <display-name xml:lang="x-default">Subscribe Pro</display-name>
+                <attribute attribute-id="SPInventoryEntryID"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
@@ -143,12 +174,39 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
+            <attribute-definition attribute-id="subproIsRecurringOrder">
+                <display-name xml:lang="x-default">Subpro Is Recurring Order</display-name>
+                <type>boolean</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="subscribe-pro">
                 <display-name xml:lang="x-default">Subscribe Pro</display-name>
                 <attribute attribute-id="subproContainsSubscriptions"/>
                 <attribute attribute-id="subproSubscriptionsToBeProcessed"/>
+                <attribute attribute-id="subproIsRecurringOrder"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
+    <type-extension type-id="OrderPaymentInstrument">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="subproPaymentProfileID">
+                <display-name xml:lang="x-default">Subscribe Pro Payment Profile ID</display-name>
+                <description xml:lang="x-default">This attribute will contain the payment profile id that is returned from Subscription Pro upon creating payment profile record in the Subscribe Pro system</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="subscribe-pro">
+                <display-name xml:lang="x-default">Subscribe Pro</display-name>
+                <attribute attribute-id="subproPaymentProfileID"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
@@ -380,4 +438,36 @@
               </attribute-group>
           </group-definitions>
       </type-extension>
+
+    <type-extension type-id="Store">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="SPLocationId">
+                <display-name xml:lang="x-default">Sub Pro Location Id</display-name>
+                <description xml:lang="x-default">Location ID received from the SP server</description>
+                <type>text</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="inventoryListId">
+                <display-name xml:lang="x-default">Store Inventory List ID</display-name>
+                <description xml:lang="x-default">Store Inventory List ID</description>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="Inventory">
+                <display-name xml:lang="x-default">Inventory</display-name>
+                <attribute attribute-id="inventoryListId"/>
+            </attribute-group>
+            <attribute-group group-id="subscribePro">
+                <display-name xml:lang="x-default">Subscribe Pro</display-name>
+                <attribute attribute-id="SPLocationId"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
 </metadata>

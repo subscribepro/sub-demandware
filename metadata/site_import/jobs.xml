@@ -48,4 +48,95 @@
         </triggers>
     </job>
 
+   
+    <job job-id="ExportInventoryFeedSP" priority="0">
+        <description/>
+        <parameters/>
+        <flow>
+            <context site-id="RefArch"/>
+            <step step-id="InventoryFeed" type="custom.InventoryFeedJob" enforce-restart="false">
+                <description/>
+                <parameters>
+                    <parameter name="SynchronizeProducts">allProducts</parameter>
+                </parameters>
+            </step>
+        </flow>
+        <rules>
+            <on-running runtime-threshold="60m" enabled="false">
+                <mark-job-as-hanging/>
+            </on-running>
+        </rules>
+        <triggers>
+            <run-recurring enabled="false">
+                <recurrence>
+                    <date-from>2023-05-31Z</date-from>
+                    <start-time>21:03:00.000Z</start-time>
+                    <interval>1d</interval>
+                    <day-of-week>
+                        <weekday>Wednesday</weekday>
+                        <weekday>Friday</weekday>
+                        <weekday>Saturday</weekday>
+                        <weekday>Sunday</weekday>
+                        <weekday>Tuesday</weekday>
+                        <weekday>Monday</weekday>
+                        <weekday>Thursday</weekday>
+                    </day-of-week>
+                </recurrence>
+            </run-recurring>
+        </triggers>
+    </job>
+
+    <job job-id="storeFeedSP" priority="0">
+        <description/>
+        <parameters/>
+        <split sequential="false">
+            <contexts template-ref="template_3739">
+                <context site-id="RefArch"/>
+                <context site-id="RefArchGlobal"/>
+            </contexts>
+            <flow-template template-id="template_3739">
+                <step step-id="storeFeed" type="custom.subPro.storeFeed" enforce-restart="false">
+                    <description/>
+                    <parameters>
+                        <parameter name="SynchronizeProducts">allProducts</parameter>
+                    </parameters>
+                </step>
+            </flow-template>
+        </split>
+        <rules>
+            <on-running runtime-threshold="60m" enabled="false">
+                <mark-job-as-hanging/>
+            </on-running>
+        </rules>
+        <triggers>
+            <run-once enabled="false">
+                <date>2023-06-22Z</date>
+                <time>07:33:00.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
+    <job job-id="MigrationsSP" priority="0">
+        <description/>
+        <parameters/>
+        <flow>
+            <context site-id="RefArch"/>
+            <step step-id="migrations" type="custom.subPro.migrations" enforce-restart="false">
+                <description/>
+                <parameters/>
+            </step>
+        </flow>
+        <rules>
+            <on-running runtime-threshold="60m" enabled="false">
+                <mark-job-as-hanging/>
+            </on-running>
+        </rules>
+        <triggers>
+            <run-once enabled="false">
+                <date>2023-07-10Z</date>
+                <time>14:50:00.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
 </jobs>

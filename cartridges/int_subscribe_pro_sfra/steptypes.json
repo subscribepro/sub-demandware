@@ -1,0 +1,181 @@
+{
+    "step-types": {
+        "chunk-script-module-step": [
+            {
+                "@type-id": "custom.InventoryFeedJob",
+                "@supports-parallel-execution": "false",
+                "@supports-site-context": "true",
+                "@supports-organization-context": "false",
+                "description": "Find product inventory and export as SP API call",
+                "module": "int_subscribe_pro_sfra/cartridge/scripts/subpro/job/inventoryFeedJob.js",
+                "before-step-function": "beforeStep",
+                "before-chunk-function": "",
+                "read-function": "read",
+                "process-function": "process",
+                "write-function": "write",
+                "after-chunk-function": "",
+                "after-step-function": "",
+                "chunk-size": 100,
+                "transactional": "true",
+                "timeout-in-seconds": "100",
+
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "SynchronizeProducts",
+                            "@type": "string",
+                            "@trim": "true",
+                            "@required": "true",
+                            "description": "Synchronize only products in the catalog with Subscription = Enabled from SFCC > SP or Synchronize all products in the catalog from SFCC > SP",
+                            "enum-values": {
+                                "value": ["subscriptionEnabledProducts", "allProducts"]
+                            }
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when the step failed with an error."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when the step finished successfully."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.subPro.storeFeed",
+                "@supports-parallel-execution": "false",
+                "@supports-site-context": "true",
+                "@supports-organization-context": "true",
+                "description": "Reading the inventory assigned to stores and sending it using SP API calls",
+                "module": "int_subscribe_pro_sfra/cartridge/scripts/subpro/job/storeFeedJob.js",
+                "before-step-function": "beforeStep",
+                "read-function": "read",
+                "process-function": "process",
+                "write-function": "write",
+                "after-chunk-function": "",
+                "after-step-function": "afterStep",
+                "chunk-size": 100,
+                "transactional": "false",
+                "parameters": {
+                    "parameter": [
+                        {
+                            "@name": "SynchronizeProducts",
+                            "@type": "string",
+                            "@trim": "true",
+                            "@required": "true",
+                            "description": "Synchronize only products in the catalog with Subscription = Enabled from SFCC > SP or Synchronize all products in the catalog from SFCC > SP",
+                            "enum-values": {
+                                "value": ["subscriptionEnabledProducts", "allProducts"]
+                            }
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when the step failed with an error."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when the step finished successfully."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.subPro.migrations",
+                "@supports-parallel-execution": "false",
+                "@supports-site-context": "true",
+                "@supports-organization-context": "true",
+                "description": "The job do migrations/synchronisation by SP instances using SP API calls",
+                "module": "int_subscribe_pro_sfra/cartridge/scripts/subpro/job/migrationSPUsers.js",
+                "before-step-function": "beforeStep",
+                "read-function": "read",
+                "process-function": "process",
+                "write-function": "write",
+                "after-chunk-function": "",
+                "after-step-function": "afterStep",
+                "chunk-size": 100,
+                "transactional": "false",
+                "parameters": {
+                    "parameter": [
+                        {
+                            "@name": "User type",
+                            "@type": "string",
+                            "@required": "true",
+                            "@trim": "false",
+                            "description": "A required string parameter, must be one of One, Two or Three.",
+                            "default-value": "Only registered users",
+                            "enum-values": {
+                                "value": ["All Users", "Only registered users", "No registered users"]
+                            }
+                        },
+                        {
+                            "@name": "Email",
+                            "@type": "string",
+                            "@required": "false",
+                            "description": "An optional string parameter, length must be between 5 and 50",
+                            "min-length": "5",
+                            "max-length": "50"
+                        },
+                        {
+                            "@name": "Customer No",
+                            "@type": "string",
+                            "@required": "false",
+                            "description": "An optional string parameter, length must be between 2 and 50",
+                            "min-length": "2",
+                            "max-length": "50"
+                        },
+                        {
+                            "@name": "First name",
+                            "@type": "string",
+                            "@required": "false",
+                            "description": "An optional string parameter, length must be between 1 and 50",
+                            "min-length": "1",
+                            "max-length": "50"
+                        },
+                        {
+                            "@name": "Last name",
+                            "@type": "string",
+                            "@required": "false",
+                            "description": "An optional string parameter, length must be between 1 and 50",
+                            "min-length": "1",
+                            "max-length": "50"
+                        },
+                        {
+                            "@name": "Created since",
+                            "@type": "date-string",
+                            "@required": "false",
+                            "@target-type": "date",
+                            "description": "An optional date parameter."
+                        },
+                        {
+                            "@name": "Additional search string",
+                            "@type": "string",
+                            "@required": "false",
+                            "description": "It is an additional field. You can set a custom phrase if you don't have enough search fields. Be careful other fields will be ignored if you use the additional field. Search phrases should write according to the standard SFCC search rule. You can find it in the SFCC documentation for the searchProfile function in CustomerMgr. For Ex:custom.subproCustomerID != NULL"
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when the step failed with an error."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when the step finished successfully."
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
