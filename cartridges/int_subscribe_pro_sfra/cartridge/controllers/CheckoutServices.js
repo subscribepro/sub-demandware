@@ -13,12 +13,11 @@ var BasketMgr = require('dw/order/BasketMgr');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 var paymentsHelper = require('~/cartridge/scripts/subpro/helpers/paymentsHelper');
 var addressHelper = require('~/cartridge/scripts/subpro/helpers/addressHelper');
-var SubscribeProLib = require('*/cartridge/scripts/subpro/lib/subscribeProLib.js');
 
 var subproEnabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('subproEnabled');
 
 server.append('SubmitPayment', server.middleware.https, csrfProtection.validateAjaxRequest, function (req, res, next) {
-    if (!subproEnabled || !SubscribeProLib.isBasketHasSubscriptionItem()) {
+    if (!subproEnabled) {
         return next();
     }
 
