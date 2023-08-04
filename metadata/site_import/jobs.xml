@@ -86,7 +86,7 @@
         </triggers>
     </job>
 
-    <job job-id="storeFeedSP" priority="0">
+    <job job-id="storeInventoryFeedSP" priority="0">
         <description/>
         <parameters/>
         <split sequential="false">
@@ -95,7 +95,7 @@
                 <context site-id="RefArchGlobal"/>
             </contexts>
             <flow-template template-id="template_3739">
-                <step step-id="storeFeed" type="custom.subPro.storeFeed" enforce-restart="false">
+                <step step-id="storeInventoryFeed" type="custom.subPro.storeInventoryFeedSP" enforce-restart="false">
                     <description/>
                     <parameters>
                         <parameter name="SynchronizeProducts">allProducts</parameter>

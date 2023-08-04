@@ -47,12 +47,12 @@
                 }
             },
             {
-                "@type-id": "custom.subPro.storeFeed",
+                "@type-id": "custom.subPro.storeInventoryFeedSP",
                 "@supports-parallel-execution": "false",
                 "@supports-site-context": "true",
                 "@supports-organization-context": "true",
                 "description": "Reading the inventory assigned to stores and sending it using SP API calls",
-                "module": "int_subscribe_pro_sfra/cartridge/scripts/subpro/job/storeFeedJob.js",
+                "module": "int_subscribe_pro_sfra/cartridge/scripts/subpro/job/storeInventoryFeedSP.js",
                 "before-step-function": "beforeStep",
                 "read-function": "read",
                 "process-function": "process",
