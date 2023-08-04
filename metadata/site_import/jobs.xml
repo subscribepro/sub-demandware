@@ -49,12 +49,12 @@
     </job>
 
    
-    <job job-id="ExportInventoryFeedSP" priority="0">
+    <job job-id="productFeedSP" priority="0">
         <description/>
         <parameters/>
         <flow>
             <context site-id="RefArch"/>
-            <step step-id="InventoryFeed" type="custom.InventoryFeedJob" enforce-restart="false">
+            <step step-id="productFeedSP" type="custom.productFeedSP" enforce-restart="false">
                 <description/>
                 <parameters>
                     <parameter name="SynchronizeProducts">allProducts</parameter>

@@ -2,12 +2,12 @@
     "step-types": {
         "chunk-script-module-step": [
             {
-                "@type-id": "custom.InventoryFeedJob",
+                "@type-id": "custom.productFeedSP",
                 "@supports-parallel-execution": "false",
                 "@supports-site-context": "true",
                 "@supports-organization-context": "false",
                 "description": "Find product inventory and export as SP API call",
-                "module": "int_subscribe_pro_sfra/cartridge/scripts/subpro/job/inventoryFeedJob.js",
+                "module": "int_subscribe_pro_sfra/cartridge/scripts/subpro/job/productFeedSPJob.js",
                 "before-step-function": "beforeStep",
                 "before-chunk-function": "",
                 "read-function": "read",
