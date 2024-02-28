@@ -78,6 +78,12 @@
                     "write_attributes":"(**)"
                 },
                 {
+                    "resource_id":"/orders/*",
+                    "methods":["get"],
+                    "read_attributes":"(**)",
+                    "write_attributes":"(**)"
+                },
+                {
                     "resource_id":"/orders/*/payment_instruments/*",
                     "methods":["patch"],
                     "read_attributes":"(**)",
