@@ -86,7 +86,7 @@ server.prepend('SaveAddress', csrfProtection.validateAjaxRequest, function (req,
 server.append('SaveAddress', csrfProtection.validateAjaxRequest, function (req, res, next) {
     this.on('route:Complete', function () {
         if (!subproEnabled) {
-            return next();
+            return;
         }
         var CustomerMgr = require('dw/customer/CustomerMgr');
         var addressForm = server.forms.getForm('address');
@@ -97,11 +97,11 @@ server.append('SaveAddress', csrfProtection.validateAjaxRequest, function (req, 
 
         var addressId = req.querystring.addressId ? req.querystring.addressId : addressFormObj.addressId;
         if (!addressId) {
-            return next();
+            return;
         }
         var address = addressBook.getAddress(addressId);
         if (!address) {
-            return next();
+            return;
         }
 
         var spAddress = addressHelper.getSubproAddress(address, session.customer.profile, false, true);
