@@ -75,6 +75,11 @@ server.prepend('SaveAddress', csrfProtection.validateAjaxRequest, function (req,
         return next();
     }
 
+    if (empty(address.custom.subproAddressID)) {
+        session.privacy.spUpdateAddress = false;
+        return next();
+    }
+
     session.privacy.updatedOldAddress = JSON.stringify({
         sp: addressHelper.getSubproAddress(address, session.customer.profile, true, true),
         sfcc: address.ID
