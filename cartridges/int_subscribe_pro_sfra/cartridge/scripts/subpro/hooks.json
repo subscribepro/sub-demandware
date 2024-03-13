@@ -23,6 +23,10 @@
         {
             "name": "dw.ocapi.shop.order.validateOrder",
             "script": "./hooks/order.js"
+        },
+        {
+            "name": "dw.ocapi.shop.basket.afterPost",
+            "script": "./hooks/basket.js"
         }
     ]
 }
