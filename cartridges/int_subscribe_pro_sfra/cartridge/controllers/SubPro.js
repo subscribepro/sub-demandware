@@ -221,6 +221,7 @@ server.post('UpdateOptions', function (req, res, next) {
             }
 
             basket.custom.subproSubscriptionsToBeProcessed = isSubpro;
+            basket.custom.subproContainsSubscriptions = isSubpro;
 
             res.json(new CartModel(basket));
         });
