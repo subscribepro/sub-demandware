@@ -78,7 +78,7 @@ var PaymentsHelper = {
                 city: billingAddress.city,
                 region: billingAddress.stateCode,
                 postcode: billingAddress.postalCode,
-                country: billingAddress.getCountryCode() ? billingAddress.getCountryCode().toString().toUpperCase() : '',
+                country: billingAddress.getCountryCode() ? billingAddress.getCountryCode().getValue().toString().toUpperCase() : '',
                 phone: billingAddress.phone || ''
             };
         } else if (defaultCustomerAddress) {
@@ -95,7 +95,7 @@ var PaymentsHelper = {
                 city: defaultCustomerAddress.city,
                 region: defaultCustomerAddress.stateCode,
                 postcode: defaultCustomerAddress.postalCode,
-                country: defaultCustomerAddress.getCountryCode() ? defaultCustomerAddress.getCountryCode().toString().toUpperCase() : '',
+                country: defaultCustomerAddress.getCountryCode() ? defaultCustomerAddress.getCountryCode().getValue().toString().toUpperCase() : '',
                 phone: defaultCustomerAddress.phone || ''
             };
         } else {
