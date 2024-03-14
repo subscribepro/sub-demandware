@@ -53,7 +53,7 @@ var AddressHelper = {
             city: address.city || '',
             region: address.stateCode || '',
             postcode: address.postalCode || '',
-            country: address.countryCode ? address.countryCode.toString().toUpperCase() : '',
+            country: address.countryCode ? address.countryCode.value.toString().toUpperCase() : '',
             phone: address.phone || ''
         };
 
