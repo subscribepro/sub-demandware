@@ -139,7 +139,6 @@ var PaymentsHelper = {
         return (
             instrument1.paymentMethod === instrument2.paymentMethod &&
             instrument1.creditCardNumber === instrument2.creditCardNumber &&
-            instrument1.creditCardHolder === instrument2.creditCardHolder &&
             instrument1.creditCardExpirationYear === instrument2.creditCardExpirationYear &&
             instrument1.creditCardExpirationMonth === instrument2.creditCardExpirationMonth
         );
